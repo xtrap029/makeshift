@@ -6,7 +6,6 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Inertia\Inertia;
-use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -17,7 +16,7 @@ class UserController extends Controller
     public function index()
     {
         return Inertia::render('users/index', [
-            'users' => User::orderBy('name')->get(),
+            'users' => User::orderBy('name')->get()
         ]);
     }
 
@@ -42,7 +41,7 @@ class UserController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        return redirect()->route('users.index');
+        return to_route('users.index')->withSuccess('User created successfully!');
     }
 
     /**
@@ -68,9 +67,16 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
-        $user->update($request->validated());
+        $validated = $request->validated();
 
-        return redirect()->route('users.index');
+        if ($validated['password']) {
+            $validated['password'] = Hash::make($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
+
+        $user->update($validated);
+        return to_route('users.index')->withSuccess('User updated successfully!');
     }
 
     /**
@@ -79,7 +85,6 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $user->delete();
-
-        return redirect()->route('users.index');
+        return to_route('users.index')->withSuccess('User deleted successfully!');
     }
 }

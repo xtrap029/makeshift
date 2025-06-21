@@ -10,18 +10,9 @@ import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Home',
-        href: '/dashboard',
-    },
-    {
-        title: 'Users',
-        href: '/users',
-    },
-    {
-        title: 'Create',
-        href: '/users/create',
-    },
+    { title: 'Dashboard', href: '/dashboard' },
+    { title: 'Users', href: '/users' },
+    { title: 'Create', href: '/users/create' },
 ];
 
 type RegisterForm = {
@@ -32,7 +23,7 @@ type RegisterForm = {
 };
 
 export default function Create() {
-    const { data, setData, post, processing, errors, reset } = useForm<Required<RegisterForm>>({
+    const { data, setData, post, processing, errors } = useForm<Required<RegisterForm>>({
         name: '',
         email: '',
         password: '',
@@ -43,10 +34,6 @@ export default function Create() {
         e.preventDefault();
         post(route('users.store'), {
             forceFormData: true,
-            preserveScroll: true,
-            onSuccess: () => {
-                reset();
-            },
         });
     };
 
@@ -63,7 +50,6 @@ export default function Create() {
                                 type="text"
                                 required
                                 autoFocus
-                                tabIndex={1}
                                 autoComplete="name"
                                 value={data.name}
                                 onChange={(e) => setData('name', e.target.value)}
@@ -79,7 +65,6 @@ export default function Create() {
                                 id="email"
                                 type="email"
                                 required
-                                tabIndex={2}
                                 autoComplete="email"
                                 value={data.email}
                                 onChange={(e) => setData('email', e.target.value)}
@@ -95,7 +80,6 @@ export default function Create() {
                                 id="password"
                                 type="password"
                                 required
-                                tabIndex={3}
                                 autoComplete="new-password"
                                 value={data.password}
                                 onChange={(e) => setData('password', e.target.value)}
@@ -111,7 +95,6 @@ export default function Create() {
                                 id="password_confirmation"
                                 type="password"
                                 required
-                                tabIndex={4}
                                 autoComplete="new-password"
                                 value={data.password_confirmation}
                                 onChange={(e) => setData('password_confirmation', e.target.value)}
@@ -121,18 +104,15 @@ export default function Create() {
                             <InputError message={errors.password_confirmation} />
                         </div>
 
-                        <Button
-                            type="submit"
-                            className="mt-2 w-full"
-                            tabIndex={5}
-                            disabled={processing}
-                        >
-                            {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                            Create account
-                        </Button>
-                        <Button variant="outline" asChild>
-                            <Link href="/users">Cancel</Link>
-                        </Button>
+                        <div className="flex gap-2">
+                            <Button type="submit" disabled={processing}>
+                                {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
+                                Create user
+                            </Button>
+                            <Button variant="outline" asChild>
+                                <Link href="/users">Cancel</Link>
+                            </Button>
+                        </div>
                     </div>
                 </form>
             </div>

@@ -9,25 +9,26 @@ import {
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { User, type BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { toast } from 'sonner';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { Pencil, Trash } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Home',
-        href: '/dashboard',
-    },
-    {
-        title: 'Users',
-        href: '/users',
-    },
+    { title: 'Dashboard', href: '/dashboard' },
+    { title: 'Users', href: '/users' },
 ];
 
-export default function Index({ users }: { users: User[] }) {
-    const deleteUser = (id: number) => {
-        if (confirm('Are you sure?')) {
-            router.delete(route('users.destroy', { id }));
-            toast.success('User deleted successfully!');
+type IndexProps = {
+    users: User[];
+};
+
+export default function Index({ users }: IndexProps) {
+    const { processing, delete: deleteUser } = useForm();
+
+    const handleDelete = (id: number, name: string) => {
+        if (confirm(`Are you sure you want to delete ${name}?`)) {
+            deleteUser(route('users.destroy', { id }), {
+                preserveScroll: true,
+            });
         }
     };
 
@@ -35,15 +36,17 @@ export default function Index({ users }: { users: User[] }) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Users List" />
             <div className="p-4">
-                <Link className={buttonVariants({ variant: 'outline' })} href="/users/create">
-                    Create User
-                </Link>
+                <div className="flex justify-end">
+                    <Link className={buttonVariants({ variant: 'default' })} href="/users/create">
+                        Create User
+                    </Link>
+                </div>
                 <Table>
                     <TableHeader>
                         <TableRow>
                             <TableHead>Name</TableHead>
                             <TableHead>Email</TableHead>
-                            <TableHead className="w-[150px] text-right">Actions</TableHead>
+                            <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -51,19 +54,20 @@ export default function Index({ users }: { users: User[] }) {
                             <TableRow key={user.id}>
                                 <TableCell>{user.name}</TableCell>
                                 <TableCell>{user.email}</TableCell>
-                                <TableCell className="text-right">
+                                <TableCell className="flex justify-end gap-2">
                                     <Link
-                                        className={buttonVariants({ variant: 'default' })}
+                                        className={buttonVariants({ variant: 'ghost' })}
                                         href={`/users/${user.id}/edit`}
                                     >
-                                        Edit
+                                        <Pencil />
                                     </Link>
                                     <Button
-                                        variant="destructive"
+                                        variant="ghost"
                                         className="cursor-pointer"
-                                        onClick={() => deleteUser(user.id)}
+                                        onClick={() => handleDelete(user.id, user.name)}
+                                        disabled={processing}
                                     >
-                                        Delete
+                                        <Trash />
                                     </Button>
                                 </TableCell>
                             </TableRow>
