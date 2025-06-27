@@ -1,4 +1,5 @@
 import { Button, buttonVariants } from '@/components/ui/button';
+import IconDynamic from '@/components/ui/icon-dynamic';
 import {
     Table,
     TableBody,
@@ -8,25 +9,25 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { User, type BreadcrumbItem } from '@/types';
+import { Amenity, type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Pencil, Trash } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Users', href: '/users' },
+    { title: 'Amenities', href: '/amenities' },
 ];
 
 type IndexProps = {
-    users: User[];
+    amenities: Amenity[];
 };
 
-export default function Index({ users }: IndexProps) {
-    const { processing, delete: deleteUser } = useForm();
+export default function Index({ amenities }: IndexProps) {
+    const { processing, delete: deleteAmenity } = useForm();
 
     const handleDelete = (id: number, name: string) => {
         if (confirm(`Are you sure you want to delete ${name}?`)) {
-            deleteUser(route('users.destroy', { id }), {
+            deleteAmenity(route('amenities.destroy', { id }), {
                 preserveScroll: true,
             });
         }
@@ -34,37 +35,48 @@ export default function Index({ users }: IndexProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Users - List" />
+            <Head title="Amenities - List" />
             <div className="p-4">
                 <div className="flex justify-end">
-                    <Link className={buttonVariants({ variant: 'default' })} href="/users/create">
+                    <Link
+                        className={buttonVariants({ variant: 'default' })}
+                        href="/amenities/create"
+                    >
                         Create
                     </Link>
                 </div>
                 <Table>
                     <TableHeader>
                         <TableRow>
+                            <TableHead>Icon</TableHead>
                             <TableHead>Name</TableHead>
-                            <TableHead>Email</TableHead>
+                            <TableHead>Description</TableHead>
                             <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {users.map((user) => (
-                            <TableRow key={user.id}>
-                                <TableCell>{user.name}</TableCell>
-                                <TableCell>{user.email}</TableCell>
+                        {amenities.map((amenity) => (
+                            <TableRow key={amenity.id}>
+                                <TableCell className="pl-3">
+                                    {amenity.icon ? (
+                                        <IconDynamic name={amenity.icon} className="size-4" />
+                                    ) : (
+                                        '-'
+                                    )}
+                                </TableCell>
+                                <TableCell>{amenity.name}</TableCell>
+                                <TableCell>{amenity.description}</TableCell>
                                 <TableCell className="flex justify-end gap-2">
                                     <Link
                                         className={buttonVariants({ variant: 'ghost' })}
-                                        href={`/users/${user.id}/edit`}
+                                        href={`/amenities/${amenity.id}/edit`}
                                     >
                                         <Pencil />
                                     </Link>
                                     <Button
                                         variant="ghost"
                                         className="cursor-pointer"
-                                        onClick={() => handleDelete(user.id, user.name)}
+                                        onClick={() => handleDelete(amenity.id, amenity.name)}
                                         disabled={processing}
                                     >
                                         <Trash />

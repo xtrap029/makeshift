@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoomController;
+use App\Http\Controllers\AmenityController;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -14,7 +16,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     Route::resource('users', UserController::class);
+    Route::resource('rooms', RoomController::class);
+    Route::resource('amenities', AmenityController::class);
 });
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';

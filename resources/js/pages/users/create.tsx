@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
+import { UserForm } from '@/types/form';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
@@ -15,15 +16,8 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Create', href: '/users/create' },
 ];
 
-type RegisterForm = {
-    name: string;
-    email: string;
-    password: string;
-    password_confirmation: string;
-};
-
 export default function Create() {
-    const { data, setData, post, processing, errors } = useForm<Required<RegisterForm>>({
+    const { data, setData, post, processing, errors } = useForm<Required<UserForm>>({
         name: '',
         email: '',
         password: '',
@@ -39,7 +33,7 @@ export default function Create() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Users List" />
+            <Head title="Users - Create" />
             <div className="p-4">
                 <form className="flex flex-col gap-6" onSubmit={submit}>
                     <div className="grid gap-6">
@@ -107,7 +101,7 @@ export default function Create() {
                         <div className="flex gap-2">
                             <Button type="submit" disabled={processing}>
                                 {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                                Create user
+                                Create
                             </Button>
                             <Button variant="outline" asChild>
                                 <Link href="/users">Cancel</Link>

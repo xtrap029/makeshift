@@ -20,6 +20,7 @@ export interface NavItem {
     href: string;
     icon?: LucideIcon | null;
     isActive?: boolean;
+    items?: NavItem[];
 }
 
 export interface SharedData {
@@ -39,4 +40,34 @@ export interface User {
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
+}
+
+export interface Room {
+    id: number;
+    name: string;
+    price: number;
+    is_active: boolean;
+    description: string;
+    is_private: boolean;
+    sqm: number;
+    qty: number;
+    cap: number;
+    amenities: Amenity[];
+    image: File | null;
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string | null;
+    owner_id?: number;
+    updated_id?: number;
+}
+
+export interface Amenity {
+    id: number;
+    name: string;
+    description: string;
+    icon: string;
+    created_at?: string;
+    updated_at?: string;
+    owner_id?: number;
+    updated_id?: number;
 }

@@ -7,39 +7,34 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem, User } from '@/types';
-import { UserForm } from '@/types/form';
+import { Amenity, BreadcrumbItem } from '@/types';
+import { AmenityForm } from '@/types/form';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Users', href: '/users' },
-    { title: 'Edit', href: '/users/edit' },
+    { title: 'Amenities', href: '/amenities' },
+    { title: 'Edit', href: '/amenities/edit' },
 ];
 
-export default function Create({ user }: { user: User }) {
-    const { data, setData, put, processing, errors } = useForm<Partial<UserForm>>({
-        name: user.name,
-        password: '',
-        password_confirmation: '',
+export default function Create({ amenity }: { amenity: Amenity }) {
+    const { data, setData, put, processing, errors } = useForm<Partial<AmenityForm>>({
+        name: amenity.name,
+        description: amenity.description,
+        icon: amenity.icon,
     });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        put(route('users.update', { user: user.id }));
+        put(route('amenities.update', { amenity: amenity.id }));
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Users - Edit" />
+            <Head title="Amenities - Edit" />
             <div className="p-4">
                 <form className="flex flex-col gap-6" onSubmit={submit}>
                     <div className="grid gap-6">
-                        <div className="grid gap-2">
-                            <Label htmlFor="email">Email address</Label>
-                            <Input id="email" value={user.email} disabled autoComplete="email" />
-                        </div>
-
-                        <div className="grid gap-2">
+                        <div className="col-span-6 grid gap-2">
                             <Label htmlFor="name">Name</Label>
                             <Input
                                 id="name"
@@ -50,46 +45,51 @@ export default function Create({ user }: { user: User }) {
                                 value={data.name}
                                 onChange={(e) => setData('name', e.target.value)}
                                 disabled={processing}
-                                placeholder="Full name"
+                                placeholder="Name"
                             />
                             <InputError message={errors.name} className="mt-2" />
                         </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
+                        <div className="col-span-6 grid gap-2">
+                            <Label htmlFor="icon">
+                                <a
+                                    href="https://lucide.dev/icons/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-500 hover:underline"
+                                >
+                                    Icon Key
+                                </a>
+                            </Label>
                             <Input
-                                id="password"
-                                type="password"
-                                autoComplete="new-password"
-                                value={data.password}
-                                onChange={(e) => setData('password', e.target.value)}
+                                id="icon"
+                                type="text"
+                                value={data.icon}
+                                onChange={(e) => setData('icon', e.target.value)}
                                 disabled={processing}
-                                placeholder="Password"
+                                placeholder="e.g. 'book-open'"
                             />
-                            <InputError message={errors.password} className="mt-2" />
+                            <InputError message={errors.icon} className="mt-2" />
                         </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="password_confirmation">Password confirmation</Label>
+                        <div className="col-span-12 grid gap-2">
+                            <Label htmlFor="description">Description</Label>
                             <Input
-                                id="password_confirmation"
-                                type="password"
-                                autoComplete="new-password"
-                                value={data.password_confirmation}
-                                onChange={(e) => setData('password_confirmation', e.target.value)}
+                                id="description"
+                                type="text"
+                                required
+                                value={data.description}
+                                onChange={(e) => setData('description', e.target.value)}
                                 disabled={processing}
-                                placeholder="Confirm password"
+                                placeholder="Description"
                             />
-                            <InputError message={errors.password_confirmation} className="mt-2" />
+                            <InputError message={errors.description} className="mt-2" />
                         </div>
-
                         <div className="flex gap-2">
                             <Button type="submit" disabled={processing}>
                                 {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
                                 Save changes
                             </Button>
                             <Button variant="outline" asChild>
-                                <Link href="/users">Cancel</Link>
+                                <Link href="/amenities">Cancel</Link>
                             </Button>
                         </div>
                     </div>
