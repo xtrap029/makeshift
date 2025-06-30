@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreRoomRequest;
 use App\Http\Requests\UpdateRoomRequest;
 use App\Models\Amenity;
+use App\Models\Layout;
 use App\Models\Room;
+use App\Models\Schedule;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -16,7 +18,7 @@ class RoomController extends Controller
      */
     public function index()
     {
-        return Inertia::render('rooms/index', [
+        return Inertia::render('room/index', [
             'rooms' => Room::orderBy('name')->get(),
         ]);
     }
@@ -26,8 +28,10 @@ class RoomController extends Controller
      */
     public function create()
     {
-        return Inertia::render('rooms/create', [
+        return Inertia::render('room/create', [
             'amenities' => Amenity::orderBy('name')->get(),
+            'layouts' => Layout::orderBy('name')->get(),
+            'schedules' => Schedule::where('is_active', true)->orderBy('name')->get(),
         ]);
     }
 
@@ -42,6 +46,15 @@ class RoomController extends Controller
 
         if (isset($validated['amenities'])) {
             $room->amenities()->attach($validated['amenities']);
+        }
+
+        if (isset($validated['layouts'])) {
+            $room->layouts()->attach($validated['layouts']);
+        }
+
+        if (isset($validated['schedule_id'])) {
+            $room->schedule()->associate($validated['schedule_id']);
+            $room->save();
         }
 
         if (isset($validated['image'])) {
@@ -59,9 +72,9 @@ class RoomController extends Controller
      */
     public function show(Room $room)
     {
-        $room->load('image', 'amenities');
+        $room->load('image', 'amenities', 'layouts', 'schedule');
 
-        return Inertia::render('rooms/show', [
+        return Inertia::render('room/show', [
             'room' => $room,
         ]);
     }
@@ -71,10 +84,12 @@ class RoomController extends Controller
      */
     public function edit(Room $room)
     {
-        $room->load('image', 'amenities');
+        $room->load('image', 'amenities', 'layouts', 'schedule');
 
-        return Inertia::render('rooms/edit', [
+        return Inertia::render('room/edit', [
             'amenities' => Amenity::orderBy('name')->get(),
+            'layouts' => Layout::orderBy('name')->get(),
+            'schedules' => Schedule::where('is_active', true)->orderBy('name')->get(),
             'room' => $room,
         ]);
     }
@@ -92,6 +107,17 @@ class RoomController extends Controller
             $room->amenities()->sync($validated['amenities']);
         } else {
             $room->amenities()->detach();
+        }
+
+        if (isset($validated['layouts'])) {
+            $room->layouts()->sync($validated['layouts']);
+        } else {
+            $room->layouts()->detach();
+        }
+
+        if (isset($validated['schedule_id'])) {
+            $room->schedule()->associate($validated['schedule_id']);
+            $room->save();
         }
 
         if (isset($validated['image'])) {

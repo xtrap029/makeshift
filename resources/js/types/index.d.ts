@@ -52,7 +52,9 @@ export interface Room {
     sqm: number;
     qty: number;
     cap: number;
+    schedule: Schedule | null;
     amenities: Amenity[];
+    layouts: Layout[];
     image: File | null;
     created_at?: string;
     updated_at?: string;
@@ -66,6 +68,40 @@ export interface Amenity {
     name: string;
     description: string;
     icon: string;
+    created_at?: string;
+    updated_at?: string;
+    owner_id?: number;
+    updated_id?: number;
+}
+
+export interface Layout {
+    id: number;
+    name: string;
+    description: string;
+    created_at?: string;
+    updated_at?: string;
+    owner_id?: number;
+    updated_id?: number;
+}
+
+export interface Schedule {
+    id: number;
+    name: string;
+    is_active: boolean;
+    sun_start: string;
+    sun_end: string;
+    mon_start: string;
+    mon_end: string;
+    tue_start: string;
+    tue_end: string;
+    wed_start: string;
+    wed_end: string;
+    thu_start: string;
+    thu_end: string;
+    fri_start: string;
+    fri_end: string;
+    sat_start: string;
+    sat_end: string;
     created_at?: string;
     updated_at?: string;
     owner_id?: number;

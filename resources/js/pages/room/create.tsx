@@ -1,4 +1,4 @@
-import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler, useState } from 'react';
 
@@ -7,35 +7,53 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MultiSelect } from '@/components/ui/multi-select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import AppLayout from '@/layouts/app-layout';
-import { Amenity, BreadcrumbItem, Room } from '@/types';
+import { Amenity, BreadcrumbItem, Layout, Schedule } from '@/types';
 import { RoomForm } from '@/types/form';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
     { title: 'Rooms', href: '/rooms' },
-    { title: 'Edit', href: '/rooms/edit' },
+    { title: 'Create', href: '/rooms/create' },
 ];
 
-export default function Edit({ room, amenities }: { room: Room; amenities: Amenity[] }) {
-    const { errors } = usePage().props;
-    const { data, setData, processing } = useForm<Partial<RoomForm>>({
-        name: room.name,
-        price: room.price,
-        is_active: room.is_active,
-        description: room.description,
-        is_private: room.is_private,
-        sqm: room.sqm,
-        qty: room.qty,
-        cap: room.cap,
-        amenities: room.amenities.map((amenity) => amenity.id),
+export default function Create({
+    amenities,
+    layouts,
+    schedules,
+}: {
+    amenities: Amenity[];
+    layouts: Layout[];
+    schedules: Schedule[];
+}) {
+    const { data, setData, post, processing, errors } = useForm<Partial<RoomForm>>({
+        name: '',
+        price: 0,
+        is_active: true,
+        description: '',
+        is_private: true,
+        sqm: 0,
+        qty: 0,
+        cap: 0,
+        schedule_id: undefined,
+        amenities: [],
+        layouts: [],
         image: null,
     });
 
-    const [selectedAmenities, setSelectedAmenities] = useState<string[]>(
-        room.amenities?.map((amenity) => amenity.id.toString()) || []
-    );
+    const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+    const [selectedLayouts, setSelectedLayouts] = useState<string[]>([]);
+    const [selectedSchedule, setSelectedSchedule] = useState<string | undefined>(undefined);
+
+    console.log(data);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -46,19 +64,18 @@ export default function Edit({ room, amenities }: { room: Room; amenities: Ameni
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        router.post(route('rooms.update', { room: room.id }), {
-            _method: 'put',
-            ...data,
+        post(route('rooms.store'), {
+            forceFormData: true,
         });
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Rooms - Edit" />
+            <Head title="Rooms - Create" />
             <div className="p-4">
                 <form className="flex flex-col gap-6" onSubmit={submit}>
-                    <div className="grid gap-6">
-                        <div className="col-span-9 grid gap-2">
+                    <div className="grid grid-cols-12 gap-6">
+                        <div className="col-span-6 grid gap-2">
                             <Label htmlFor="name">Name</Label>
                             <Input
                                 id="name"
@@ -74,22 +91,24 @@ export default function Edit({ room, amenities }: { room: Room; amenities: Ameni
                             <InputError message={errors.name} className="mt-2" />
                         </div>
                         <div className="col-span-3 grid gap-2">
-                            <Label htmlFor="image">
-                                {!room.image && 'Image'}
-                                {room.image && (
-                                    <a
-                                        href={`/storage/${room.image?.name}`}
-                                        target="_blank"
-                                        className="text-blue-300 underline"
-                                    >
-                                        Replace Image
-                                    </a>
-                                )}
-                            </Label>
+                            <Label htmlFor="price">Price</Label>
+                            <Input
+                                id="price"
+                                type="number"
+                                required
+                                value={data.price}
+                                onChange={(e) => setData('price', parseInt(e.target.value))}
+                                disabled={processing}
+                                placeholder="Price"
+                            />
+                            <InputError message={errors.price} className="mt-2" />
+                        </div>
+                        <div className="col-span-3 grid gap-2">
+                            <Label htmlFor="image">Image</Label>
                             <Input
                                 id="image"
                                 type="file"
-                                required={!room.image}
+                                required
                                 onChange={handleImageChange}
                                 accept="image/png, image/jpeg, image/jpg"
                             />
@@ -109,17 +128,30 @@ export default function Edit({ room, amenities }: { room: Room; amenities: Ameni
                             <InputError message={errors.description} className="mt-2" />
                         </div>
                         <div className="col-span-3 grid gap-2">
-                            <Label htmlFor="price">Price</Label>
-                            <Input
-                                id="price"
-                                type="number"
-                                required
-                                value={data.price}
-                                onChange={(e) => setData('price', parseInt(e.target.value))}
+                            <Label htmlFor="schedule_id">Schedule</Label>
+                            <Select
+                                value={selectedSchedule}
+                                onValueChange={(value) => {
+                                    setSelectedSchedule(value);
+                                    setData('schedule_id', parseInt(value));
+                                }}
                                 disabled={processing}
-                                placeholder="Price"
-                            />
-                            <InputError message={errors.price} className="mt-2" />
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a schedule" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {schedules.map((schedule) => (
+                                        <SelectItem
+                                            key={schedule.id}
+                                            value={schedule.id.toString()}
+                                        >
+                                            {schedule.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <InputError message={errors.schedule_id} className="mt-2" />
                         </div>
                         <div className="col-span-3 grid grid-cols-2 gap-2">
                             <div className="flex flex-col gap-3">
@@ -197,11 +229,29 @@ export default function Edit({ room, amenities }: { room: Room; amenities: Ameni
                                 placeholder="Select amenities"
                                 variant="inverted"
                             />
+                            <InputError message={errors.amenities} className="mt-2" />
+                        </div>
+                        <div className="col-span-12 grid gap-2">
+                            <Label htmlFor="layouts">Layouts</Label>
+                            <MultiSelect
+                                options={layouts.map((layout) => ({
+                                    value: layout.id.toString(),
+                                    label: layout.name,
+                                }))}
+                                onValueChange={(tags) => {
+                                    setSelectedLayouts(tags);
+                                    setData('layouts', tags.map(Number));
+                                }}
+                                defaultValue={selectedLayouts}
+                                placeholder="Select layouts"
+                                variant="inverted"
+                            />
+                            <InputError message={errors.layouts} className="mt-2" />
                         </div>
                         <div className="flex gap-2">
                             <Button type="submit" disabled={processing}>
                                 {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                                Save changes
+                                Create
                             </Button>
                             <Button variant="outline" asChild>
                                 <Link href="/rooms">Cancel</Link>

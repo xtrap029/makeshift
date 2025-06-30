@@ -5,8 +5,8 @@ namespace App\Http\Requests;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
-/** @method \App\Models\Amenity route(string $key = null) */
-class UpdateAmenityRequest extends FormRequest
+/** @method \App\Models\Layout route(string $key = null) */
+class UpdateLayoutRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +24,8 @@ class UpdateAmenityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:amenities,name,' . $this->route('amenity')->id,
+            'name' => 'required|string|max:255|unique:layouts,name,' . $this->route('layout')->id,
             'description' => 'nullable|string|max:255',
-            'icon' => 'required|string|max:255',
         ];
     }
 }

@@ -5,13 +5,6 @@ export interface UserForm {
     password_confirmation: string;
 }
 
-export interface AmenityForm {
-    id: number;
-    icon: string;
-    name: string;
-    description: string;
-}
-
 export interface RoomForm {
     id: number;
     name: string;
@@ -22,6 +15,41 @@ export interface RoomForm {
     sqm: number;
     qty: number;
     cap: number;
+    schedule_id: number;
     amenities: number[];
+    layouts: number[];
     image: File | null;
+}
+
+export interface AmenityForm {
+    id: number;
+    icon: string;
+    name: string;
+    description: string;
+}
+
+export interface LayoutForm {
+    id: number;
+    name: string;
+    description: string;
+}
+
+export interface ScheduleForm {
+    id: number;
+    name: string;
+    is_active: boolean;
+    sun_start: string;
+    sun_end: string;
+    mon_start: string;
+    mon_end: string;
+    tue_start: string;
+    tue_end: string;
+    wed_start: string;
+    wed_end: string;
+    thu_start: string;
+    thu_end: string;
+    fri_start: string;
+    fri_end: string;
+    sat_start: string;
+    sat_end: string;
 }

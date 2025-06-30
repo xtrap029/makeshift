@@ -28,6 +28,11 @@ class Room extends Model
         return $this->belongsToMany(Amenity::class, 'amenity_room');
     }
 
+    public function layouts()
+    {
+        return $this->belongsToMany(Layout::class, 'layout_room');
+    }
+
     public function image()
     {
         return $this->hasOne(RoomImage::class)->where('is_main', true);
@@ -36,5 +41,10 @@ class Room extends Model
     public function images()
     {
         return $this->hasMany(RoomImage::class);
+    }
+
+    public function schedule()
+    {
+        return $this->belongsTo(Schedule::class);
     }
 }

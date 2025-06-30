@@ -31,8 +31,11 @@ class StoreRoomRequest extends FormRequest
             'sqm' => 'required|integer',
             'qty' => 'required|integer',
             'cap' => 'required|integer',
+            'schedule_id' => 'required|integer|exists:schedules,id',
             'amenities' => 'nullable|array',
             'amenities.*' => 'nullable|integer|exists:amenities,id',
+            'layouts' => 'nullable|array',
+            'layouts.*' => 'nullable|integer|exists:layouts,id',
             'image' => 'required|image|mimes:png,jpg,jpeg|max:2048',
         ];
     }

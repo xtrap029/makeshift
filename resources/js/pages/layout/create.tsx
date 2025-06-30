@@ -8,33 +8,32 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { AmenityForm } from '@/types/form';
+import { LayoutForm } from '@/types/form';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Amenities', href: '/amenities' },
-    { title: 'Create', href: '/amenities/create' },
+    { title: 'Layouts', href: '/layouts' },
+    { title: 'Create', href: '/layouts/create' },
 ];
 
 export default function Create() {
-    const { data, setData, post, processing, errors } = useForm<Partial<AmenityForm>>({
+    const { data, setData, post, processing, errors } = useForm<Partial<LayoutForm>>({
         name: '',
         description: '',
-        icon: '',
     });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('amenities.store'));
+        post(route('layouts.store'));
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Amenities - Create" />
+            <Head title="Layouts - Create" />
             <div className="p-4">
                 <form className="flex flex-col gap-6" onSubmit={submit}>
                     <div className="grid grid-cols-12 gap-6">
-                        <div className="col-span-6 grid gap-2">
+                        <div className="col-span-12 grid gap-2">
                             <Label htmlFor="name">Name</Label>
                             <Input
                                 id="name"
@@ -48,27 +47,6 @@ export default function Create() {
                                 placeholder="Name"
                             />
                             <InputError message={errors.name} className="mt-2" />
-                        </div>
-                        <div className="col-span-6 grid gap-2">
-                            <Label htmlFor="icon">
-                                <a
-                                    href="https://lucide.dev/icons/"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-500 hover:underline"
-                                >
-                                    Icon Key
-                                </a>
-                            </Label>
-                            <Input
-                                id="icon"
-                                type="text"
-                                value={data.icon}
-                                onChange={(e) => setData('icon', e.target.value)}
-                                disabled={processing}
-                                placeholder="e.g. 'book-open'"
-                            />
-                            <InputError message={errors.icon} className="mt-2" />
                         </div>
                         <div className="col-span-12 grid gap-2">
                             <Label htmlFor="description">Description</Label>
@@ -89,7 +67,7 @@ export default function Create() {
                                 Create
                             </Button>
                             <Button variant="outline" asChild>
-                                <Link href="/amenities">Cancel</Link>
+                                <Link href="/layouts">Cancel</Link>
                             </Button>
                         </div>
                     </div>

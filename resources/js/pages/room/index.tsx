@@ -34,9 +34,8 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                     <TableHeader>
                         <TableRow>
                             <TableHead>Name</TableHead>
-                            <TableHead className="text-center">Active</TableHead>
-                            <TableHead className="text-center">Private</TableHead>
                             <TableHead className="text-center">Price</TableHead>
+                            <TableHead className="text-center">Active</TableHead>
                             <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
@@ -45,21 +44,14 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                             <TableRow key={room.id}>
                                 <TableCell>{room.name}</TableCell>
                                 <TableCell className="text-center">
+                                    {room.price ? `₱ ${room.price}` : '-'}
+                                </TableCell>
+                                <TableCell className="text-center">
                                     {room.is_active ? (
                                         <Check className="mx-auto text-green-500" />
                                     ) : (
                                         ''
                                     )}
-                                </TableCell>
-                                <TableCell>
-                                    {room.is_private ? (
-                                        <Check className="mx-auto text-green-500" />
-                                    ) : (
-                                        ''
-                                    )}
-                                </TableCell>
-                                <TableCell className="text-center">
-                                    {room.price ? `₱ ${room.price}` : '-'}
                                 </TableCell>
                                 <TableCell className="flex justify-end gap-2">
                                     <Link

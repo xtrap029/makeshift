@@ -1,6 +1,8 @@
+import WeekSchedule from '@/components/custom/week-schedule';
 import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
 import IconDynamic from '@/components/ui/icon-dynamic';
+import { Separator } from '@/components/ui/separator';
 import {
     Sheet,
     SheetContent,
@@ -13,7 +15,7 @@ import { useDelete } from '@/hooks/use-delete';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Room } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { Check, SquareDashed, Users } from 'lucide-react';
+import { Check, Dot, SquareDashed, Users } from 'lucide-react';
 import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -26,18 +28,17 @@ export default function Show({ room }: { room: Room }) {
     const { destroy } = useDelete();
 
     const [openPreview, setOpenPreview] = useState(false);
+    const [is24Hour, setIs24Hour] = useState(true);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Rooms - Show" />
             <div className="p-4">
                 <div className="mb-8 flex justify-between gap-2">
-                    <div className="flex items-center gap-2">
+                    <div className="flex gap-2">
                         <Button variant="outline" asChild>
                             <Link href="/rooms">Back</Link>
                         </Button>
-                    </div>
-                    <div className="flex justify-end gap-2">
                         <Button
                             variant="outline"
                             className="cursor-pointer"
@@ -45,8 +46,17 @@ export default function Show({ room }: { room: Room }) {
                         >
                             Preview
                         </Button>
+                        <Button
+                            variant="outline"
+                            className="cursor-pointer"
+                            onClick={() => setIs24Hour(!is24Hour)}
+                        >
+                            View in {is24Hour ? '12 Hour' : '24 Hour'} format
+                        </Button>
+                    </div>
+                    <div className="flex gap-2">
                         <Link
-                            className={buttonVariants({ variant: 'outline' })}
+                            className={buttonVariants({ variant: 'default' })}
                             href={`/rooms/${room.id}/edit`}
                         >
                             Edit
@@ -71,7 +81,8 @@ export default function Show({ room }: { room: Room }) {
                         )}
                         <h1 className="text-2xl font-bold">{room.name}</h1>
                     </div>
-                    <Table className="my-4">
+                    <div className="text-muted-foreground my-4 text-sm">{room.description}</div>
+                    <Table>
                         <TableBody>
                             <TableRow>
                                 <TableHead>Price</TableHead>
@@ -107,9 +118,24 @@ export default function Show({ room }: { room: Room }) {
                                     </div>
                                 </TableCell>
                             </TableRow>
+                            <TableRow>
+                                <TableHead>Layouts</TableHead>
+                                <TableCell>
+                                    <div className="flex flex-wrap gap-2">
+                                        {room.layouts.map((layout) => {
+                                            return <Badge key={layout.id}>{layout.name}</Badge>;
+                                        })}
+                                    </div>
+                                </TableCell>
+                            </TableRow>
                         </TableBody>
                     </Table>
-                    <div className="text-muted-foreground text-sm">{room.description}</div>
+                    {room.schedule && (
+                        <>
+                            <Separator className="mb-4" />
+                            <WeekSchedule schedule={room.schedule} is24Hour={is24Hour} />
+                        </>
+                    )}
                 </div>
             </div>
             <Sheet open={openPreview} onOpenChange={setOpenPreview}>
@@ -152,6 +178,9 @@ export default function Show({ room }: { room: Room }) {
                                         {room.description}
                                     </div>
                                     <div className="text-foreground mt-4 grid grid-cols-2 gap-2">
+                                        <div className="text-muted-foreground col-span-2 text-sm">
+                                            Amenities
+                                        </div>
                                         {room.amenities.map((amenity) => {
                                             return (
                                                 <div
@@ -167,6 +196,22 @@ export default function Show({ room }: { room: Room }) {
                                                         <Check className="size-4" />
                                                     )}
                                                     <div>{amenity.name}</div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                    <div className="text-foreground mt-4 grid grid-cols-2 gap-2">
+                                        <div className="text-muted-foreground col-span-2 text-sm">
+                                            Layouts
+                                        </div>
+                                        {room.layouts.map((layout) => {
+                                            return (
+                                                <div
+                                                    className="flex items-center gap-3"
+                                                    key={layout.id}
+                                                >
+                                                    <Dot className="size-4" />
+                                                    <div>{layout.name}</div>
                                                 </div>
                                             );
                                         })}

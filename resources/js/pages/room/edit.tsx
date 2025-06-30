@@ -1,4 +1,4 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler, useState } from 'react';
 
@@ -7,32 +7,62 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MultiSelect } from '@/components/ui/multi-select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import AppLayout from '@/layouts/app-layout';
-import { Amenity, BreadcrumbItem } from '@/types';
+import { Amenity, BreadcrumbItem, Layout, Room, Schedule } from '@/types';
 import { RoomForm } from '@/types/form';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
     { title: 'Rooms', href: '/rooms' },
-    { title: 'Create', href: '/rooms/create' },
+    { title: 'Edit', href: '/rooms/edit' },
 ];
 
-export default function Create({ amenities }: { amenities: Amenity[] }) {
-    const { data, setData, post, processing, errors } = useForm<Partial<RoomForm>>({
-        name: '',
-        price: 0,
-        is_active: true,
-        description: '',
-        is_private: true,
-        sqm: 0,
-        qty: 0,
-        cap: 0,
-        amenities: [],
+export default function Edit({
+    room,
+    amenities,
+    layouts,
+    schedules,
+}: {
+    room: Room;
+    amenities: Amenity[];
+    layouts: Layout[];
+    schedules: Schedule[];
+}) {
+    const { errors } = usePage().props;
+    const { data, setData, processing } = useForm<Partial<RoomForm>>({
+        name: room.name,
+        price: room.price,
+        is_active: room.is_active,
+        description: room.description,
+        is_private: room.is_private,
+        sqm: room.sqm,
+        qty: room.qty,
+        cap: room.cap,
+        schedule_id: room.schedule?.id,
+        amenities: room.amenities.map((amenity) => amenity.id),
+        layouts: room.layouts.map((layout) => layout.id),
         image: null,
     });
 
-    const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+    const [selectedAmenities, setSelectedAmenities] = useState<string[]>(
+        room.amenities?.map((amenity) => amenity.id.toString()) || []
+    );
+
+    const [selectedLayouts, setSelectedLayouts] = useState<string[]>(
+        room.layouts?.map((layout) => layout.id.toString()) || []
+    );
+
+    const [selectedSchedule, setSelectedSchedule] = useState<string | undefined>(
+        room.schedule?.id?.toString() || undefined
+    );
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -43,18 +73,19 @@ export default function Create({ amenities }: { amenities: Amenity[] }) {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('rooms.store'), {
-            forceFormData: true,
+        router.post(route('rooms.update', { room: room.id }), {
+            _method: 'put',
+            ...data,
         });
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Rooms - Create" />
+            <Head title="Rooms - Edit" />
             <div className="p-4">
                 <form className="flex flex-col gap-6" onSubmit={submit}>
                     <div className="grid grid-cols-12 gap-6">
-                        <div className="col-span-9 grid gap-2">
+                        <div className="col-span-6 grid gap-2">
                             <Label htmlFor="name">Name</Label>
                             <Input
                                 id="name"
@@ -70,11 +101,35 @@ export default function Create({ amenities }: { amenities: Amenity[] }) {
                             <InputError message={errors.name} className="mt-2" />
                         </div>
                         <div className="col-span-3 grid gap-2">
-                            <Label htmlFor="image">Image</Label>
+                            <Label htmlFor="price">Price</Label>
+                            <Input
+                                id="price"
+                                type="number"
+                                required
+                                value={data.price}
+                                onChange={(e) => setData('price', parseInt(e.target.value))}
+                                disabled={processing}
+                                placeholder="Price"
+                            />
+                            <InputError message={errors.price} className="mt-2" />
+                        </div>
+                        <div className="col-span-3 grid gap-2">
+                            <Label htmlFor="image">
+                                {!room.image && 'Image'}
+                                {room.image && (
+                                    <a
+                                        href={`/storage/${room.image?.name}`}
+                                        target="_blank"
+                                        className="text-blue-300 underline"
+                                    >
+                                        Replace Image
+                                    </a>
+                                )}
+                            </Label>
                             <Input
                                 id="image"
                                 type="file"
-                                required
+                                required={!room.image}
                                 onChange={handleImageChange}
                                 accept="image/png, image/jpeg, image/jpg"
                             />
@@ -94,17 +149,30 @@ export default function Create({ amenities }: { amenities: Amenity[] }) {
                             <InputError message={errors.description} className="mt-2" />
                         </div>
                         <div className="col-span-3 grid gap-2">
-                            <Label htmlFor="price">Price</Label>
-                            <Input
-                                id="price"
-                                type="number"
-                                required
-                                value={data.price}
-                                onChange={(e) => setData('price', parseInt(e.target.value))}
+                            <Label htmlFor="schedule_id">Schedule</Label>
+                            <Select
+                                value={selectedSchedule}
+                                onValueChange={(value) => {
+                                    setSelectedSchedule(value);
+                                    setData('schedule_id', parseInt(value));
+                                }}
                                 disabled={processing}
-                                placeholder="Price"
-                            />
-                            <InputError message={errors.price} className="mt-2" />
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a schedule" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {schedules.map((schedule) => (
+                                        <SelectItem
+                                            key={schedule.id}
+                                            value={schedule.id.toString()}
+                                        >
+                                            {schedule.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <InputError message={errors.schedule_id} className="mt-2" />
                         </div>
                         <div className="col-span-3 grid grid-cols-2 gap-2">
                             <div className="flex flex-col gap-3">
@@ -182,11 +250,29 @@ export default function Create({ amenities }: { amenities: Amenity[] }) {
                                 placeholder="Select amenities"
                                 variant="inverted"
                             />
+                            <InputError message={errors.amenities} className="mt-2" />
+                        </div>
+                        <div className="col-span-12 grid gap-2">
+                            <Label htmlFor="layouts">Layouts</Label>
+                            <MultiSelect
+                                options={layouts.map((layout) => ({
+                                    value: layout.id.toString(),
+                                    label: layout.name,
+                                }))}
+                                onValueChange={(tags) => {
+                                    setSelectedLayouts(tags);
+                                    setData('layouts', tags.map(Number));
+                                }}
+                                defaultValue={selectedLayouts}
+                                placeholder="Select layouts"
+                                variant="inverted"
+                            />
+                            <InputError message={errors.layouts} className="mt-2" />
                         </div>
                         <div className="flex gap-2">
                             <Button type="submit" disabled={processing}>
                                 {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                                Create
+                                Save changes
                             </Button>
                             <Button variant="outline" asChild>
                                 <Link href="/rooms">Cancel</Link>

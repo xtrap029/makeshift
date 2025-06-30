@@ -24,7 +24,7 @@ class UpdateRoomRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255', Rule::unique('rooms', 'name')->ignore($this->route('room')->id),],
+            'name' => 'required|string|max:255|unique:rooms,name,' . $this->route('room')->id,
             'description' => 'required|string',
             'price' => 'required|numeric',
             'is_active' => 'required|boolean',
@@ -32,8 +32,11 @@ class UpdateRoomRequest extends FormRequest
             'sqm' => 'required|integer',
             'qty' => 'required|integer',
             'cap' => 'required|integer',
+            'schedule_id' => 'required|integer|exists:schedules,id',
             'amenities' => 'nullable|array',
             'amenities.*' => 'nullable|integer|exists:amenities,id',
+            'layouts' => 'nullable|array',
+            'layouts.*' => 'nullable|integer|exists:layouts,id',
             'image' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
         ];
     }
