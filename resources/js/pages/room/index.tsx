@@ -35,6 +35,7 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                         <TableRow>
                             <TableHead>Name</TableHead>
                             <TableHead className="text-center">Price</TableHead>
+                            <TableHead className="text-center">Schedule</TableHead>
                             <TableHead className="text-center">Active</TableHead>
                             <TableHead></TableHead>
                         </TableRow>
@@ -45,6 +46,21 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                                 <TableCell>{room.name}</TableCell>
                                 <TableCell className="text-center">
                                     {room.price ? `₱ ${room.price}` : '-'}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                    {room.schedule ? (
+                                        <span
+                                            className={`${
+                                                room.schedule.is_active
+                                                    ? 'text-green-500'
+                                                    : 'text-red-500'
+                                            }`}
+                                        >
+                                            {room.schedule.name}
+                                        </span>
+                                    ) : (
+                                        '-'
+                                    )}
                                 </TableCell>
                                 <TableCell className="text-center">
                                     {room.is_active ? (

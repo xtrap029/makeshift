@@ -19,6 +19,7 @@ export function useDelete() {
 
         form.delete(route(routeName, { id }), {
             preserveScroll: true,
+            preserveState: false,
             onSuccess: options.onSuccess,
             onError: options.onError,
         });

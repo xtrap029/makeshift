@@ -133,6 +133,17 @@ export default function Show({ room }: { room: Room }) {
                     {room.schedule && (
                         <>
                             <Separator className="mb-4" />
+                            <div className="flex items-center gap-2">
+                                <h1 className="text-xl font-bold">{room.schedule.name}</h1>
+                                <div className="flex gap-2 self-center">
+                                    <Badge variant="outline" className="text-sm">
+                                        {room.schedule.max_day} days
+                                    </Badge>
+                                    <Badge variant="outline" className="text-sm">
+                                        {room.schedule.max_date}
+                                    </Badge>
+                                </div>
+                            </div>
                             <WeekSchedule schedule={room.schedule} is24Hour={is24Hour} />
                         </>
                     )}

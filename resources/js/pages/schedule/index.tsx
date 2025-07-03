@@ -1,10 +1,11 @@
 import WeekSchedule from '@/components/custom/week-schedule';
+import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { useDelete } from '@/hooks/use-delete';
 import AppLayout from '@/layouts/app-layout';
 import { Schedule, type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { Check, Pencil, Trash } from 'lucide-react';
+import { Pencil, Trash } from 'lucide-react';
 import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -45,13 +46,16 @@ export default function Index({ schedules }: { schedules: Schedule[] }) {
                             <div className="flex justify-between gap-2">
                                 <div className="flex items-center gap-2">
                                     <h1 className="text-xl font-bold">{schedule.name}</h1>
+                                    <div className="flex gap-2 self-center">
+                                        <Badge variant="outline" className="text-sm">
+                                            {schedule.max_day} days
+                                        </Badge>
+                                        <Badge variant="outline" className="text-sm">
+                                            {schedule.max_date}
+                                        </Badge>
+                                    </div>
                                 </div>
                                 <div className="flex gap-2">
-                                    {schedule.is_active ? (
-                                        <Check className="mr-2 self-center text-green-500" />
-                                    ) : (
-                                        ''
-                                    )}
                                     <Link
                                         className={buttonVariants({ variant: 'ghost' })}
                                         href={`/schedules/${schedule.id}/edit`}

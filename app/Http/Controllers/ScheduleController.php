@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreScheduleRequest;
 use App\Http\Requests\UpdateScheduleRequest;
+use App\Models\Room;
 use App\Models\Schedule;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Carbon\Carbon;
 
 class ScheduleController extends Controller
 {
@@ -15,8 +16,12 @@ class ScheduleController extends Controller
      */
     public function index()
     {
+        $schedules = Schedule::orderBy('name')->get();
+        foreach ($schedules as $schedule) {
+            $schedule->max_date = Carbon::parse($schedule->max_date)->diffForHumans();
+        }
         return Inertia::render('schedule/index', [
-            'schedules' => Schedule::orderBy('name')->get(),
+            'schedules' => $schedules,
         ]);
     }
 
@@ -43,12 +48,7 @@ class ScheduleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        return Inertia::render('schedule/show', [
-            'schedule' => Schedule::find($id),
-        ]);
-    }
+    public function show(string $id) {}
 
     /**
      * Show the form for editing the specified resource.
@@ -66,7 +66,6 @@ class ScheduleController extends Controller
     public function update(UpdateScheduleRequest $request, Schedule $schedule)
     {
         $validated = $request->validated();
-
         $schedule->update($validated);
 
         return to_route('schedules.index')->withSuccess('Schedule updated successfully!');
@@ -77,7 +76,9 @@ class ScheduleController extends Controller
      */
     public function destroy(string $id)
     {
-        Schedule::find($id)->delete();
+        $schedule = Schedule::find($id);
+        Room::where('schedule_id', $schedule->id)->update(['schedule_id' => null]);
+        $schedule->delete();
 
         return to_route('schedules.index')->withSuccess('Schedule deleted successfully!');
     }

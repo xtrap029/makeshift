@@ -33,7 +33,16 @@ export default function WeekSchedule({
     is24Hour: boolean;
 }) {
     return (
-        <div className="grid grid-cols-7 gap-4">
+        <div className="relative grid grid-cols-7 gap-4">
+            {!schedule?.is_active ? (
+                <div className="absolute inset-0 z-10 bg-white/90">
+                    <div className="flex h-full w-full items-center justify-center">
+                        <span className="text-lg font-bold text-gray-500">
+                            Schedule is not active
+                        </span>
+                    </div>
+                </div>
+            ) : null}
             {schedule &&
                 days.map(({ label, key }) => (
                     <Card key={key} className="relative overflow-hidden">

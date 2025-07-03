@@ -16,15 +16,15 @@ export default function Form({
     submit,
 }: {
     data: Partial<ScheduleForm>;
-    setData: (key: keyof ScheduleForm, value: string) => void;
+    setData: (key: keyof ScheduleForm, value: ScheduleForm[keyof ScheduleForm]) => void;
     processing: boolean;
     errors: Record<string, string>;
     submit: FormEventHandler;
 }) {
     return (
         <form className="flex flex-col gap-6" onSubmit={submit}>
-            <div className="grid grid-cols-15 gap-6">
-                <div className="col-span-13 grid gap-2">
+            <div className="grid grid-cols-16 gap-6">
+                <div className="col-span-14 grid gap-2">
                     <Label htmlFor="name">Name</Label>
                     <Input
                         id="name"
@@ -44,12 +44,36 @@ export default function Form({
                     <Switch
                         id="is_active"
                         checked={data.is_active}
-                        onCheckedChange={(checked) => setData('is_active', checked.toString())}
+                        onCheckedChange={(checked) => setData('is_active', checked)}
                         disabled={processing}
                     />
                     <InputError message={errors.is_active} className="mt-2" />
                 </div>
-                <div className="col-span-1 grid gap-2 text-center">
+                <div className="col-span-8 grid gap-2">
+                    <Label htmlFor="max_date">Max Date</Label>
+                    <Input
+                        id="max_date"
+                        type="date"
+                        value={data.max_date}
+                        onChange={(e) => setData('max_date', e.target.value)}
+                        disabled={processing}
+                        placeholder="Max Date"
+                    />
+                    <InputError message={errors.max_date} className="mt-2" />
+                </div>
+                <div className="col-span-8 grid gap-2">
+                    <Label htmlFor="max_day">Max Days</Label>
+                    <Input
+                        id="max_day"
+                        type="number"
+                        value={data.max_day}
+                        onChange={(e) => setData('max_day', e.target.value)}
+                        disabled={processing}
+                        placeholder="Max Day"
+                    />
+                    <InputError message={errors.max_day} className="mt-2" />
+                </div>
+                <div className="col-span-2 grid gap-2">
                     <Label></Label>
                     <Label className="mt-2">Start</Label>
                     <Label className="mt-2">End</Label>

@@ -88,6 +88,8 @@ export interface Schedule {
     id: number;
     name: string;
     is_active: boolean;
+    max_day: number;
+    max_date: string;
     sun_start: string;
     sun_end: string;
     mon_start: string;

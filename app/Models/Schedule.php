@@ -13,6 +13,8 @@ class Schedule extends Model
     protected $fillable = [
         'name',
         'is_active',
+        'max_day',
+        'max_date',
         'sun_start',
         'sun_end',
         'mon_start',

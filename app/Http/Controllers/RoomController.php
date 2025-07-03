@@ -10,6 +10,7 @@ use App\Models\Room;
 use App\Models\Schedule;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Carbon\Carbon;
 
 class RoomController extends Controller
 {
@@ -19,7 +20,7 @@ class RoomController extends Controller
     public function index()
     {
         return Inertia::render('room/index', [
-            'rooms' => Room::orderBy('name')->get(),
+            'rooms' => Room::with('schedule')->orderBy('name')->get(),
         ]);
     }
 
@@ -31,7 +32,7 @@ class RoomController extends Controller
         return Inertia::render('room/create', [
             'amenities' => Amenity::orderBy('name')->get(),
             'layouts' => Layout::orderBy('name')->get(),
-            'schedules' => Schedule::where('is_active', true)->orderBy('name')->get(),
+            'schedules' => Schedule::orderBy('name')->get(),
         ]);
     }
 
@@ -73,6 +74,7 @@ class RoomController extends Controller
     public function show(Room $room)
     {
         $room->load('image', 'amenities', 'layouts', 'schedule');
+        $room->schedule->max_date = Carbon::parse($room->schedule->max_date)->diffForHumans();
 
         return Inertia::render('room/show', [
             'room' => $room,
@@ -89,7 +91,7 @@ class RoomController extends Controller
         return Inertia::render('room/edit', [
             'amenities' => Amenity::orderBy('name')->get(),
             'layouts' => Layout::orderBy('name')->get(),
-            'schedules' => Schedule::where('is_active', true)->orderBy('name')->get(),
+            'schedules' => Schedule::orderBy('name')->get(),
             'room' => $room,
         ]);
     }

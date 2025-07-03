@@ -16,6 +16,8 @@ export default function Edit({ schedule }: { schedule: Schedule }) {
     const { data, setData, processing, put } = useForm<Partial<ScheduleForm>>({
         name: schedule.name,
         is_active: schedule.is_active,
+        max_day: schedule.max_day,
+        max_date: schedule.max_date,
         sun_start: schedule.sun_start || '',
         sun_end: schedule.sun_end || '',
         mon_start: schedule.mon_start || '',

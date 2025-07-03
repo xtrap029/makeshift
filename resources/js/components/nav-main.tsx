@@ -26,7 +26,11 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                                                 isActive={subItem.href === page.url}
                                                 tooltip={{ children: subItem.title }}
                                             >
-                                                <Link href={subItem.href} prefetch>
+                                                <Link
+                                                    href={subItem.href}
+                                                    preserveState={false}
+                                                    prefetch
+                                                >
                                                     {subItem.icon && <subItem.icon />}
                                                     <span>{subItem.title}</span>
                                                 </Link>
@@ -43,7 +47,7 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                                     isActive={item.href === page.url}
                                     tooltip={{ children: item.title }}
                                 >
-                                    <Link href={item.href} prefetch>
+                                    <Link href={item.href} preserveState={false} prefetch>
                                         {item.icon && <item.icon />}
                                         <span>{item.title}</span>
                                     </Link>

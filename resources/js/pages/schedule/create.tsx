@@ -15,6 +15,8 @@ export default function Create() {
     const { data, setData, post, processing, errors } = useForm<Partial<ScheduleForm>>({
         name: '',
         is_active: true,
+        max_day: 0,
+        max_date: new Date().toISOString().split('T')[0],
         sun_start: '',
         sun_end: '',
         mon_start: '',

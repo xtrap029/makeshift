@@ -25,6 +25,8 @@ class StoreScheduleRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'is_active' => 'required|boolean',
+            'max_day' => 'required|integer|min:0',
+            'max_date' => 'required|date',
             'sun_start' => 'nullable|required_with:sun_end|string|max:255',
             'sun_end' => 'nullable|required_with:sun_start|string|max:255',
             'mon_start' => 'nullable|required_with:mon_end|string|max:255',
