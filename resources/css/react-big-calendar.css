@@ -1,0 +1,48 @@
+.rbc-month-view {
+    @apply !rounded-lg;
+}
+
+.rbc-toolbar-label {
+    @apply !text-lg !font-bold;
+}
+
+.rbc-off-range-bg {
+    @apply !bg-sidebar-accent;
+}
+
+.rbc-today {
+    @apply !bg-gray-100;
+}
+
+.rbc-btn-group > button {
+    @apply !shadow-none !border !border-input !bg-background !text-foreground !text-xs;
+}
+
+.rbc-btn-group > button.rbc-active {
+    @apply !bg-black !text-white !shadow-none !border !border-input !bg-background !text-foreground;
+}
+
+.rbc-button-link {
+    @apply !p-1 !text-sm;
+}
+
+.rbc-header {
+    @apply !py-2;
+}
+
+.rbc-row-segment {
+    @apply !px-1;
+}
+
+.rbc-event {
+    @apply !rounded-lg;
+}
+
+.rbc-event-content {
+    @apply !text-sm !px-1;
+}
+
+.rbc-agenda-view table.rbc-agenda-table thead > tr > th.rbc-header:nth-child(2),
+.rbc-agenda-view .rbc-agenda-content table.rbc-agenda-table .rbc-agenda-time-cell {
+    @apply !hidden;
+}

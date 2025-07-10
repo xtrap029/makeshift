@@ -109,3 +109,15 @@ export interface Schedule {
     owner_id?: number;
     updated_id?: number;
 }
+
+export interface ScheduleOverride {
+    id: number;
+    note: string;
+    date: string;
+    is_open: boolean;
+    rooms: Room[];
+    created_at?: string;
+    updated_at?: string;
+    owner_id?: number;
+    updated_id?: number;
+}

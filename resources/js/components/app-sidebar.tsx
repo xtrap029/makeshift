@@ -12,7 +12,15 @@ import {
 } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { Building, Calendar, ConciergeBell, LayoutGrid, Puzzle, User } from 'lucide-react';
+import {
+    Building,
+    Calendar,
+    CalendarSync,
+    ConciergeBell,
+    LayoutGrid,
+    Puzzle,
+    User,
+} from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -55,6 +63,11 @@ const mainNavItems: NavItem[] = [
                 title: 'Schedules',
                 href: '/schedules',
                 icon: Calendar,
+            },
+            {
+                title: 'Overrides',
+                href: '/overrides',
+                icon: CalendarSync,
             },
         ],
     },

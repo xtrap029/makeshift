@@ -55,3 +55,11 @@ export interface ScheduleForm {
     sat_start: string;
     sat_end: string;
 }
+
+export interface ScheduleOverrideForm {
+    id: number;
+    date: string;
+    is_open: boolean;
+    note: string;
+    rooms: number[];
+}
