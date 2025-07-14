@@ -14,10 +14,8 @@ class LayoutController extends Controller
      */
     public function index()
     {
-        $layouts = Layout::orderBy('name')->get();
-
         return Inertia::render('layout/index', [
-            'layouts' => $layouts,
+            'layouts' => Layout::orderBy('name')->get(),
         ]);
     }
 

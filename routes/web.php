@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\AmenityController;
 use App\Http\Controllers\LayoutController;
+use App\Http\Controllers\PaymentProviderController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ScheduleOverrideController;
 use Inertia\Inertia;
@@ -24,6 +25,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('layouts', LayoutController::class);
     Route::resource('schedules', ScheduleController::class);
     Route::resource('overrides', ScheduleOverrideController::class);
+    Route::resource('payment-providers', PaymentProviderController::class)->names('paymentProviders');
 });
 
 require __DIR__ . '/settings.php';

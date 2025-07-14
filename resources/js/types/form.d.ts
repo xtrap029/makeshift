@@ -64,3 +64,12 @@ export interface ScheduleOverrideForm {
     note: string;
     rooms: number[];
 }
+
+export interface PaymentProviderForm {
+    id: number;
+    name: string;
+    description: string;
+    is_manual: boolean;
+    is_active: boolean;
+    is_default: boolean;
+}

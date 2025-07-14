@@ -122,3 +122,17 @@ export interface ScheduleOverride {
     owner_id?: number;
     updated_id?: number;
 }
+
+export interface PaymentProvider {
+    id: number;
+    name: string;
+    description: string;
+    is_manual: boolean;
+    is_active: boolean;
+    is_default: boolean;
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string | null;
+    owner_id?: number;
+    updated_id?: number;
+}

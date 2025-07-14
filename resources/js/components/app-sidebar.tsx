@@ -20,6 +20,7 @@ import {
     LayoutGrid,
     Puzzle,
     User,
+    WalletCards,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -68,6 +69,32 @@ const mainNavItems: NavItem[] = [
                 title: 'Overrides',
                 href: '/overrides',
                 icon: CalendarSync,
+            },
+        ],
+    },
+    {
+        title: 'Transactions',
+        href: '',
+        items: [
+            // {
+            //     title: 'Bookings',
+            //     href: '/bookings',
+            //     icon: CalendarCheck,
+            // },
+            // {
+            //     title: 'Booking Logs',
+            //     href: '/booking-logs',
+            //     icon: FileClock,
+            // },
+            // {
+            //     title: 'Payments',
+            //     href: '/payments',
+            //     icon: CreditCard,
+            // },
+            {
+                title: 'Payment Providers',
+                href: '/payment-providers',
+                icon: WalletCards,
             },
         ],
     },
