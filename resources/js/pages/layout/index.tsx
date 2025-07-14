@@ -7,9 +7,10 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { useDelete } from '@/hooks/use-delete';
 import AppLayout from '@/layouts/app-layout';
 import { Layout, type BreadcrumbItem } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { Pencil, Trash } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -18,22 +19,18 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Index({ layouts }: { layouts: Layout[] }) {
-    const { processing, delete: deleteLayout } = useForm();
-
-    const handleDelete = (id: number, name: string) => {
-        if (confirm(`Are you sure you want to delete ${name}?`)) {
-            deleteLayout(route('layouts.destroy', { id }), {
-                preserveScroll: true,
-            });
-        }
-    };
+    const { destroy, processing } = useDelete();
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Layouts - List" />
             <div className="p-4">
                 <div className="flex justify-end">
-                    <Link className={buttonVariants({ variant: 'default' })} href="/layouts/create">
+                    <Link
+                        className={buttonVariants({ variant: 'default' })}
+                        href="/layouts/create"
+                        disabled={processing}
+                    >
                         Create
                     </Link>
                 </div>
@@ -54,13 +51,15 @@ export default function Index({ layouts }: { layouts: Layout[] }) {
                                     <Link
                                         className={buttonVariants({ variant: 'ghost' })}
                                         href={`/layouts/${layout.id}/edit`}
+                                        disabled={processing}
                                     >
                                         <Pencil />
                                     </Link>
                                     <Button
                                         variant="ghost"
-                                        className="cursor-pointer"
-                                        onClick={() => handleDelete(layout.id, layout.name)}
+                                        onClick={() =>
+                                            destroy('layouts.destroy', layout.id, layout.name)
+                                        }
                                         disabled={processing}
                                     >
                                         <Trash />

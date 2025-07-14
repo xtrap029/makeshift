@@ -7,9 +7,10 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { useDelete } from '@/hooks/use-delete';
 import AppLayout from '@/layouts/app-layout';
 import { User, type BreadcrumbItem } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { Pencil, Trash } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -22,22 +23,18 @@ type IndexProps = {
 };
 
 export default function Index({ users }: IndexProps) {
-    const { processing, delete: deleteUser } = useForm();
-
-    const handleDelete = (id: number, name: string) => {
-        if (confirm(`Are you sure you want to delete ${name}?`)) {
-            deleteUser(route('users.destroy', { id }), {
-                preserveScroll: true,
-            });
-        }
-    };
+    const { destroy, processing } = useDelete();
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Users - List" />
             <div className="p-4">
                 <div className="flex justify-end">
-                    <Link className={buttonVariants({ variant: 'default' })} href="/users/create">
+                    <Link
+                        className={buttonVariants({ variant: 'default' })}
+                        href="/users/create"
+                        disabled={processing}
+                    >
                         Create
                     </Link>
                 </div>
@@ -58,13 +55,13 @@ export default function Index({ users }: IndexProps) {
                                     <Link
                                         className={buttonVariants({ variant: 'ghost' })}
                                         href={`/users/${user.id}/edit`}
+                                        disabled={processing}
                                     >
                                         <Pencil />
                                     </Link>
                                     <Button
                                         variant="ghost"
-                                        className="cursor-pointer"
-                                        onClick={() => handleDelete(user.id, user.name)}
+                                        onClick={() => destroy('users.destroy', user.id, user.name)}
                                         disabled={processing}
                                     >
                                         <Trash />

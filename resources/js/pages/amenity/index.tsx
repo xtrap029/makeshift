@@ -8,9 +8,10 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { useDelete } from '@/hooks/use-delete';
 import AppLayout from '@/layouts/app-layout';
 import { Amenity, type BreadcrumbItem } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { Pencil, Trash } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -19,15 +20,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Index({ amenities }: { amenities: Amenity[] }) {
-    const { processing, delete: deleteAmenity } = useForm();
-
-    const handleDelete = (id: number, name: string) => {
-        if (confirm(`Are you sure you want to delete ${name}?`)) {
-            deleteAmenity(route('amenities.destroy', { id }), {
-                preserveScroll: true,
-            });
-        }
-    };
+    const { destroy, processing } = useDelete();
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -37,6 +30,7 @@ export default function Index({ amenities }: { amenities: Amenity[] }) {
                     <Link
                         className={buttonVariants({ variant: 'default' })}
                         href="/amenities/create"
+                        disabled={processing}
                     >
                         Create
                     </Link>
@@ -66,13 +60,15 @@ export default function Index({ amenities }: { amenities: Amenity[] }) {
                                     <Link
                                         className={buttonVariants({ variant: 'ghost' })}
                                         href={`/amenities/${amenity.id}/edit`}
+                                        disabled={processing}
                                     >
                                         <Pencil />
                                     </Link>
                                     <Button
                                         variant="ghost"
-                                        className="cursor-pointer"
-                                        onClick={() => handleDelete(amenity.id, amenity.name)}
+                                        onClick={() =>
+                                            destroy('amenities.destroy', amenity.id, amenity.name)
+                                        }
                                         disabled={processing}
                                     >
                                         <Trash />

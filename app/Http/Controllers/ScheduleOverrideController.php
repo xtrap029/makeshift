@@ -87,8 +87,11 @@ class ScheduleOverrideController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ScheduleOverride $scheduleOverride)
+    public function destroy(ScheduleOverride $override)
     {
-        //
+        $override->rooms()->detach();
+        $override->delete();
+
+        return to_route('overrides.index')->withSuccess('Override deleted successfully!');
     }
 }

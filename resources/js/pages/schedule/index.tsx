@@ -26,7 +26,7 @@ export default function Index({ schedules }: { schedules: Schedule[] }) {
                         <Button
                             variant="outline"
                             onClick={() => setIs24Hour(!is24Hour)}
-                            className="cursor-pointer"
+                            disabled={processing}
                         >
                             View in {is24Hour ? '12 Hour' : '24 Hour'} format
                         </Button>
@@ -35,6 +35,7 @@ export default function Index({ schedules }: { schedules: Schedule[] }) {
                         <Link
                             className={buttonVariants({ variant: 'default' })}
                             href="/schedules/create"
+                            disabled={processing}
                         >
                             Create
                         </Link>
@@ -59,6 +60,7 @@ export default function Index({ schedules }: { schedules: Schedule[] }) {
                                     <Link
                                         className={buttonVariants({ variant: 'ghost' })}
                                         href={`/schedules/${schedule.id}/edit`}
+                                        disabled={processing}
                                     >
                                         <Pencil />
                                     </Link>

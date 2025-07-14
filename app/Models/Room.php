@@ -47,4 +47,9 @@ class Room extends Model
     {
         return $this->belongsTo(Schedule::class);
     }
+
+    public function scheduleOverrideRooms()
+    {
+        return $this->hasMany(ScheduleOverrideRoom::class);
+    }
 }

@@ -10,6 +10,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useDelete } from '@/hooks/use-delete';
 import { Room } from '@/types';
 import { ScheduleOverrideForm } from '@/types/form';
 import { Link } from '@inertiajs/react';
@@ -34,6 +35,8 @@ export default function Form({
     submit: FormEventHandler;
     rooms: Room[];
 }) {
+    const { destroy, processing: deleteProcessing } = useDelete();
+
     const [selectedRooms, setSelectedRooms] = useState<string[]>(
         data.rooms?.map((room) => room.toString()) || []
     );
@@ -101,14 +104,26 @@ export default function Form({
                     />
                     <InputError message={errors.rooms} className="mt-2" />
                 </div>
-                <div className="flex gap-2">
-                    <Button type="submit" disabled={processing}>
-                        {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                        Save
-                    </Button>
-                    <Button variant="outline" asChild>
-                        <Link href="/overrides">Cancel</Link>
-                    </Button>
+                <div className="col-span-12 flex justify-between gap-2">
+                    <div className="flex flex-1 gap-2">
+                        <Button type="submit" disabled={processing || deleteProcessing}>
+                            {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
+                            Save
+                        </Button>
+                        <Button variant="outline" disabled={processing || deleteProcessing} asChild>
+                            <Link href="/overrides">Cancel</Link>
+                        </Button>
+                    </div>
+                    {data.id && data.note && (
+                        <Button
+                            variant="destructive"
+                            type="button"
+                            onClick={() => destroy('overrides.destroy', data.id!, data.note!)}
+                            disabled={processing || deleteProcessing}
+                        >
+                            Delete
+                        </Button>
+                    )}
                 </div>
             </div>
         </form>

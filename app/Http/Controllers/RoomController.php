@@ -8,6 +8,7 @@ use App\Models\Amenity;
 use App\Models\Layout;
 use App\Models\Room;
 use App\Models\Schedule;
+use App\Models\ScheduleOverrideRoom;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Carbon\Carbon;
@@ -74,7 +75,16 @@ class RoomController extends Controller
     public function show(Room $room)
     {
         $room->load('image', 'amenities', 'layouts', 'schedule');
-        $room->schedule->max_date = Carbon::parse($room->schedule->max_date)->diffForHumans();
+        if ($room->schedule) {
+            $room->schedule->max_date = Carbon::parse($room->schedule->max_date)->diffForHumans();
+        }
+
+        $room->overrides = ScheduleOverrideRoom::where('room_id', $room->id)
+            ->join('schedule_overrides', 'schedule_override_rooms.schedule_override_id', '=', 'schedule_overrides.id')
+            ->where('schedule_overrides.date', '>=', now())
+            ->orderBy('schedule_overrides.date', 'asc')
+            ->select('schedule_overrides.*')
+            ->get();
 
         return Inertia::render('room/show', [
             'room' => $room,

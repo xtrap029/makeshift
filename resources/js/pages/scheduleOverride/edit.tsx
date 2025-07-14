@@ -20,6 +20,7 @@ export default function Edit({
 }) {
     const { errors } = usePage().props;
     const { data, setData, processing, put } = useForm<Partial<ScheduleOverrideForm>>({
+        id: scheduleOverride.id,
         date: scheduleOverride.date,
         is_open: scheduleOverride.is_open,
         note: scheduleOverride.note,

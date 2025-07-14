@@ -55,6 +55,7 @@ export interface Room {
     schedule: Schedule | null;
     amenities: Amenity[];
     layouts: Layout[];
+    overrides: ScheduleOverride[];
     image: File | null;
     created_at?: string;
     updated_at?: string;

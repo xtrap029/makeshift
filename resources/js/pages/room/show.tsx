@@ -13,8 +13,9 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@/components/ui/table';
 import { useDelete } from '@/hooks/use-delete';
 import AppLayout from '@/layouts/app-layout';
+import { cn } from '@/lib/utils';
 import { BreadcrumbItem, Room } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { Check, Dot, SquareDashed, Users } from 'lucide-react';
 import { useState } from 'react';
 
@@ -25,7 +26,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Show({ room }: { room: Room }) {
-    const { destroy } = useDelete();
+    const { destroy, processing } = useDelete();
 
     const [openPreview, setOpenPreview] = useState(false);
     const [is24Hour, setIs24Hour] = useState(true);
@@ -36,20 +37,20 @@ export default function Show({ room }: { room: Room }) {
             <div className="p-4">
                 <div className="mb-8 flex justify-between gap-2">
                     <div className="flex gap-2">
-                        <Button variant="outline" asChild>
+                        <Button variant="outline" asChild disabled={processing}>
                             <Link href="/rooms">Back</Link>
                         </Button>
                         <Button
                             variant="outline"
-                            className="cursor-pointer"
                             onClick={() => setOpenPreview(true)}
+                            disabled={processing}
                         >
                             Preview
                         </Button>
                         <Button
                             variant="outline"
-                            className="cursor-pointer"
                             onClick={() => setIs24Hour(!is24Hour)}
+                            disabled={processing}
                         >
                             View in {is24Hour ? '12 Hour' : '24 Hour'} format
                         </Button>
@@ -58,13 +59,14 @@ export default function Show({ room }: { room: Room }) {
                         <Link
                             className={buttonVariants({ variant: 'default' })}
                             href={`/rooms/${room.id}/edit`}
+                            disabled={processing}
                         >
                             Edit
                         </Link>
                         <Button
                             variant="destructive"
-                            className="cursor-pointer"
                             onClick={() => destroy('rooms.destroy', room.id, room.name)}
+                            disabled={processing}
                         >
                             Delete
                         </Button>
@@ -82,54 +84,121 @@ export default function Show({ room }: { room: Room }) {
                         <h1 className="text-2xl font-bold">{room.name}</h1>
                     </div>
                     <div className="text-muted-foreground my-4 text-sm">{room.description}</div>
-                    <Table>
-                        <TableBody>
-                            <TableRow>
-                                <TableHead>Price</TableHead>
-                                <TableCell>{room.price ? `₱ ${room.price}` : '-'}</TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableHead>Status</TableHead>
-                                <TableCell>{room.is_active ? 'Active' : 'Inactive'}</TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableHead>Type</TableHead>
-                                <TableCell>{room.is_private ? 'Private' : 'Common'}</TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableHead>Size</TableHead>
-                                <TableCell>{room.sqm} m²</TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableHead>Quantity</TableHead>
-                                <TableCell>{room.qty}</TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableHead>Capacity</TableHead>
-                                <TableCell>{room.cap}</TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableHead>Amenities</TableHead>
-                                <TableCell>
-                                    <div className="flex flex-wrap gap-2">
-                                        {room.amenities.map((amenity) => {
-                                            return <Badge key={amenity.id}>{amenity.name}</Badge>;
+                    <div className="grid w-full grid-cols-12 gap-2">
+                        <div className="col-span-9">
+                            <Table>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableHead>Price</TableHead>
+                                        <TableCell>
+                                            {room.price ? `₱ ${room.price}` : '-'}
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableHead>Status</TableHead>
+                                        <TableCell>
+                                            {room.is_active ? 'Active' : 'Inactive'}
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableHead>Type</TableHead>
+                                        <TableCell>
+                                            {room.is_private ? 'Private' : 'Common'}
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableHead>Size</TableHead>
+                                        <TableCell>{room.sqm} m²</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableHead>Quantity</TableHead>
+                                        <TableCell>{room.qty}</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableHead>Capacity</TableHead>
+                                        <TableCell>{room.cap}</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableHead>Amenities</TableHead>
+                                        <TableCell>
+                                            <div className="flex flex-wrap gap-2">
+                                                {room.amenities.map((amenity) => {
+                                                    return (
+                                                        <Badge key={amenity.id}>
+                                                            {amenity.name}
+                                                        </Badge>
+                                                    );
+                                                })}
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableHead>Layouts</TableHead>
+                                        <TableCell>
+                                            <div className="flex flex-wrap gap-2">
+                                                {room.layouts.map((layout) => {
+                                                    return (
+                                                        <Badge key={layout.id}>{layout.name}</Badge>
+                                                    );
+                                                })}
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </div>
+                        <div className="col-span-3">
+                            <Table>
+                                <TableBody className="border-l">
+                                    <TableRow>
+                                        <TableHead>Overrides</TableHead>
+                                    </TableRow>
+                                    {room.overrides &&
+                                        room.overrides.length > 0 &&
+                                        room.overrides.map((override, index) => {
+                                            return (
+                                                <TableRow key={override.id} className="border-0">
+                                                    <TableCell className="flex justify-between gap-2">
+                                                        {index === 0 ||
+                                                        room.overrides[index - 1].date !==
+                                                            override.date ? (
+                                                            <div className="text-muted-foreground text-sm">
+                                                                {override.date}
+                                                            </div>
+                                                        ) : (
+                                                            <div></div>
+                                                        )}
+                                                        <Badge
+                                                            key={override.id}
+                                                            className={cn(
+                                                                'cursor-pointer rounded-full text-sm',
+                                                                override.is_open
+                                                                    ? 'bg-emerald-100 text-emerald-700'
+                                                                    : 'bg-rose-100 text-rose-700'
+                                                            )}
+                                                            onClick={() =>
+                                                                router.visit(
+                                                                    route('overrides.edit', {
+                                                                        override: override.id,
+                                                                    })
+                                                                )
+                                                            }
+                                                        >
+                                                            {override.note}
+                                                        </Badge>
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
                                         })}
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableHead>Layouts</TableHead>
-                                <TableCell>
-                                    <div className="flex flex-wrap gap-2">
-                                        {room.layouts.map((layout) => {
-                                            return <Badge key={layout.id}>{layout.name}</Badge>;
-                                        })}
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        </TableBody>
-                    </Table>
+                                    {room.overrides && room.overrides.length === 0 && (
+                                        <TableRow>
+                                            <TableCell>No overrides</TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </div>
                     {room.schedule && (
                         <>
                             <Separator className="mb-4" />
@@ -232,7 +301,7 @@ export default function Show({ room }: { room: Room }) {
                                     </Button>
                                     <Button
                                         variant="secondary"
-                                        className="w-full cursor-pointer rounded-full py-6 text-lg font-bold"
+                                        className="w-full rounded-full py-6 text-lg font-bold"
                                         onClick={() => setOpenPreview(false)}
                                     >
                                         BACK

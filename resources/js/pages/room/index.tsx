@@ -26,7 +26,11 @@ export default function Index({ rooms }: { rooms: Room[] }) {
             <Head title="Rooms - List" />
             <div className="p-4">
                 <div className="flex justify-end">
-                    <Link className={buttonVariants({ variant: 'default' })} href="/rooms/create">
+                    <Link
+                        className={buttonVariants({ variant: 'default' })}
+                        href="/rooms/create"
+                        disabled={processing}
+                    >
                         Create
                     </Link>
                 </div>
@@ -73,18 +77,19 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                                     <Link
                                         className={buttonVariants({ variant: 'ghost' })}
                                         href={`/rooms/${room.id}`}
+                                        disabled={processing}
                                     >
                                         <Eye />
                                     </Link>
                                     <Link
                                         className={buttonVariants({ variant: 'ghost' })}
                                         href={`/rooms/${room.id}/edit`}
+                                        disabled={processing}
                                     >
                                         <Pencil />
                                     </Link>
                                     <Button
                                         variant="ghost"
-                                        className="cursor-pointer"
                                         onClick={() => destroy('rooms.destroy', room.id, room.name)}
                                         disabled={processing}
                                     >
