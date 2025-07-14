@@ -19,6 +19,7 @@ export interface RoomForm {
     amenities: number[];
     layouts: number[];
     image: File | null;
+    image_name: string | null;
 }
 
 export interface AmenityForm {
