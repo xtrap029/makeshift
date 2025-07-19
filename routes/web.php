@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\AmenityController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\LayoutController;
 use App\Http\Controllers\PaymentProviderController;
 use App\Http\Controllers\ScheduleController;
@@ -26,6 +27,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('schedules', ScheduleController::class);
     Route::resource('overrides', ScheduleOverrideController::class);
     Route::resource('payment-providers', PaymentProviderController::class)->names('paymentProviders');
+    Route::resource('bookings', BookingController::class);
+    Route::put('bookings/{booking}/edit-status', [BookingController::class, 'updateStatus'])
+        ->name('bookings.updateStatus');
 });
 
 require __DIR__ . '/settings.php';

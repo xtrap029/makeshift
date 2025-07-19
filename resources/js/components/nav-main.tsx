@@ -23,13 +23,17 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                                         <SidebarMenuItem key={subItem.title}>
                                             <SidebarMenuButton
                                                 asChild
-                                                isActive={subItem.href === page.url}
+                                                isActive={
+                                                    subItem.href === page.url ||
+                                                    (page.url.startsWith(subItem.href) &&
+                                                        subItem.href !== page.url)
+                                                }
                                                 tooltip={{ children: subItem.title }}
                                             >
                                                 <Link
                                                     href={subItem.href}
                                                     preserveState={false}
-                                                    prefetch
+                                                    // prefetch
                                                 >
                                                     {subItem.icon && <subItem.icon />}
                                                     <span>{subItem.title}</span>
@@ -47,7 +51,11 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                                     isActive={item.href === page.url}
                                     tooltip={{ children: item.title }}
                                 >
-                                    <Link href={item.href} preserveState={false} prefetch>
+                                    <Link
+                                        href={item.href}
+                                        preserveState={false}
+                                        // prefetch
+                                    >
                                         {item.icon && <item.icon />}
                                         <span>{item.title}</span>
                                     </Link>

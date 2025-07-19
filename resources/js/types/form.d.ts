@@ -73,3 +73,17 @@ export interface PaymentProviderForm {
     is_active: boolean;
     is_default: boolean;
 }
+
+export interface BookingForm {
+    id: number;
+    customer_name: string;
+    customer_email: string;
+    customer_phone: string;
+    room_id: number;
+    layout_id: number;
+    note: string;
+    qty: number;
+    start_date: string;
+    start_time: string;
+    end_time: string;
+}

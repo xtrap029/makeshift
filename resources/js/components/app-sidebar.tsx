@@ -15,12 +15,13 @@ import { Link } from '@inertiajs/react';
 import {
     Building,
     Calendar,
+    CalendarCheck,
     CalendarSync,
     ConciergeBell,
     LayoutGrid,
     Puzzle,
     User,
-    WalletCards,
+    Wallet,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -29,11 +30,6 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: '/dashboard',
         icon: LayoutGrid,
-    },
-    {
-        title: 'Users',
-        href: '/users',
-        icon: User,
     },
     {
         title: 'Spaces',
@@ -76,11 +72,11 @@ const mainNavItems: NavItem[] = [
         title: 'Transactions',
         href: '',
         items: [
-            // {
-            //     title: 'Bookings',
-            //     href: '/bookings',
-            //     icon: CalendarCheck,
-            // },
+            {
+                title: 'Bookings',
+                href: '/bookings',
+                icon: CalendarCheck,
+            },
             // {
             //     title: 'Booking Logs',
             //     href: '/booking-logs',
@@ -94,7 +90,18 @@ const mainNavItems: NavItem[] = [
             {
                 title: 'Payment Providers',
                 href: '/payment-providers',
-                icon: WalletCards,
+                icon: Wallet,
+            },
+        ],
+    },
+    {
+        title: 'Website',
+        href: '',
+        items: [
+            {
+                title: 'Users',
+                href: '/users',
+                icon: User,
             },
         ],
     },

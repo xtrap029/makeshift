@@ -136,3 +136,28 @@ export interface PaymentProvider {
     owner_id?: number;
     updated_id?: number;
 }
+
+export interface Booking {
+    id: number;
+    customer_name: string;
+    customer_email: string;
+    customer_phone: string;
+    room: Room;
+    layout: Layout;
+    note: string;
+    qty: number;
+    start_date: string;
+    start_time: string;
+    end_time: string;
+    status: number;
+    expires_at: string;
+    voucher_code: string;
+    voucher_sent_at: string | null;
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string | null;
+    owner_id?: number;
+    updated_id?: number;
+    owner?: User;
+    updater?: User;
+}
