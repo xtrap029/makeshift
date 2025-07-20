@@ -115,6 +115,8 @@ export interface ScheduleOverride {
     id: number;
     note: string;
     date: string;
+    time_start: string;
+    time_end: string;
     is_open: boolean;
     rooms: Room[];
     created_at?: string;

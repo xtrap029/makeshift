@@ -11,6 +11,8 @@ class ScheduleOverride extends Model
 
     protected $fillable = [
         'date',
+        'time_start',
+        'time_end',
         'is_open',
         'note',
     ];

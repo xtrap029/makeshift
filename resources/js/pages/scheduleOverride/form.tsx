@@ -87,7 +87,7 @@ export default function Form({
                     />
                     <InputError message={errors.date} className="mt-2" />
                 </div>
-                <div className="col-span-12 grid gap-2">
+                <div className="col-span-8 grid gap-2">
                     <Label htmlFor="rooms">Rooms</Label>
                     <MultiSelect
                         options={rooms.map((room) => ({
@@ -103,6 +103,30 @@ export default function Form({
                         variant="inverted"
                     />
                     <InputError message={errors.rooms} className="mt-2" />
+                </div>
+                <div className="col-span-2 grid gap-2">
+                    <Label htmlFor="time_start">Time Start</Label>
+                    <Input
+                        id="time_start"
+                        type="time"
+                        value={data.time_start}
+                        onChange={(e) => setData('time_start', e.target.value)}
+                        disabled={processing}
+                        placeholder="Time Start"
+                    />
+                    <InputError message={errors.time_start} className="mt-2" />
+                </div>
+                <div className="col-span-2 grid gap-2">
+                    <Label htmlFor="time_end">Time End</Label>
+                    <Input
+                        id="time_end"
+                        type="time"
+                        value={data.time_end}
+                        onChange={(e) => setData('time_end', e.target.value)}
+                        disabled={processing}
+                        placeholder="Time End"
+                    />
+                    <InputError message={errors.time_end} className="mt-2" />
                 </div>
                 <div className="col-span-12 flex justify-between gap-2">
                     <div className="flex flex-1 gap-2">

@@ -22,6 +22,8 @@ export default function Edit({
     const { data, setData, processing, put } = useForm<Partial<ScheduleOverrideForm>>({
         id: scheduleOverride.id,
         date: scheduleOverride.date,
+        time_start: scheduleOverride.time_start,
+        time_end: scheduleOverride.time_end,
         is_open: scheduleOverride.is_open,
         note: scheduleOverride.note,
         rooms: scheduleOverride.rooms.map((room) => room.id),

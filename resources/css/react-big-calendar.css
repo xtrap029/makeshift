@@ -41,8 +41,3 @@
 .rbc-event-content {
     @apply !text-sm !px-1;
 }
-
-.rbc-agenda-view table.rbc-agenda-table thead > tr > th.rbc-header:nth-child(2),
-.rbc-agenda-view .rbc-agenda-content table.rbc-agenda-table .rbc-agenda-time-cell {
-    @apply !hidden;
-}

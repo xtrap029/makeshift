@@ -22,8 +22,8 @@ export default function Index({ scheduleOverrides }: { scheduleOverrides: Schedu
     const events: CustomEvent[] = scheduleOverrides.map((scheduleOverride) => ({
         id: scheduleOverride.id,
         title: scheduleOverride.note,
-        start: new Date(scheduleOverride.date),
-        end: new Date(scheduleOverride.date),
+        start: new Date(scheduleOverride.date + ' ' + scheduleOverride.time_start),
+        end: new Date(scheduleOverride.date + ' ' + scheduleOverride.time_end),
         description: scheduleOverride.note,
         is_open: scheduleOverride.is_open,
     }));
@@ -52,7 +52,6 @@ export default function Index({ scheduleOverrides }: { scheduleOverrides: Schedu
                         endAccessor="end"
                         onSelectEvent={handleSelectEvent}
                         style={{ height: 700 }}
-                        views={['month', 'agenda']}
                         popup
                         eventPropGetter={(event: CustomEvent) => ({
                             className: event.is_open

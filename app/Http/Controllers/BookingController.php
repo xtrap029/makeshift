@@ -127,6 +127,8 @@ class BookingController extends Controller
             if (!$schedule) {
                 return back()->withError($failed_message . ' Schedule is not set for this date. Please check the schedule.');
             }
+
+            // consider time as well
         }
 
         // - Bookings: with Pending or Confirmed status from date/time
