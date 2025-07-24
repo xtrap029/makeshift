@@ -6,6 +6,5 @@ return [
         'pending' => [2, 'Pending'],
         'confirmed' => [3, 'Confirmed'],
         'cancelled' => [4, 'Cancelled'],
-        'expired' => [5, 'Expired'],
     ],
 ];

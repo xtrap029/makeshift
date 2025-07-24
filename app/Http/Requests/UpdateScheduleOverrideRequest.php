@@ -23,8 +23,8 @@ class UpdateScheduleOverrideRequest extends FormRequest
     {
         return [
             'date' => 'required|date',
-            'time_start' => 'required|date_format:H:i|before:time_end',
-            'time_end' => 'required|date_format:H:i|after:time_start',
+            'time_start' => 'required|string|max:255',
+            'time_end' => 'required|string|max:255',
             'is_open' => 'required|boolean',
             'note' => 'required|string',
             'rooms' => 'nullable|array',

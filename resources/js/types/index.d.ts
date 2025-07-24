@@ -152,6 +152,7 @@ export interface Booking {
     start_time: string;
     end_time: string;
     status: number;
+    cancel_reason: string | null;
     expires_at: string;
     voucher_code: string;
     voucher_sent_at: string | null;

@@ -22,6 +22,7 @@ export default function Create({
     layouts: Layout[];
 }) {
     const { data, setData, put, processing, errors } = useForm<Partial<BookingForm>>({
+        id: booking.id,
         customer_name: booking.customer_name,
         customer_email: booking.customer_email,
         customer_phone: booking.customer_phone,
@@ -32,6 +33,8 @@ export default function Create({
         start_date: booking.start_date,
         start_time: booking.start_time,
         end_time: booking.end_time,
+        status: booking.status,
+        expires_at: booking.expires_at,
     });
 
     const submit: FormEventHandler = (e) => {

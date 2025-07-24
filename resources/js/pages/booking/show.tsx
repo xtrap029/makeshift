@@ -1,5 +1,13 @@
+import Countdown from '@/components/custom/countdown';
 import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@/components/ui/table';
 import { bookingStatus } from '@/constants';
 import { useDelete } from '@/hooks/use-delete';
@@ -18,15 +26,24 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Show({ booking }: { booking: Booking }) {
     const labelWidth = 'w-[150px]';
     const { destroy, processing: deleteProcessing } = useDelete();
-    const { updateStatus, processing: updateProcessing } = useUpdateStatus('pending');
 
-    const handleStatusChange = () => {
-        updateStatus({
-            routeName: 'bookings.updateStatus',
-            id: booking.id,
-            label: `#${booking.id}`,
-        });
+    const updateStatusConfig = {
+        routeName: 'bookings.updateStatus',
+        id: booking.id,
+        label: `#${booking.id}`,
     };
+    const { updateStatus: updateToDraftStatus, processing: updateToDraftProcessing } =
+        useUpdateStatus('draft');
+    const { updateStatus: updateToPendingStatus, processing: updateToPendingProcessing } =
+        useUpdateStatus('pending');
+    const { updateStatus: updateToCancelledStatus, processing: updateToCancelledProcessing } =
+        useUpdateStatus('cancelled');
+
+    const isAnyProcessing =
+        deleteProcessing ||
+        updateToDraftProcessing ||
+        updateToPendingProcessing ||
+        updateToCancelledProcessing;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -37,29 +54,71 @@ export default function Show({ booking }: { booking: Booking }) {
                         <Button variant="outline" asChild>
                             <Link href="/bookings">Back</Link>
                         </Button>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" disabled={isAnyProcessing}>
+                                    Change Status
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                {bookingStatus.find((status) => status.id === booking.status)
+                                    ?.label === 'Draft' && (
+                                    <DropdownMenuItem
+                                        onClick={() => updateToPendingStatus(updateStatusConfig)}
+                                        className="cursor-pointer"
+                                    >
+                                        Pending
+                                    </DropdownMenuItem>
+                                )}
+                                {['Pending', 'Cancelled'].includes(
+                                    bookingStatus.find((status) => status.id === booking.status)
+                                        ?.label || ''
+                                ) && (
+                                    <DropdownMenuItem
+                                        onClick={() => updateToDraftStatus(updateStatusConfig)}
+                                        className="cursor-pointer"
+                                    >
+                                        Draft
+                                    </DropdownMenuItem>
+                                )}
+                                {bookingStatus.find((status) => status.id === booking.status)
+                                    ?.label === 'Pending' && (
+                                    <>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            onClick={() =>
+                                                updateToCancelledStatus(updateStatusConfig)
+                                            }
+                                            className="cursor-pointer"
+                                        >
+                                            Cancelled
+                                        </DropdownMenuItem>
+                                    </>
+                                )}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                     <div className="flex gap-2">
-                        <Button
-                            variant="outline"
-                            onClick={handleStatusChange}
-                            disabled={deleteProcessing || updateProcessing}
-                        >
-                            Mark as Pending
-                        </Button>
-                        <Link
-                            className={buttonVariants({ variant: 'default' })}
-                            href={`/bookings/${booking.id}/edit`}
-                            disabled={deleteProcessing || updateProcessing}
-                        >
-                            Edit
-                        </Link>
-                        {booking.status === 1 && (
+                        {['Draft', 'Pending'].includes(
+                            bookingStatus.find((status) => status.id === booking.status)?.label ||
+                                ''
+                        ) && (
+                            <Link
+                                className={buttonVariants({ variant: 'default' })}
+                                href={`/bookings/${booking.id}/edit`}
+                                disabled={isAnyProcessing}
+                            >
+                                Edit
+                            </Link>
+                        )}
+                        {bookingStatus.find((status) => status.id === booking.status)?.label ===
+                            'Draft' && (
                             <Button
                                 variant="destructive"
                                 onClick={() =>
                                     destroy('bookings.destroy', booking.id, `#${booking.id}`)
                                 }
-                                disabled={deleteProcessing || updateProcessing}
+                                disabled={isAnyProcessing}
                             >
                                 Delete
                             </Button>
@@ -85,12 +144,24 @@ export default function Show({ booking }: { booking: Booking }) {
                                 {booking.room.name}
                             </a>
                         </h1>
-                        <Badge
-                            variant="outline"
-                            className={bookingStatus[booking.status - 1].badgeClass}
-                        >
-                            {bookingStatus[booking.status - 1].label}
-                        </Badge>
+                        <div className="flex items-center gap-1">
+                            <Badge
+                                variant="outline"
+                                className={bookingStatus[booking.status - 1].badgeClass}
+                            >
+                                {bookingStatus[booking.status - 1].label}
+                            </Badge>
+                            {booking.expires_at &&
+                                bookingStatus.find((status) => status.id === booking.status)
+                                    ?.label === 'Pending' && (
+                                    <Badge
+                                        variant="outline"
+                                        className={bookingStatus[booking.status - 1].badgeClass}
+                                    >
+                                        Expires in <Countdown deadline={booking.expires_at} />
+                                    </Badge>
+                                )}
+                        </div>
                     </div>
                     <div className="grid w-full grid-cols-12 gap-2">
                         <div className="col-span-6 mt-4">
@@ -211,6 +282,16 @@ export default function Show({ booking }: { booking: Booking }) {
                                             by {booking.updater?.name}
                                         </TableCell>
                                     </TableRow>
+                                    {bookingStatus.find((status) => status.id === booking.status)
+                                        ?.label === 'Cancelled' &&
+                                        booking.cancel_reason && (
+                                            <TableRow>
+                                                <TableHead className={labelWidth}>
+                                                    Cancel Reason
+                                                </TableHead>
+                                                <TableCell>{booking.cancel_reason}</TableCell>
+                                            </TableRow>
+                                        )}
                                 </TableBody>
                             </Table>
                         </div>

@@ -10,6 +10,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { bookingStatus } from '@/constants';
 import { Layout, Room } from '@/types';
 import { BookingForm } from '@/types/form';
 import { Link } from '@inertiajs/react';
@@ -33,6 +34,9 @@ export default function Form({
     rooms: Room[];
     layouts: Layout[];
 }) {
+    const isPending =
+        bookingStatus.find((status) => status.id === data.status)?.label === 'Pending';
+
     const [selectedRoom, setSelectedRoom] = useState<string | undefined>(
         data.room_id?.toString() || undefined
     );
@@ -105,7 +109,7 @@ export default function Form({
                             setData('room_id', parseInt(value));
                         }}
                         required
-                        disabled={processing}
+                        disabled={processing || isPending}
                     >
                         <SelectTrigger>
                             <SelectValue placeholder="Select a room" />
@@ -129,7 +133,7 @@ export default function Form({
                             setData('qty', parseInt(value));
                         }}
                         required
-                        disabled={processing}
+                        disabled={processing || isPending}
                     >
                         <SelectTrigger>
                             <SelectValue placeholder="Select qty" />
@@ -195,7 +199,7 @@ export default function Form({
                         required
                         value={data.start_date}
                         onChange={(e) => setData('start_date', e.target.value)}
-                        disabled={processing}
+                        disabled={processing || isPending}
                     />
                     <InputError message={errors.start_date} className="mt-2" />
                 </div>
@@ -208,7 +212,7 @@ export default function Form({
                             setData('start_time', value);
                         }}
                         required
-                        disabled={processing}
+                        disabled={processing || isPending}
                     >
                         <SelectTrigger>
                             <SelectValue placeholder="Select a start time" />
@@ -235,7 +239,7 @@ export default function Form({
                             setData('end_time', value);
                         }}
                         required
-                        disabled={processing}
+                        disabled={processing || isPending}
                     >
                         <SelectTrigger>
                             <SelectValue placeholder="Select a end time" />
@@ -253,14 +257,29 @@ export default function Form({
                     </Select>
                     <InputError message={errors.end_time} className="mt-2" />
                 </div>
-                <div className="flex gap-2">
-                    <Button type="submit" disabled={processing}>
-                        {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                        Save changes
-                    </Button>
-                    <Button variant="outline" asChild>
-                        <Link href="/bookings">Cancel</Link>
-                    </Button>
+                {isPending && (
+                    <div className="col-span-4 grid gap-2">
+                        <Label htmlFor="expires_at">Expires At</Label>
+                        <Input
+                            id="expires_at"
+                            type="datetime-local"
+                            value={data.expires_at}
+                            onChange={(e) => setData('expires_at', e.target.value)}
+                            disabled={processing}
+                        />
+                        <InputError message={errors.expires_at} className="mt-2" />
+                    </div>
+                )}
+                <div className="col-span-12 grid gap-2">
+                    <div className="flex gap-2">
+                        <Button type="submit" disabled={processing}>
+                            {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
+                            Save
+                        </Button>
+                        <Button variant="outline" asChild>
+                            <Link href={`/bookings/${data.id || ''}`}>Cancel</Link>
+                        </Button>
+                    </div>
                 </div>
             </div>
         </form>

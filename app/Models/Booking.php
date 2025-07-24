@@ -23,6 +23,7 @@ class Booking extends Model
         'start_time',
         'end_time',
         'status',
+        'cancel_reason',
         'expires_at',
         'voucher_code',
         'voucher_sent_at',

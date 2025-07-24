@@ -88,4 +88,6 @@ export interface BookingForm {
     start_date: string;
     start_time: string;
     end_time: string;
+    status: number;
+    expires_at: string;
 }

@@ -86,7 +86,7 @@ export default function Create({ user }: { user: User }) {
                         <div className="flex gap-2">
                             <Button type="submit" disabled={processing}>
                                 {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                                Save changes
+                                Save
                             </Button>
                             <Button variant="outline" asChild>
                                 <Link href="/users">Cancel</Link>
