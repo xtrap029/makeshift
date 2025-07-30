@@ -12,7 +12,7 @@ export default function ShowPayment({ booking }: { booking: Booking }) {
         <Table>
             <TableBody>
                 <TableRow>
-                    <TableHead colSpan={4}>
+                    <TableHead colSpan={5}>
                         <h2 className="text-lg font-bold">Payments</h2>
                     </TableHead>
                     {bookingStatus.find((status) => status.id === booking.status)?.label ===
