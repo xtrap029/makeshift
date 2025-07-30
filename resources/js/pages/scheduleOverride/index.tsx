@@ -1,3 +1,4 @@
+import Header from '@/components/custom/page/header';
 import { buttonVariants } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { ScheduleOverride, type BreadcrumbItem } from '@/types';
@@ -36,14 +37,14 @@ export default function Index({ scheduleOverrides }: { scheduleOverrides: Schedu
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Overrides - List" />
             <div className="p-4">
-                <div className="flex justify-end">
+                <Header title="Overrides">
                     <Link
                         className={buttonVariants({ variant: 'default' })}
                         href="/overrides/create"
                     >
                         Create
                     </Link>
-                </div>
+                </Header>
                 <div className="mt-4 rounded-lg border p-4">
                     <Calendar
                         localizer={localizer}

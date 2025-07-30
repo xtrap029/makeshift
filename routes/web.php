@@ -9,6 +9,7 @@ use App\Http\Controllers\LayoutController;
 use App\Http\Controllers\PaymentProviderController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ScheduleOverrideController;
+use App\Http\Controllers\PaymentController;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -30,6 +31,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('bookings', BookingController::class);
     Route::put('bookings/{booking}/edit-status', [BookingController::class, 'updateStatus'])
         ->name('bookings.updateStatus');
+    Route::resource('payments', PaymentController::class);
 });
 
 require __DIR__ . '/settings.php';

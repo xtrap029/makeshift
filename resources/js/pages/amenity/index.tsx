@@ -1,3 +1,5 @@
+import Header from '@/components/custom/page/header';
+import Pagination from '@/components/custom/pagination';
 import { Button, buttonVariants } from '@/components/ui/button';
 import IconDynamic from '@/components/ui/icon-dynamic';
 import {
@@ -11,6 +13,7 @@ import {
 import { useDelete } from '@/hooks/use-delete';
 import AppLayout from '@/layouts/app-layout';
 import { Amenity, type BreadcrumbItem } from '@/types';
+import { PaginatedData } from '@/types/pagination';
 import { Head, Link } from '@inertiajs/react';
 import { Pencil, Trash } from 'lucide-react';
 
@@ -19,14 +22,14 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Amenities', href: '/amenities' },
 ];
 
-export default function Index({ amenities }: { amenities: Amenity[] }) {
+export default function Index({ amenities }: { amenities: PaginatedData<Amenity> }) {
     const { destroy, processing } = useDelete();
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Amenities - List" />
             <div className="p-4">
-                <div className="flex justify-end">
+                <Header title="Amenities">
                     <Link
                         className={buttonVariants({ variant: 'default' })}
                         href="/amenities/create"
@@ -34,7 +37,7 @@ export default function Index({ amenities }: { amenities: Amenity[] }) {
                     >
                         Create
                     </Link>
-                </div>
+                </Header>
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -45,7 +48,7 @@ export default function Index({ amenities }: { amenities: Amenity[] }) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {amenities.map((amenity) => (
+                        {amenities.data.map((amenity) => (
                             <TableRow key={amenity.id}>
                                 <TableCell className="pl-3">
                                     {amenity.icon ? (
@@ -78,6 +81,7 @@ export default function Index({ amenities }: { amenities: Amenity[] }) {
                         ))}
                     </TableBody>
                 </Table>
+                <Pagination links={amenities.links} />
             </div>
         </AppLayout>
     );

@@ -14,7 +14,7 @@ class AmenityController extends Controller
      */
     public function index()
     {
-        $amenities = Amenity::orderBy('name')->get();
+        $amenities = Amenity::orderBy('name')->paginate(config('global.pagination_limit'));
 
         return Inertia::render('amenity/index', [
             'amenities' => $amenities,

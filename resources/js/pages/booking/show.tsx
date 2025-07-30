@@ -6,6 +6,7 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuSeparator,
+    DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@/components/ui/table';
@@ -14,8 +15,12 @@ import { useDelete } from '@/hooks/use-delete';
 import { useUpdateStatus } from '@/hooks/use-update-status';
 import AppLayout from '@/layouts/app-layout';
 import { Booking, BreadcrumbItem } from '@/types';
+import { priceDisplay } from '@/utils/formatters';
 import { Head, Link } from '@inertiajs/react';
 import dayjs from 'dayjs';
+import { CheckCircle, Circle, CircleDashed, CircleX } from 'lucide-react';
+import { toast } from 'sonner';
+import ShowPayment from './show-payment';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
@@ -36,14 +41,17 @@ export default function Show({ booking }: { booking: Booking }) {
         useUpdateStatus('draft');
     const { updateStatus: updateToPendingStatus, processing: updateToPendingProcessing } =
         useUpdateStatus('pending');
-    const { updateStatus: updateToCancelledStatus, processing: updateToCancelledProcessing } =
-        useUpdateStatus('cancelled');
+    const { updateStatus: updateToCanceledStatus, processing: updateToCanceledProcessing } =
+        useUpdateStatus('canceled');
+    const { updateStatus: updateToConfirmedStatus, processing: updateToConfirmedProcessing } =
+        useUpdateStatus('confirmed');
 
     const isAnyProcessing =
         deleteProcessing ||
         updateToDraftProcessing ||
         updateToPendingProcessing ||
-        updateToCancelledProcessing;
+        updateToCanceledProcessing ||
+        updateToConfirmedProcessing;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -54,49 +62,83 @@ export default function Show({ booking }: { booking: Booking }) {
                         <Button variant="outline" asChild>
                             <Link href="/bookings">Back</Link>
                         </Button>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline" disabled={isAnyProcessing}>
-                                    Change Status
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                {bookingStatus.find((status) => status.id === booking.status)
-                                    ?.label === 'Draft' && (
-                                    <DropdownMenuItem
-                                        onClick={() => updateToPendingStatus(updateStatusConfig)}
-                                        className="cursor-pointer"
-                                    >
-                                        Pending
-                                    </DropdownMenuItem>
-                                )}
-                                {['Pending', 'Cancelled'].includes(
-                                    bookingStatus.find((status) => status.id === booking.status)
-                                        ?.label || ''
-                                ) && (
-                                    <DropdownMenuItem
-                                        onClick={() => updateToDraftStatus(updateStatusConfig)}
-                                        className="cursor-pointer"
-                                    >
-                                        Draft
-                                    </DropdownMenuItem>
-                                )}
-                                {bookingStatus.find((status) => status.id === booking.status)
-                                    ?.label === 'Pending' && (
-                                    <>
-                                        <DropdownMenuSeparator />
+                        {bookingStatus.find((status) => status.id === booking.status)?.label !==
+                            'Confirmed' && (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" disabled={isAnyProcessing}>
+                                        Change Status
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-50" align="start">
+                                    {bookingStatus.find((status) => status.id === booking.status)
+                                        ?.label === 'Pending' && (
+                                        <DropdownMenuItem
+                                            onClick={() => {
+                                                if (booking.total_paid >= booking.total_price) {
+                                                    updateToConfirmedStatus(updateStatusConfig);
+                                                } else {
+                                                    toast.error(
+                                                        'Total paid is less than total price'
+                                                    );
+                                                }
+                                            }}
+                                            className="cursor-pointer"
+                                        >
+                                            Confirmed
+                                            <DropdownMenuShortcut>
+                                                <CheckCircle size={16} />
+                                            </DropdownMenuShortcut>
+                                        </DropdownMenuItem>
+                                    )}
+                                    {bookingStatus.find((status) => status.id === booking.status)
+                                        ?.label === 'Draft' && (
                                         <DropdownMenuItem
                                             onClick={() =>
-                                                updateToCancelledStatus(updateStatusConfig)
+                                                updateToPendingStatus(updateStatusConfig)
                                             }
                                             className="cursor-pointer"
                                         >
-                                            Cancelled
+                                            Pending
+                                            <DropdownMenuShortcut>
+                                                <Circle size={16} />
+                                            </DropdownMenuShortcut>
                                         </DropdownMenuItem>
-                                    </>
-                                )}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                                    )}
+                                    {['Pending', 'Canceled'].includes(
+                                        bookingStatus.find((status) => status.id === booking.status)
+                                            ?.label || ''
+                                    ) && (
+                                        <DropdownMenuItem
+                                            onClick={() => updateToDraftStatus(updateStatusConfig)}
+                                            className="cursor-pointer"
+                                        >
+                                            Draft
+                                            <DropdownMenuShortcut>
+                                                <CircleDashed size={16} />
+                                            </DropdownMenuShortcut>
+                                        </DropdownMenuItem>
+                                    )}
+                                    {bookingStatus.find((status) => status.id === booking.status)
+                                        ?.label === 'Pending' && (
+                                        <>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem
+                                                onClick={() =>
+                                                    updateToCanceledStatus(updateStatusConfig)
+                                                }
+                                                className="cursor-pointer"
+                                            >
+                                                Canceled
+                                                <DropdownMenuShortcut>
+                                                    <CircleX size={16} />
+                                                </DropdownMenuShortcut>
+                                            </DropdownMenuItem>
+                                        </>
+                                    )}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )}
                     </div>
                     <div className="flex gap-2">
                         {['Draft', 'Pending'].includes(
@@ -127,13 +169,6 @@ export default function Show({ booking }: { booking: Booking }) {
                 </div>
                 <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-4">
-                        {booking.room.image?.name && (
-                            <img
-                                src={`/storage/${booking.room.image?.name}`}
-                                alt={booking.room.name}
-                                className="h-10 w-10 rounded-full object-cover"
-                            />
-                        )}
                         <h1 className="text-2xl font-bold">
                             #{booking.id}{' '}
                             <a
@@ -147,16 +182,26 @@ export default function Show({ booking }: { booking: Booking }) {
                         <div className="flex items-center gap-1">
                             <Badge
                                 variant="outline"
-                                className={bookingStatus[booking.status - 1].badgeClass}
+                                className={
+                                    bookingStatus.find((status) => status.id === booking.status)
+                                        ?.badgeClass
+                                }
                             >
-                                {bookingStatus[booking.status - 1].label}
+                                {
+                                    bookingStatus.find((status) => status.id === booking.status)
+                                        ?.label
+                                }
                             </Badge>
                             {booking.expires_at &&
                                 bookingStatus.find((status) => status.id === booking.status)
                                     ?.label === 'Pending' && (
                                     <Badge
                                         variant="outline"
-                                        className={bookingStatus[booking.status - 1].badgeClass}
+                                        className={
+                                            bookingStatus.find(
+                                                (status) => status.id === booking.status
+                                            )?.badgeClass
+                                        }
                                     >
                                         Expires in <Countdown deadline={booking.expires_at} />
                                     </Badge>
@@ -222,10 +267,11 @@ export default function Show({ booking }: { booking: Booking }) {
                                     </TableRow>
                                     <TableRow>
                                         <TableHead className={labelWidth}>Time</TableHead>
-                                        <TableCell>
-                                            {booking.start_time.slice(0, 5)} -{' '}
-                                            {booking.end_time.slice(0, 5)}
-                                        </TableCell>
+                                        <TableCell>{booking.start_time.slice(0, 5)}</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableHead className={labelWidth}>Total Hours</TableHead>
+                                        <TableCell>{booking.total_hours}</TableCell>
                                     </TableRow>
                                 </TableBody>
                             </Table>
@@ -239,7 +285,9 @@ export default function Show({ booking }: { booking: Booking }) {
                                     <TableRow>
                                         <TableHead className={labelWidth}>Room Price</TableHead>
                                         <TableCell>
-                                            {booking.room.price ? `₱ ${booking.room.price}` : '-'}
+                                            {booking.room.price
+                                                ? priceDisplay(Number(booking.room.price))
+                                                : '-'}
                                         </TableCell>
                                     </TableRow>
                                     <TableRow>
@@ -247,18 +295,27 @@ export default function Show({ booking }: { booking: Booking }) {
                                         <TableCell>{booking.qty}</TableCell>
                                     </TableRow>
                                     <TableRow>
-                                        <TableHead className={labelWidth}>Total Price</TableHead>
+                                        <TableHead className={labelWidth}>Computation</TableHead>
                                         <TableCell>
                                             {booking.room.price
-                                                ? `₱ ${(
-                                                      parseFloat(booking.room.price.toString()) *
-                                                      booking.qty
-                                                  ).toFixed(2)}`
+                                                ? priceDisplay(Number(booking.room.price))
+                                                : '-'}{' '}
+                                            x {booking.total_hours} hours x {booking.qty} spaces
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableHead className={labelWidth}>Total Price</TableHead>
+                                        <TableCell className="font-bold">
+                                            {booking.total_price
+                                                ? priceDisplay(Number(booking.total_price))
                                                 : '-'}
                                         </TableCell>
                                     </TableRow>
                                 </TableBody>
                             </Table>
+                        </div>
+                        <div className="col-span-12 mt-4">
+                            <ShowPayment booking={booking} />
                         </div>
                         <div className="col-span-6 mt-4">
                             <Table>
@@ -272,18 +329,18 @@ export default function Show({ booking }: { booking: Booking }) {
                                         <TableHead className={labelWidth}>Created</TableHead>
                                         <TableCell>
                                             {dayjs(booking.created_at).format('YYYY-MM-DD HH:mm')}{' '}
-                                            by {booking.owner?.name}
+                                            by {booking.owner?.name || 'N/A'}
                                         </TableCell>
                                     </TableRow>
                                     <TableRow>
                                         <TableHead className={labelWidth}>Updated</TableHead>
                                         <TableCell>
                                             {dayjs(booking.updated_at).format('YYYY-MM-DD HH:mm')}{' '}
-                                            by {booking.updater?.name}
+                                            by {booking.updater?.name || 'N/A'}
                                         </TableCell>
                                     </TableRow>
                                     {bookingStatus.find((status) => status.id === booking.status)
-                                        ?.label === 'Cancelled' &&
+                                        ?.label === 'Canceled' &&
                                         booking.cancel_reason && (
                                             <TableRow>
                                                 <TableHead className={labelWidth}>

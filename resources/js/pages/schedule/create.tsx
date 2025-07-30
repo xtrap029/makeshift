@@ -1,3 +1,4 @@
+import Header from '@/components/custom/page/header';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { ScheduleForm } from '@/types/form';
@@ -42,6 +43,7 @@ export default function Create() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Schedules - Create" />
             <div className="p-4">
+                <Header title="Create Schedule" />
                 <Form
                     data={data}
                     setData={setData}

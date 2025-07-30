@@ -18,6 +18,7 @@ import {
     CalendarCheck,
     CalendarSync,
     ConciergeBell,
+    CreditCard,
     LayoutGrid,
     Puzzle,
     User,
@@ -82,11 +83,11 @@ const mainNavItems: NavItem[] = [
             //     href: '/booking-logs',
             //     icon: FileClock,
             // },
-            // {
-            //     title: 'Payments',
-            //     href: '/payments',
-            //     icon: CreditCard,
-            // },
+            {
+                title: 'Payments',
+                href: '/payments',
+                icon: CreditCard,
+            },
             {
                 title: 'Payment Providers',
                 href: '/payment-providers',

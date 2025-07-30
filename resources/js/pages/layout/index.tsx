@@ -1,3 +1,5 @@
+import Header from '@/components/custom/page/header';
+import Pagination from '@/components/custom/pagination';
 import { Button, buttonVariants } from '@/components/ui/button';
 import {
     Table,
@@ -10,6 +12,7 @@ import {
 import { useDelete } from '@/hooks/use-delete';
 import AppLayout from '@/layouts/app-layout';
 import { Layout, type BreadcrumbItem } from '@/types';
+import { PaginatedData } from '@/types/pagination';
 import { Head, Link } from '@inertiajs/react';
 import { Pencil, Trash } from 'lucide-react';
 
@@ -18,14 +21,14 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Layouts', href: '/layouts' },
 ];
 
-export default function Index({ layouts }: { layouts: Layout[] }) {
+export default function Index({ layouts }: { layouts: PaginatedData<Layout> }) {
     const { destroy, processing } = useDelete();
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Layouts - List" />
             <div className="p-4">
-                <div className="flex justify-end">
+                <Header title="Layouts">
                     <Link
                         className={buttonVariants({ variant: 'default' })}
                         href="/layouts/create"
@@ -33,7 +36,7 @@ export default function Index({ layouts }: { layouts: Layout[] }) {
                     >
                         Create
                     </Link>
-                </div>
+                </Header>
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -43,7 +46,7 @@ export default function Index({ layouts }: { layouts: Layout[] }) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {layouts.map((layout) => (
+                        {layouts.data.map((layout) => (
                             <TableRow key={layout.id}>
                                 <TableCell>{layout.name}</TableCell>
                                 <TableCell>{layout.description}</TableCell>
@@ -69,6 +72,7 @@ export default function Index({ layouts }: { layouts: Layout[] }) {
                         ))}
                     </TableBody>
                 </Table>
+                <Pagination links={layouts.links} />
             </div>
         </AppLayout>
     );

@@ -15,6 +15,7 @@ import { useDelete } from '@/hooks/use-delete';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { BreadcrumbItem, Room } from '@/types';
+import { priceDisplay } from '@/utils/formatters';
 import { Head, Link, router } from '@inertiajs/react';
 import { Check, Dot, SquareDashed, Users } from 'lucide-react';
 import { useState } from 'react';
@@ -91,7 +92,7 @@ export default function Show({ room }: { room: Room }) {
                                     <TableRow>
                                         <TableHead>Price</TableHead>
                                         <TableCell>
-                                            {room.price ? `₱ ${room.price}` : '-'}
+                                            {room.price ? priceDisplay(Number(room.price)) : '-'}
                                         </TableCell>
                                     </TableRow>
                                     <TableRow>
@@ -238,7 +239,7 @@ export default function Show({ room }: { room: Room }) {
                                             variant="outline"
                                             className="text-destructive text-md rounded-full font-bold shadow-sm"
                                         >
-                                            {room.price ? `₱ ${room.price}` : '-'}
+                                            {room.price ? priceDisplay(Number(room.price)) : '-'}
                                             <span className="text-muted-foreground text-xs">
                                                 /hr
                                             </span>

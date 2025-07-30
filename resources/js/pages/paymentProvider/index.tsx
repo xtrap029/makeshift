@@ -1,3 +1,5 @@
+import Header from '@/components/custom/page/header';
+import Pagination from '@/components/custom/pagination';
 import { Button, buttonVariants } from '@/components/ui/button';
 import {
     Table,
@@ -10,6 +12,7 @@ import {
 import { useDelete } from '@/hooks/use-delete';
 import AppLayout from '@/layouts/app-layout';
 import { PaymentProvider, type BreadcrumbItem } from '@/types';
+import { PaginatedData } from '@/types/pagination';
 import { Head, Link } from '@inertiajs/react';
 import { Check, Pencil, Trash } from 'lucide-react';
 
@@ -18,14 +21,18 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Payment Providers', href: '/payment-providers' },
 ];
 
-export default function Index({ paymentProviders }: { paymentProviders: PaymentProvider[] }) {
+export default function Index({
+    paymentProviders,
+}: {
+    paymentProviders: PaginatedData<PaymentProvider>;
+}) {
     const { destroy, processing } = useDelete();
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Payment Providers - List" />
             <div className="p-4">
-                <div className="flex justify-end">
+                <Header title="Payment Providers">
                     <Link
                         className={buttonVariants({ variant: 'default' })}
                         href="/payment-providers/create"
@@ -33,7 +40,7 @@ export default function Index({ paymentProviders }: { paymentProviders: PaymentP
                     >
                         Create
                     </Link>
-                </div>
+                </Header>
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -46,7 +53,7 @@ export default function Index({ paymentProviders }: { paymentProviders: PaymentP
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {paymentProviders.map((paymentProvider) => (
+                        {paymentProviders.data.map((paymentProvider) => (
                             <TableRow key={paymentProvider.id}>
                                 <TableCell>{paymentProvider.name}</TableCell>
                                 <TableCell className="text-center">
@@ -95,6 +102,7 @@ export default function Index({ paymentProviders }: { paymentProviders: PaymentP
                         ))}
                     </TableBody>
                 </Table>
+                <Pagination links={paymentProviders.links} />
             </div>
         </AppLayout>
     );

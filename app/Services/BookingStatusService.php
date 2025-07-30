@@ -15,7 +15,7 @@ class BookingStatusService
         Booking::where('status', config('global.booking_status.pending')[0])
             ->where('expires_at', '<', $now)
             ->update([
-                'status' => config('global.booking_status.cancelled')[0],
+                'status' => config('global.booking_status.canceled')[0],
                 'cancel_reason' => 'Expired: ' . $now->format('Y-m-d H:i:s'),
             ]);
     }

@@ -25,6 +25,7 @@ export default function Edit({
 }) {
     const { errors } = usePage().props;
     const { data, setData, processing } = useForm<Partial<RoomForm>>({
+        id: room.id,
         name: room.name,
         price: room.price,
         is_active: room.is_active,

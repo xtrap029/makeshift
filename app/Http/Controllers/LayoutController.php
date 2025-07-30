@@ -15,7 +15,7 @@ class LayoutController extends Controller
     public function index()
     {
         return Inertia::render('layout/index', [
-            'layouts' => Layout::orderBy('name')->get(),
+            'layouts' => Layout::orderBy('name')->paginate(config('global.pagination_limit')),
         ]);
     }
 

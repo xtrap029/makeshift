@@ -21,7 +21,7 @@ class RoomController extends Controller
     public function index()
     {
         return Inertia::render('room/index', [
-            'rooms' => Room::with('schedule')->orderBy('name')->get(),
+            'rooms' => Room::with('schedule')->orderBy('name')->paginate(config('global.pagination_limit')),
         ]);
     }
 
@@ -66,7 +66,7 @@ class RoomController extends Controller
             ]);
         }
 
-        return to_route('rooms.index')->withSuccess('Room created successfully!');
+        return to_route('rooms.show', $room)->withSuccess('Room created successfully!');
     }
 
     /**
@@ -144,7 +144,7 @@ class RoomController extends Controller
             ]);
         }
 
-        return to_route('rooms.index')->withSuccess('Room updated successfully!');
+        return to_route('rooms.show', $room)->withSuccess('Room updated successfully!');
     }
 
     /**

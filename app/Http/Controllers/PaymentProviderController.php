@@ -15,7 +15,7 @@ class PaymentProviderController extends Controller
     public function index()
     {
         return Inertia::render('paymentProvider/index', [
-            'paymentProviders' => PaymentProvider::orderBy('name')->get(),
+            'paymentProviders' => PaymentProvider::orderBy('name')->paginate(config('global.pagination_limit')),
         ]);
     }
 

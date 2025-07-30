@@ -1,3 +1,4 @@
+import Header from '@/components/custom/page/header';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Schedule } from '@/types';
 import { ScheduleForm } from '@/types/form';
@@ -43,6 +44,7 @@ export default function Edit({ schedule }: { schedule: Schedule }) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Schedules - Edit" />
             <div className="p-4">
+                <Header title="Edit Schedule" />
                 <Form
                     data={data}
                     setData={setData}

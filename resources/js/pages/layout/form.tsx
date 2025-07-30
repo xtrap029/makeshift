@@ -1,3 +1,4 @@
+import Header from '@/components/custom/page/header';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,6 +23,7 @@ export default function Form({
 }) {
     return (
         <form className="flex flex-col gap-6" onSubmit={submit}>
+            <Header title={`${data.id ? 'Edit' : 'Create'} Layout`} />
             <div className="grid gap-6">
                 <div className="col-span-12 grid gap-2">
                     <Label htmlFor="name">Name</Label>

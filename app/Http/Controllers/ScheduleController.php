@@ -16,7 +16,7 @@ class ScheduleController extends Controller
      */
     public function index()
     {
-        $schedules = Schedule::orderBy('name')->get();
+        $schedules = Schedule::orderBy('name')->paginate(config('global.pagination_limit'));
         foreach ($schedules as $schedule) {
             $schedule->max_date = Carbon::parse($schedule->max_date)->diffForHumans();
         }

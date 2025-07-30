@@ -20,7 +20,7 @@ class BookingController extends Controller
     public function index()
     {
         return Inertia::render('booking/index', [
-            'bookings' => Booking::with('room', 'layout')->orderBy('created_at', 'desc')->get(),
+            'bookings' => Booking::with('room', 'layout')->orderBy('created_at', 'desc')->paginate(config('global.pagination_limit')),
         ]);
     }
 
@@ -54,7 +54,10 @@ class BookingController extends Controller
      */
     public function show(Booking $booking)
     {
-        $booking->load('room', 'layout', 'owner', 'updater');
+        $booking->load('room', 'layout', 'owner', 'updater', 'payments.payment_provider');
+        $booking->total_paid = $booking->total_paid();
+        $booking->total_hours = $booking->total_hours();
+        $booking->total_price = $booking->total_price();
 
         return Inertia::render('booking/show', [
             'booking' => $booking,
@@ -157,7 +160,7 @@ class BookingController extends Controller
 
                     // Bookings: with Pending or Confirmed status from date/time
                     $bookings = Booking::where('room_id', $booking->room_id)
-                        ->whereNotIn('status', [config('global.booking_status.draft')[0], config('global.booking_status.cancelled')[0]])
+                        ->whereNotIn('status', [config('global.booking_status.draft')[0], config('global.booking_status.canceled')[0]])
                         ->where('start_date', $booking->start_date)
                         ->where('start_time', '<=', $i < ltrim(substr($booking->start_time, 0, 2), '0') ? sprintf('%02d:00', $i) : sprintf('%02d:59', $i - 1))
                         ->where('end_time', '>=', $i < ltrim(substr($booking->end_time, 0, 2), '0') ? sprintf('%02d:01', $i) : sprintf('%02d:00', $i))
@@ -172,19 +175,32 @@ class BookingController extends Controller
                 break;
             case 'draft':
                 // Booking should be pending
-                if ($booking->status !== config('global.booking_status.pending')[0] && $booking->status !== config('global.booking_status.cancelled')[0]) {
-                    return back()->withError($failed_message . ' Booking is not pending or cancelled');
+                if ($booking->status !== config('global.booking_status.pending')[0] && $booking->status !== config('global.booking_status.canceled')[0]) {
+                    return back()->withError($failed_message . ' Booking is not pending or canceled');
                 }
 
                 $booking->update(['status' => config('global.booking_status.draft')[0]]);
                 break;
-            case 'cancelled':
+            case 'confirmed':
                 // Booking should be pending
                 if ($booking->status !== config('global.booking_status.pending')[0]) {
                     return back()->withError($failed_message . ' Booking is not pending');
                 }
 
-                $booking->update(['status' => config('global.booking_status.cancelled')[0]]);
+                // Total paid should be equal or greater than total price
+                if ($booking->total_paid() < $booking->total_price()) {
+                    return back()->withError($failed_message . ' Total paid is less than total price');
+                }
+
+                $booking->update(['status' => config('global.booking_status.confirmed')[0]]);
+                break;
+            case 'canceled':
+                // Booking should be pending
+                if ($booking->status !== config('global.booking_status.pending')[0]) {
+                    return back()->withError($failed_message . ' Booking is not pending');
+                }
+
+                $booking->update(['status' => config('global.booking_status.canceled')[0]]);
                 break;
             default:
                 return back()->withError($failed_message . ' Invalid status');

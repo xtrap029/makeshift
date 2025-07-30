@@ -4,8 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-/** @method \App\Models\Room route(string $key = null) */
-class UpdateBookingStatusRequest extends FormRequest
+/** @method \App\Models\Payment route(string $key = null) */
+class UpdatePaymentStatusRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,7 +23,7 @@ class UpdateBookingStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => 'required|string|in:' . implode(',', array_keys(config('global.booking_status'))),
+            'status' => 'required|string|in:' . implode(',', array_keys(config('global.payment_status'))),
         ];
     }
 }

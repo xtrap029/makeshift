@@ -91,3 +91,18 @@ export interface BookingForm {
     status: number;
     expires_at: string;
 }
+
+export interface PaymentForm {
+    id: number;
+    booking_id: number | null;
+    payment_provider_id: number;
+    note: string;
+    reference_number: string;
+    amount: number;
+    amount_paid: number;
+    paid_at: string;
+    with_attachment: boolean;
+    attachment: File | null;
+    attachment_name: string | null;
+    status: number;
+}

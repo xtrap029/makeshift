@@ -1,9 +1,12 @@
+import Header from '@/components/custom/page/header';
+import Pagination from '@/components/custom/pagination';
 import WeekSchedule from '@/components/custom/week-schedule';
 import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { useDelete } from '@/hooks/use-delete';
 import AppLayout from '@/layouts/app-layout';
 import { Schedule, type BreadcrumbItem } from '@/types';
+import { PaginatedData } from '@/types/pagination';
 import { Head, Link } from '@inertiajs/react';
 import { Pencil, Trash } from 'lucide-react';
 import { useState } from 'react';
@@ -13,7 +16,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Schedules', href: '/schedules' },
 ];
 
-export default function Index({ schedules }: { schedules: Schedule[] }) {
+export default function Index({ schedules }: { schedules: PaginatedData<Schedule> }) {
     const { destroy, processing } = useDelete();
     const [is24Hour, setIs24Hour] = useState(true);
 
@@ -21,8 +24,8 @@ export default function Index({ schedules }: { schedules: Schedule[] }) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Schedules - List" />
             <div className="p-4">
-                <div className="mb-8 flex justify-between gap-2">
-                    <div className="flex">
+                <Header title="Schedules">
+                    <div className="flex gap-2">
                         <Button
                             variant="outline"
                             onClick={() => setIs24Hour(!is24Hour)}
@@ -30,8 +33,6 @@ export default function Index({ schedules }: { schedules: Schedule[] }) {
                         >
                             View in {is24Hour ? '12 Hour' : '24 Hour'} format
                         </Button>
-                    </div>
-                    <div className="flex">
                         <Link
                             className={buttonVariants({ variant: 'default' })}
                             href="/schedules/create"
@@ -40,9 +41,9 @@ export default function Index({ schedules }: { schedules: Schedule[] }) {
                             Create
                         </Link>
                     </div>
-                </div>
-                <div className="flex flex-col gap-8">
-                    {schedules.map((schedule) => (
+                </Header>
+                <div className="mb-10 flex flex-col gap-8">
+                    {schedules.data.map((schedule) => (
                         <div key={schedule.id} className="flex flex-col gap-2">
                             <div className="flex justify-between gap-2">
                                 <div className="flex items-center gap-2">
@@ -86,6 +87,7 @@ export default function Index({ schedules }: { schedules: Schedule[] }) {
                         </div>
                     ))}
                 </div>
+                <Pagination links={schedules.links} />
             </div>
         </AppLayout>
     );

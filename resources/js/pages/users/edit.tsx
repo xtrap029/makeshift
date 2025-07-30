@@ -2,6 +2,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
+import Header from '@/components/custom/page/header';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,6 +34,7 @@ export default function Create({ user }: { user: User }) {
             <Head title="Users - Edit" />
             <div className="p-4">
                 <form className="flex flex-col gap-6" onSubmit={submit}>
+                    <Header title="Edit User" />
                     <div className="grid gap-6">
                         <div className="grid gap-2">
                             <Label htmlFor="email">Email address</Label>

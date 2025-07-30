@@ -146,6 +146,10 @@ export interface Booking {
     customer_phone: string;
     room: Room;
     layout: Layout;
+    payments: Payment[];
+    total_paid: number;
+    total_hours: number;
+    total_price: number;
     note: string;
     qty: number;
     start_date: string;
@@ -156,6 +160,27 @@ export interface Booking {
     expires_at: string;
     voucher_code: string;
     voucher_sent_at: string | null;
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string | null;
+    owner_id?: number;
+    updated_id?: number;
+    owner?: User;
+    updater?: User;
+}
+
+export interface Payment {
+    id: number;
+    booking: Booking;
+    payment_provider: PaymentProvider;
+    note: string;
+    status: number;
+    reference_number: string;
+    amount: number;
+    amount_paid: number;
+    paid_at: string | null;
+    raw_response: Record<string, unknown> | null;
+    attachment: string | null;
     created_at?: string;
     updated_at?: string;
     deleted_at?: string | null;

@@ -1,3 +1,5 @@
+import Header from '@/components/custom/page/header';
+import Pagination from '@/components/custom/pagination';
 import { Button, buttonVariants } from '@/components/ui/button';
 import {
     Table,
@@ -10,6 +12,7 @@ import {
 import { useDelete } from '@/hooks/use-delete';
 import AppLayout from '@/layouts/app-layout';
 import { User, type BreadcrumbItem } from '@/types';
+import { PaginatedData } from '@/types/pagination';
 import { Head, Link } from '@inertiajs/react';
 import { Pencil, Trash } from 'lucide-react';
 
@@ -18,18 +21,14 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Users', href: '/users' },
 ];
 
-type IndexProps = {
-    users: User[];
-};
-
-export default function Index({ users }: IndexProps) {
+export default function Index({ users }: { users: PaginatedData<User> }) {
     const { destroy, processing } = useDelete();
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Users - List" />
             <div className="p-4">
-                <div className="flex justify-end">
+                <Header title="Users">
                     <Link
                         className={buttonVariants({ variant: 'default' })}
                         href="/users/create"
@@ -37,7 +36,7 @@ export default function Index({ users }: IndexProps) {
                     >
                         Create
                     </Link>
-                </div>
+                </Header>
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -47,7 +46,7 @@ export default function Index({ users }: IndexProps) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {users.map((user) => (
+                        {users.data.map((user) => (
                             <TableRow key={user.id}>
                                 <TableCell>{user.name}</TableCell>
                                 <TableCell>{user.email}</TableCell>
@@ -71,6 +70,7 @@ export default function Index({ users }: IndexProps) {
                         ))}
                     </TableBody>
                 </Table>
+                <Pagination links={users.links} />
             </div>
         </AppLayout>
     );

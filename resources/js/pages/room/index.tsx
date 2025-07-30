@@ -1,3 +1,5 @@
+import Header from '@/components/custom/page/header';
+import Pagination from '@/components/custom/pagination';
 import { Button, buttonVariants } from '@/components/ui/button';
 import {
     Table,
@@ -10,6 +12,8 @@ import {
 import { useDelete } from '@/hooks/use-delete';
 import AppLayout from '@/layouts/app-layout';
 import { Room, type BreadcrumbItem } from '@/types';
+import { PaginatedData } from '@/types/pagination';
+import { priceDisplay } from '@/utils/formatters';
 import { Head, Link } from '@inertiajs/react';
 import { Check, Eye, Pencil, Trash } from 'lucide-react';
 
@@ -18,14 +22,14 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Rooms', href: '/rooms' },
 ];
 
-export default function Index({ rooms }: { rooms: Room[] }) {
+export default function Index({ rooms }: { rooms: PaginatedData<Room> }) {
     const { destroy, processing } = useDelete();
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Rooms - List" />
             <div className="p-4">
-                <div className="flex justify-end">
+                <Header title="Rooms">
                     <Link
                         className={buttonVariants({ variant: 'default' })}
                         href="/rooms/create"
@@ -33,23 +37,23 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                     >
                         Create
                     </Link>
-                </div>
+                </Header>
                 <Table>
                     <TableHeader>
                         <TableRow>
                             <TableHead>Name</TableHead>
-                            <TableHead className="text-center">Price</TableHead>
+                            <TableHead>Price</TableHead>
                             <TableHead className="text-center">Schedule</TableHead>
                             <TableHead className="text-center">Active</TableHead>
                             <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {rooms.map((room) => (
+                        {rooms.data.map((room) => (
                             <TableRow key={room.id}>
                                 <TableCell>{room.name}</TableCell>
-                                <TableCell className="text-center">
-                                    {room.price ? `₱ ${room.price}` : '-'}
+                                <TableCell>
+                                    {room.price ? priceDisplay(Number(room.price)) : '-'}
                                 </TableCell>
                                 <TableCell className="text-center">
                                     {room.schedule ? (
@@ -100,6 +104,7 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                         ))}
                     </TableBody>
                 </Table>
+                <Pagination links={rooms.links} />
             </div>
         </AppLayout>
     );
