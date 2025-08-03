@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\AmenityController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\Unauth\HomeController;
 use App\Http\Controllers\LayoutController;
 use App\Http\Controllers\PaymentProviderController;
 use App\Http\Controllers\ScheduleController;
@@ -12,9 +13,8 @@ use App\Http\Controllers\ScheduleOverrideController;
 use App\Http\Controllers\PaymentController;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('welcome');
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/rooms', [RoomController::class, 'index'])->name('rooms');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
