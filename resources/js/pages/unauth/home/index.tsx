@@ -1,7 +1,7 @@
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayoutHeaderCustomer from '@/layouts/app/app-header-layout-customer';
 
-export default function Home() {
+export default function Index() {
     return (
         <AppLayoutHeaderCustomer page="Welcome">
             <div className="flex flex-col items-center">

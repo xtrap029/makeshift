@@ -165,3 +165,20 @@
 }
 
 @import './react-big-calendar.css';
+
+input[type="date"] {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 2.5rem; /* enough space for the icon */
+  position: relative;
+  background: transparent;
+}
+
+/* Optional: Add a custom calendar icon if needed */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}

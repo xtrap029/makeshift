@@ -6,6 +6,7 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\AmenityController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Unauth\HomeController;
+use App\Http\Controllers\Unauth\SpaceController;
 use App\Http\Controllers\LayoutController;
 use App\Http\Controllers\PaymentProviderController;
 use App\Http\Controllers\ScheduleController;
@@ -14,7 +15,7 @@ use App\Http\Controllers\PaymentController;
 use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/rooms', [RoomController::class, 'index'])->name('rooms');
+Route::get('/spaces', [SpaceController::class, 'index'])->name('spaces');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {

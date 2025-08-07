@@ -1,7 +1,7 @@
 import { AppContentCustomer } from '@/components/app-content-customer';
-// import AppLogoCustomer from '@/components/app-logo-customer';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { AppShell } from '@/components/app-shell';
+import Animation from '@/components/custom/animation';
 import { cn } from '@/lib/utils';
 import { Link } from '@inertiajs/react';
 import { CoffeeIcon, HomeIcon, QrCodeIcon } from 'lucide-react';
@@ -60,10 +60,10 @@ export default function AppHeaderLayoutCustomer({
                 </div>
                 <h1
                     className={`max-w-screen-xl px-4 font-extrabold transition-all duration-300 ${
-                        scrolled ? 'pt-4 pb-2 text-3xl' : 'pt-8 pb-4 text-5xl'
+                        scrolled ? 'pt-4 pb-2 text-4xl' : 'pt-8 pb-4 text-5xl'
                     }`}
                 >
-                    {page.charAt(0).toUpperCase() + page.slice(1)}
+                    <Animation>{page.charAt(0).toUpperCase() + page.slice(1)}</Animation>
                 </h1>
             </header>
             <div className="bg-makeshift-primary">
@@ -72,18 +72,26 @@ export default function AppHeaderLayoutCustomer({
             <AppContentCustomer>{children}</AppContentCustomer>
             <div className="fixed right-0 bottom-0 left-0 border-t-2 border-gray-200 bg-white px-4 py-6">
                 <div className="flex items-center justify-around">
-                    <Link href="/">
-                        <CoffeeIcon className="size-8" />
+                    <Link href="/spaces">
+                        <CoffeeIcon
+                            className={cn('size-8 transition-all duration-300', {
+                                'text-makeshift-primary': route().current('spaces'),
+                            })}
+                        />
                     </Link>
                     <Link href="/">
                         <HomeIcon
-                            className={cn('size-8', {
+                            className={cn('size-8 transition-all duration-300', {
                                 'text-makeshift-primary': route().current('home'),
                             })}
                         />
                     </Link>
                     <Link href="/">
-                        <QrCodeIcon className="size-8" />
+                        <QrCodeIcon
+                            className={cn('size-8 transition-all duration-300', {
+                                'text-makeshift-primary': route().current('qr'),
+                            })}
+                        />
                     </Link>
                 </div>
             </div>
