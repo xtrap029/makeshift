@@ -14,12 +14,11 @@ import {
 } from '@/components/ui/drawer';
 import AppLayoutHeaderCustomer from '@/layouts/app/app-header-layout-customer';
 import { Room } from '@/types';
-import { router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { CalendarIcon, SquareDashed, Users } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export default function Index({ rooms }: { rooms: Room[] }) {
-    const [scrolled, setScrolled] = useState(false);
     const [appliedDate, setAppliedDate] = useState<string>(route().params.date || '');
     const [draftDate, setDraftDate] = useState<string>(route().params.date || '');
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -53,41 +52,26 @@ export default function Index({ rooms }: { rooms: Room[] }) {
         }
     };
 
-    useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 10);
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
     return (
         <AppLayoutHeaderCustomer page="Spaces">
+            <Head title="Spaces" />
             <Drawer open={drawerOpen} onOpenChange={handleDrawerOpenChange}>
                 <DrawerTrigger asChild>
                     <Button
                         variant="makeshiftDefault"
                         size="makeshiftXl"
-                        className={`transition-all duration-300 ${
-                            scrolled
-                                ? 'text-makeshift-primary fixed top-5 right-4 z-50 h-[50px] w-[50px] bg-white shadow-xl'
-                                : 'shadow-lg'
-                        }`}
+                        className="transition-all duration-300 shadow-lg"
                     >
                         <CalendarIcon className="size-5" />
-                        {scrolled
-                            ? ''
-                            : `${
-                                  appliedDate
-                                      ? new Date(appliedDate).toLocaleDateString('en-US', {
-                                            weekday: 'long',
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric',
+                        {appliedDate
+                            ? new Date(appliedDate).toLocaleDateString('en-US', {
+                                  weekday: 'long',
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric',
                                         })
-                                      : 'Filter by Date'
-                              }`}
+                            : 'Filter by Date'
+                        }
                     </Button>
                 </DrawerTrigger>
                 <DrawerContent>
@@ -130,7 +114,10 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                 {rooms.map((room) => (
                     <div key={room.id.toString()} className="w-full">
                         <Animation isRandom>
-                            <Card className="w-full cursor-pointer rounded-2xl py-2 shadow-lg">
+                            <Card
+                                className="w-full cursor-pointer rounded-2xl py-2 shadow-lg"
+                                onClick={() => router.visit(route('spaces.show', room.name))}
+                            >
                                 <CardContent className="px-2">
                                     <div className="flex items-center justify-center gap-3">
                                         <div className="relative h-[100px] w-[100px] flex-shrink-0 overflow-hidden rounded-2xl bg-gray-100">

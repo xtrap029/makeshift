@@ -73,9 +73,26 @@ class SpaceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $name)
     {
-        //
+        $room = Room::select('id', 'name', 'cap', 'sqm', 'description', 'price')
+            ->where('is_active', true)
+            ->where('qty', '>', 0)
+            ->where('name', $name)
+            ->with(['image' => function ($query) {
+                $query->select('name', 'room_id')->where('is_main', true);
+            }])
+            ->with(['layouts' => function ($query) {
+                $query->select('name', 'room_id');
+            }])
+            ->with(['amenities' => function ($query) {
+                $query->select('name', 'icon', 'room_id');
+            }])
+            ->firstOrFail();
+
+        return Inertia::render('unauth/space/show', [
+            'room' => $room,
+        ]);
     }
 
     /**

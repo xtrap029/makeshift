@@ -16,6 +16,7 @@ use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/spaces', [SpaceController::class, 'index'])->name('spaces');
+Route::get('/spaces/{space}', [SpaceController::class, 'show'])->name('spaces.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {

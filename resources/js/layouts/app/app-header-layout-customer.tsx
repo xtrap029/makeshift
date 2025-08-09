@@ -2,6 +2,8 @@ import { AppContentCustomer } from '@/components/app-content-customer';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { AppShell } from '@/components/app-shell';
 import Animation from '@/components/custom/animation';
+import { Button } from '@/components/ui/button';
+import IconDynamic from '@/components/ui/icon-dynamic';
 import { cn } from '@/lib/utils';
 import { Link } from '@inertiajs/react';
 import { CoffeeIcon, HomeIcon, QrCodeIcon } from 'lucide-react';
@@ -9,8 +11,10 @@ import { useEffect, useState, type PropsWithChildren } from 'react';
 
 export default function AppHeaderLayoutCustomer({
     page,
+    rightIcon,
+    rightIconHref,
     children,
-}: PropsWithChildren<{ page: string }>) {
+}: PropsWithChildren<{ page: string; rightIcon?: string; rightIconHref?: string }>) {
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
@@ -59,23 +63,39 @@ export default function AppHeaderLayoutCustomer({
                     </div>
                 </div>
                 <h1
-                    className={`max-w-screen-xl px-4 font-extrabold transition-all duration-300 ${
+                    className={`max-w-screen-xl pr-[70px] pl-4 font-extrabold transition-all duration-300 ${
                         scrolled ? 'pt-4 pb-2 text-4xl' : 'pt-8 pb-4 text-5xl'
                     }`}
                 >
                     <Animation>{page.charAt(0).toUpperCase() + page.slice(1)}</Animation>
                 </h1>
+                {rightIcon && rightIconHref && (
+                    <Animation isVertical>
+                        <Link href={rightIconHref}>
+                            <Button 
+                            className={`absolute right-4 rounded-full bg-white text-makeshift-primary shadow-lg transition-all duration-300 ${
+                                scrolled ? 'bottom-3 size-8' : 'bottom-5 size-10'
+                            }`} size="icon">
+                                <IconDynamic name={rightIcon} className="size-5" />
+                            </Button>
+                        </Link>
+                    </Animation>
+                )}
             </header>
             <div className="bg-makeshift-primary">
                 <div className="h-5 rounded-t-2xl bg-white"></div>
             </div>
-            <AppContentCustomer>{children}</AppContentCustomer>
+            <AppContentCustomer>
+                {children}
+                <div className="h-[70px]"></div>
+            </AppContentCustomer>
             <div className="fixed right-0 bottom-0 left-0 border-t-2 border-gray-200 bg-white px-4 py-6">
                 <div className="flex items-center justify-around">
                     <Link href="/spaces">
                         <CoffeeIcon
                             className={cn('size-8 transition-all duration-300', {
-                                'text-makeshift-primary': route().current('spaces'),
+                                'text-makeshift-primary':
+                                    route().current('spaces') || route().current('spaces.show'),
                             })}
                         />
                     </Link>
