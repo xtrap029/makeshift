@@ -42,6 +42,14 @@ export default function Form({
         data.rooms?.map((room) => room.toString()) || []
     );
 
+    const [selectedTimeStart, setSelectedTimeStart] = useState<string | undefined>(
+        data.time_start?.toString() || undefined
+    );
+
+    const [selectedTimeEnd, setSelectedTimeEnd] = useState<string | undefined>(
+        data.time_end?.toString() || undefined
+    );
+
     return (
         <form className="flex flex-col gap-6" onSubmit={submit}>
             <Header title={`${data.id ? 'Edit' : 'Create'} Schedule Override`} />
@@ -108,26 +116,56 @@ export default function Form({
                 </div>
                 <div className="col-span-2 grid gap-2">
                     <Label htmlFor="time_start">Time Start</Label>
-                    <Input
-                        id="time_start"
-                        type="time"
-                        value={data.time_start}
-                        onChange={(e) => setData('time_start', e.target.value)}
+                    <Select
+                        value={selectedTimeStart}
+                        onValueChange={(value) => {
+                            setSelectedTimeStart(value);
+                            setData('time_start', value);
+                        }}
+                        required
                         disabled={processing}
-                        placeholder="Time Start"
-                    />
+                    >
+                        <SelectTrigger>
+                            <SelectValue placeholder="Time Start" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {Array.from({ length: 24 }, (_, i) => (
+                                <SelectItem
+                                    key={i}
+                                    value={i.toString().padStart(2, '0') + ':00:00'}
+                                >
+                                    {i.toString().padStart(2, '0')}:00
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                     <InputError message={errors.time_start} className="mt-2" />
                 </div>
                 <div className="col-span-2 grid gap-2">
                     <Label htmlFor="time_end">Time End</Label>
-                    <Input
-                        id="time_end"
-                        type="time"
-                        value={data.time_end}
-                        onChange={(e) => setData('time_end', e.target.value)}
+                    <Select
+                        value={selectedTimeEnd}
+                        onValueChange={(value) => {
+                            setSelectedTimeEnd(value);
+                            setData('time_end', value);
+                        }}
+                        required
                         disabled={processing}
-                        placeholder="Time End"
-                    />
+                    >
+                        <SelectTrigger>
+                            <SelectValue placeholder="Time End" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {Array.from({ length: 24 }, (_, i) => (
+                                <SelectItem
+                                    key={i}
+                                    value={i.toString().padStart(2, '0') + ':00:00'}
+                                >
+                                    {i.toString().padStart(2, '0')}:00
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                     <InputError message={errors.time_end} className="mt-2" />
                 </div>
                 <div className="col-span-12 flex justify-between gap-2">

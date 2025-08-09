@@ -267,7 +267,10 @@ export default function Show({ booking }: { booking: Booking }) {
                                     </TableRow>
                                     <TableRow>
                                         <TableHead className={labelWidth}>Time</TableHead>
-                                        <TableCell>{booking.start_time.slice(0, 5)}</TableCell>
+                                        <TableCell>
+                                            {booking.start_time.slice(0, 5)} -{' '}
+                                            {booking.end_time.slice(0, 5)}
+                                        </TableCell>
                                     </TableRow>
                                     <TableRow>
                                         <TableHead className={labelWidth}>Total Hours</TableHead>

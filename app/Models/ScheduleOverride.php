@@ -21,4 +21,9 @@ class ScheduleOverride extends Model
     {
         return $this->belongsToMany(Room::class, 'schedule_override_rooms');
     }
+
+    public function scheduleOverrideRooms()
+    {
+        return $this->hasMany(ScheduleOverrideRoom::class);
+    }
 }

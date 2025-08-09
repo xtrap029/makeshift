@@ -60,7 +60,7 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                     <Button
                         variant="makeshiftDefault"
                         size="makeshiftXl"
-                        className="transition-all duration-300 shadow-lg"
+                        className="shadow-lg transition-all duration-300"
                     >
                         <CalendarIcon className="size-5" />
                         {appliedDate
@@ -69,9 +69,8 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                                   year: 'numeric',
                                   month: 'long',
                                   day: 'numeric',
-                                        })
-                            : 'Filter by Date'
-                        }
+                              })
+                            : 'Filter by Date'}
                     </Button>
                 </DrawerTrigger>
                 <DrawerContent>
@@ -84,7 +83,11 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                             <div className="flex items-center justify-center space-x-2">
                                 <Input
                                     type="date"
-                                    min={new Date().toISOString().split('T')[0]}
+                                    min={
+                                        new Date(Date.now() + 24 * 60 * 60 * 1000)
+                                            .toISOString()
+                                            .split('T')[0]
+                                    }
                                     className="w-full"
                                     onChange={(e) => setDraftDate(e.target.value)}
                                     value={draftDate}
@@ -116,7 +119,12 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                         <Animation isRandom>
                             <Card
                                 className="w-full cursor-pointer rounded-2xl py-2 shadow-lg"
-                                onClick={() => router.visit(route('spaces.show', room.name))}
+                                onClick={() =>
+                                    router.visit(
+                                        route('spaces.show', room.name) +
+                                            `?date=${encodeURIComponent(appliedDate)}`
+                                    )
+                                }
                             >
                                 <CardContent className="px-2">
                                     <div className="flex items-center justify-center gap-3">

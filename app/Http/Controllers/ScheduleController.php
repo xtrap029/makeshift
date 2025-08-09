@@ -39,7 +39,6 @@ class ScheduleController extends Controller
     public function store(StoreScheduleRequest $request)
     {
         $validated = $request->validated();
-
         Schedule::create($validated);
 
         return to_route('schedules.index')->withSuccess('Schedule created successfully!');

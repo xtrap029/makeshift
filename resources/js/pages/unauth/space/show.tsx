@@ -1,4 +1,5 @@
 import { Input } from '@/components/custom/makeshift/input';
+import { SelectTrigger } from '@/components/custom/makeshift/selectTrigger';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,15 +12,110 @@ import {
     DrawerTrigger,
 } from '@/components/ui/drawer';
 import IconDynamic from '@/components/ui/icon-dynamic';
+import { Select, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 import AppLayoutHeaderCustomer from '@/layouts/app/app-header-layout-customer';
 import { Room } from '@/types';
 import { priceDisplay } from '@/utils/formatters';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { Check, Dot, SquareDashed, Users } from 'lucide-react';
 import { useState } from 'react';
 
-export default function Show({ room }: { room: Room }) {
+type InquiryForm = {
+    date: string;
+    start_time: string;
+    end_time: string;
+    layout: string;
+};
+
+export default function Show({
+    room,
+    availableTimes,
+    selectedDate,
+}: {
+    room: Room;
+    availableTimes: string[];
+    selectedDate: string;
+}) {
+    console.log(availableTimes);
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [inquiryForm, setInquiryForm] = useState<InquiryForm>({
+        date: selectedDate || '',
+        start_time: '',
+        end_time: '',
+        layout: '',
+    });
+
+    const [selectedTimes, setSelectedTimes] = useState<{
+        start_time: string;
+        end_time: string;
+    }>({
+        start_time: '',
+        end_time: '',
+    });
+
+    const generateEndTimes = (times: string[], startTime: string): string[] => {
+        // Helper: convert HH:mm to minutes
+        const toMinutes = (t: string) => {
+            const [h, m] = t.split(':').map(Number);
+            return h * 60 + m;
+        };
+
+        // Increment each time by 1 hour (skip times that go past 23:59)
+        const incrementedTimes = times
+            .map((time) => {
+                const [hourStr, minuteStr] = time.split(':');
+                const hour = parseInt(hourStr, 10);
+                const incrementedHour = hour + 1;
+                if (incrementedHour > 23) return null;
+                return `${incrementedHour.toString().padStart(2, '0')}:${minuteStr}`;
+            })
+            .filter((t): t is string => t !== null);
+
+        const startMins = toMinutes(startTime);
+
+        // Filter incremented times strictly after startTime
+        const filteredTimes = incrementedTimes.filter((t) => toMinutes(t) > startMins);
+
+        // Return times while gaps between consecutive times <= 60 mins
+        const result: string[] = [];
+        let prevMins = startMins;
+
+        for (const t of filteredTimes) {
+            const currentMins = toMinutes(t);
+            const diff = currentMins - prevMins;
+
+            if (diff > 60) break;
+
+            result.push(t);
+            prevMins = currentMins;
+        }
+
+        return result;
+    };
+
+    const handleDateChange = (date: string) => {
+        setInquiryForm({
+            ...inquiryForm,
+            date,
+        });
+        setSelectedTimes({
+            start_time: '',
+            end_time: '',
+        });
+
+        router.get(
+            route('spaces.show', room.name),
+            { date: date },
+            {
+                preserveState: true,
+                replace: true,
+            }
+        );
+    };
+
+    const handleNext = () => {
+        console.log(inquiryForm);
+    };
 
     return (
         <AppLayoutHeaderCustomer page={room.name} rightIcon="arrow-left" rightIconHref="/spaces">
@@ -102,34 +198,108 @@ export default function Show({ room }: { room: Room }) {
                                             </div>
                                             <Input
                                                 type="date"
-                                                min={new Date().toISOString().split('T')[0]}
+                                                min={
+                                                    new Date(Date.now() + 24 * 60 * 60 * 1000)
+                                                        .toISOString()
+                                                        .split('T')[0]
+                                                }
+                                                value={inquiryForm.date}
+                                                onChange={(e) => handleDateChange(e.target.value)}
                                             />
                                         </div>
                                         <div>
                                             <div className="text-muted-foreground mb-1 ml-3">
                                                 Start Time
                                             </div>
-                                            <Input type="time" />
+                                            <Select
+                                                value={selectedTimes.start_time}
+                                                onValueChange={(value) => {
+                                                    setSelectedTimes({
+                                                        ...selectedTimes,
+                                                        start_time: value,
+                                                        end_time: '',
+                                                    });
+                                                }}
+                                                required
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="--:--" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {inquiryForm.date &&
+                                                        availableTimes.length === 0 && (
+                                                            <SelectItem value="--:--" disabled>
+                                                                No available times
+                                                            </SelectItem>
+                                                        )}
+                                                    {(inquiryForm.date &&
+                                                        availableTimes.map((time) => (
+                                                            <SelectItem key={time} value={time}>
+                                                                {time}
+                                                            </SelectItem>
+                                                        ))) || (
+                                                        <SelectItem value="--:--" disabled>
+                                                            Select a date first
+                                                        </SelectItem>
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
                                         </div>
                                         <div>
                                             <div className="text-muted-foreground mb-1 ml-3">
                                                 End Time
                                             </div>
-                                            <Input type="time" />
+                                            <Select
+                                                value={selectedTimes.end_time}
+                                                onValueChange={(value) => {
+                                                    setSelectedTimes({
+                                                        ...selectedTimes,
+                                                        end_time: value,
+                                                    });
+                                                }}
+                                                required
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="--:--" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {(selectedTimes.start_time &&
+                                                        generateEndTimes(
+                                                            availableTimes,
+                                                            selectedTimes.start_time
+                                                        ).map((time) => (
+                                                            <SelectItem key={time} value={time}>
+                                                                {time}
+                                                            </SelectItem>
+                                                        ))) || (
+                                                        <SelectItem value="--:--" disabled>
+                                                            Select a start time first
+                                                        </SelectItem>
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
                                         </div>
                                         <div className="col-span-2">
                                             <div className="text-muted-foreground mb-1 ml-3">
                                                 Layout
                                             </div>
-                                            <Input type="text"/>
+                                            <Input type="text" />
                                         </div>
                                     </div>
                                 </div>
                                 <DrawerFooter className="pb-10">
-                                    <Button variant="makeshiftDefault" size="makeshiftXl">
+                                    <Button
+                                        variant="makeshiftDefault"
+                                        size="makeshiftXl"
+                                        onClick={handleNext}
+                                    >
                                         Next
                                     </Button>
-                                    <Button variant="makeshiftOutline" size="makeshiftXl" onClick={() => setDrawerOpen(false)}>
+                                    <Button
+                                        variant="makeshiftOutline"
+                                        size="makeshiftXl"
+                                        onClick={() => setDrawerOpen(false)}
+                                    >
                                         Close
                                     </Button>
                                 </DrawerFooter>
