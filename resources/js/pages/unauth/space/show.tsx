@@ -18,7 +18,7 @@ import { Room } from '@/types';
 import { priceDisplay } from '@/utils/formatters';
 import { Head, router } from '@inertiajs/react';
 import { Check, Dot, SquareDashed, Users } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type InquiryForm = {
     date: string;
@@ -36,8 +36,8 @@ export default function Show({
     availableTimes: string[];
     selectedDate: string;
 }) {
-    console.log(availableTimes);
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [totalPrice, setTotalPrice] = useState(0);
     const [inquiryForm, setInquiryForm] = useState<InquiryForm>({
         date: selectedDate || '',
         start_time: '',
@@ -117,6 +117,16 @@ export default function Show({
         console.log(inquiryForm);
     };
 
+    useEffect(() => {
+        setTotalPrice(
+            inquiryForm.end_time && inquiryForm.start_time
+                ? room.price *
+                      (Number(inquiryForm.end_time.split(':')[0]) -
+                          Number(inquiryForm.start_time.split(':')[0]))
+                : 0
+        );
+    }, [inquiryForm.end_time, inquiryForm.start_time, room.price]);
+
     return (
         <AppLayoutHeaderCustomer page={room.name} rightIcon="arrow-left" rightIconHref="/spaces">
             <Head title={room.name} />
@@ -174,7 +184,7 @@ export default function Show({
                             );
                         })}
                     </div>
-                    <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+                    <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} autoFocus={drawerOpen}>
                         <DrawerTrigger asChild>
                             <Button
                                 variant="makeshiftDefault"
@@ -283,7 +293,39 @@ export default function Show({
                                             <div className="text-muted-foreground mb-1 ml-3">
                                                 Layout
                                             </div>
-                                            <Input type="text" />
+                                            <Select
+                                                value={inquiryForm.layout}
+                                                onValueChange={(value) => {
+                                                    setInquiryForm({
+                                                        ...inquiryForm,
+                                                        layout: value,
+                                                    });
+                                                }}
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a layout" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {room.layouts.map((layout) => (
+                                                        <SelectItem
+                                                            key={layout.name}
+                                                            value={layout.name.toString()}
+                                                        >
+                                                            {layout.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="col-span-2">
+                                            <div className="text-muted-foreground mb-1 ml-3">
+                                                Total Price
+                                            </div>
+                                            <Input
+                                                type="text"
+                                                value={priceDisplay(totalPrice)}
+                                                disabled
+                                            />
                                         </div>
                                     </div>
                                 </div>

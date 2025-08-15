@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Unauth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Layout;
 use App\Models\Room;
 use App\Models\Schedule;
 use App\Models\ScheduleOverride;
@@ -72,15 +73,23 @@ class SpaceController extends Controller
      */
     public function show(string $name, Request $request)
     {
-        $room = Room::select('id', 'name', 'cap', 'sqm', 'description', 'price', 'schedule_id', 'qty')
-            ->where('is_active', true)
+        $room = Room::select(
+            'id',
+            'name',
+            'cap',
+            'sqm',
+            'description',
+            'price',
+            'schedule_id',
+            'qty'
+        )->where('is_active', true)
             ->where('qty', '>', 0)
             ->where('name', $name)
             ->with(['image' => function ($query) {
                 $query->select('name', 'room_id')->where('is_main', true);
             }])
             ->with(['layouts' => function ($query) {
-                $query->select('name', 'room_id');
+                $query->select('name', 'room_id')->orderBy('name', 'asc');
             }])
             ->with(['amenities' => function ($query) {
                 $query->select('name', 'icon', 'room_id');

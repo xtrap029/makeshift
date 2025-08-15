@@ -167,8 +167,6 @@
 @import './react-big-calendar.css';
 
 input[type="date"] {
-  appearance: none;
-  -webkit-appearance: none;
   padding-right: 2.5rem; /* enough space for the icon */
   position: relative;
   background: transparent;
