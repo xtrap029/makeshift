@@ -12,11 +12,14 @@ use App\Http\Controllers\PaymentProviderController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ScheduleOverrideController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ReservationController;
 use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/spaces', [SpaceController::class, 'index'])->name('spaces');
 Route::get('/spaces/{space}', [SpaceController::class, 'show'])->name('spaces.show');
+Route::get('/reservation/inquire/{roomName}', [ReservationController::class, 'inquire'])->name('reservation.inquire');
+Route::post('/reservation/inquire/{roomName}', [ReservationController::class, 'inquirePost'])->name('reservation.inquire.post');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {

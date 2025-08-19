@@ -24,21 +24,21 @@ export default function Edit({
     schedules: Schedule[];
 }) {
     const { errors } = usePage().props;
-    const { data, setData, processing } = useForm<Partial<RoomForm>>({
+    const { data, setData, processing } = useForm<RoomForm>({
         id: room.id,
-        name: room.name,
-        price: room.price,
-        is_active: room.is_active,
-        description: room.description,
-        is_private: room.is_private,
-        sqm: room.sqm,
-        qty: room.qty,
-        cap: room.cap,
-        schedule_id: room.schedule?.id,
-        amenities: room.amenities.map((amenity) => amenity.id),
-        layouts: room.layouts.map((layout) => layout.id),
+        name: room.name ?? '',
+        price: room.price ?? 0,
+        is_active: room.is_active ?? true,
+        description: room.description ?? '',
+        is_private: room.is_private ?? false,
+        sqm: room.sqm ?? 0,
+        qty: room.qty ?? 1,
+        cap: room.cap ?? 1,
+        schedule_id: room.schedule?.id ?? 0,
+        amenities: room.amenities?.map((a) => a.id) ?? [],
+        layouts: room.layouts?.map((l) => l.id) ?? [],
         image: null,
-        image_name: room.image?.name,
+        image_name: room.image?.name ?? null,
     });
 
     const submit: FormEventHandler = (e) => {

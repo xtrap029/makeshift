@@ -3,29 +3,22 @@ import { SelectTrigger } from '@/components/custom/makeshift/selectTrigger';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-    Drawer,
-    DrawerContent,
-    DrawerDescription,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerTrigger,
-} from '@/components/ui/drawer';
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import IconDynamic from '@/components/ui/icon-dynamic';
 import { Select, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 import AppLayoutHeaderCustomer from '@/layouts/app/app-header-layout-customer';
 import { Room } from '@/types';
+import { InquiryForm } from '@/types/form';
 import { priceDisplay } from '@/utils/formatters';
 import { Head, router } from '@inertiajs/react';
 import { Check, Dot, SquareDashed, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
-
-type InquiryForm = {
-    date: string;
-    start_time: string;
-    end_time: string;
-    layout: string;
-};
 
 export default function Show({
     room,
@@ -36,21 +29,13 @@ export default function Show({
     availableTimes: string[];
     selectedDate: string;
 }) {
-    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [dialogOpen, setDialogOpen] = useState(false);
     const [totalPrice, setTotalPrice] = useState(0);
-    const [inquiryForm, setInquiryForm] = useState<InquiryForm>({
+    const [inquiryForm, setInquiryForm] = useState<Partial<InquiryForm>>({
         date: selectedDate || '',
         start_time: '',
         end_time: '',
         layout: '',
-    });
-
-    const [selectedTimes, setSelectedTimes] = useState<{
-        start_time: string;
-        end_time: string;
-    }>({
-        start_time: '',
-        end_time: '',
     });
 
     const generateEndTimes = (times: string[], startTime: string): string[] => {
@@ -97,8 +82,6 @@ export default function Show({
         setInquiryForm({
             ...inquiryForm,
             date,
-        });
-        setSelectedTimes({
             start_time: '',
             end_time: '',
         });
@@ -114,7 +97,10 @@ export default function Show({
     };
 
     const handleNext = () => {
-        console.log(inquiryForm);
+        router.get(route('reservation.inquire', room.name), {
+            ...inquiryForm,
+        });
+        setDialogOpen(false);
     };
 
     useEffect(() => {
@@ -173,7 +159,7 @@ export default function Show({
                             );
                         })}
                     </div>
-                    <div className="text-foreground mt-4 grid grid-cols-2 gap-2">
+                    <div className="text-foreground my-4 grid grid-cols-2 gap-2">
                         <div className="text-muted-foreground col-span-2 text-sm">Layouts</div>
                         {room.layouts.map((layout) => {
                             return (
@@ -184,24 +170,24 @@ export default function Show({
                             );
                         })}
                     </div>
-                    <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} autoFocus={drawerOpen}>
-                        <DrawerTrigger asChild>
+                    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                        <DialogTrigger asChild>
                             <Button
                                 variant="makeshiftDefault"
                                 size="makeshiftXl"
-                                className="mt-4 w-full shadow-lg"
+                                className="shadow-lg transition-all duration-300"
                             >
                                 Inquire Now
                             </Button>
-                        </DrawerTrigger>
-                        <DrawerContent>
-                            <div className="mx-auto w-full max-w-sm">
-                                <DrawerHeader>
-                                    <DrawerTitle>Inquire Now</DrawerTitle>
-                                    <DrawerDescription>Customize your space</DrawerDescription>
-                                </DrawerHeader>
-                                <div className="p-4">
-                                    <div className="grid grid-cols-2 gap-4">
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Inquire Now</DialogTitle>
+                                <DialogDescription
+                                    className="mt-4 grid grid-cols-2 items-center justify-center gap-4 text-left"
+                                    asChild
+                                >
+                                    <div>
                                         <div className="col-span-2">
                                             <div className="text-muted-foreground mb-1 ml-3">
                                                 Date
@@ -222,10 +208,10 @@ export default function Show({
                                                 Start Time
                                             </div>
                                             <Select
-                                                value={selectedTimes.start_time}
+                                                value={inquiryForm.start_time}
                                                 onValueChange={(value) => {
-                                                    setSelectedTimes({
-                                                        ...selectedTimes,
+                                                    setInquiryForm({
+                                                        ...inquiryForm,
                                                         start_time: value,
                                                         end_time: '',
                                                     });
@@ -260,10 +246,10 @@ export default function Show({
                                                 End Time
                                             </div>
                                             <Select
-                                                value={selectedTimes.end_time}
+                                                value={inquiryForm.end_time}
                                                 onValueChange={(value) => {
-                                                    setSelectedTimes({
-                                                        ...selectedTimes,
+                                                    setInquiryForm({
+                                                        ...inquiryForm,
                                                         end_time: value,
                                                     });
                                                 }}
@@ -273,10 +259,10 @@ export default function Show({
                                                     <SelectValue placeholder="--:--" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {(selectedTimes.start_time &&
+                                                    {(inquiryForm.start_time &&
                                                         generateEndTimes(
                                                             availableTimes,
-                                                            selectedTimes.start_time
+                                                            inquiryForm.start_time
                                                         ).map((time) => (
                                                             <SelectItem key={time} value={time}>
                                                                 {time}
@@ -317,37 +303,35 @@ export default function Show({
                                                 </SelectContent>
                                             </Select>
                                         </div>
-                                        <div className="col-span-2">
-                                            <div className="text-muted-foreground mb-1 ml-3">
+                                        <div className="col-span-2 py-4 text-center">
+                                            <div className="text-makeshift-primary text-2xl font-bold">
+                                                {priceDisplay(totalPrice)}
+                                            </div>
+                                            <div className="text-muted-foreground mb-1">
                                                 Total Price
                                             </div>
-                                            <Input
-                                                type="text"
-                                                value={priceDisplay(totalPrice)}
-                                                disabled
-                                            />
                                         </div>
+                                        <Button
+                                            variant="makeshiftDefault"
+                                            size="makeshiftXl"
+                                            onClick={handleNext}
+                                            className="col-span-2"
+                                        >
+                                            Next
+                                        </Button>
+                                        <Button
+                                            variant="makeshiftOutline"
+                                            size="makeshiftXl"
+                                            onClick={() => setDialogOpen(false)}
+                                            className="col-span-2"
+                                        >
+                                            Close
+                                        </Button>
                                     </div>
-                                </div>
-                                <DrawerFooter className="pb-10">
-                                    <Button
-                                        variant="makeshiftDefault"
-                                        size="makeshiftXl"
-                                        onClick={handleNext}
-                                    >
-                                        Next
-                                    </Button>
-                                    <Button
-                                        variant="makeshiftOutline"
-                                        size="makeshiftXl"
-                                        onClick={() => setDrawerOpen(false)}
-                                    >
-                                        Close
-                                    </Button>
-                                </DrawerFooter>
-                            </div>
-                        </DrawerContent>
-                    </Drawer>
+                                </DialogDescription>
+                            </DialogHeader>
+                        </DialogContent>
+                    </Dialog>
                 </div>
             </div>
         </AppLayoutHeaderCustomer>

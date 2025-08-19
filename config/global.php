@@ -16,4 +16,5 @@ return [
         'canceled' => [5, 'Canceled'],
         'refunded' => [6, 'Refunded'],
     ],
+    'no_reserve_status' => [1, 4],
 ];

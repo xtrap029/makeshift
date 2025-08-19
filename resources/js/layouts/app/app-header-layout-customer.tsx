@@ -4,10 +4,20 @@ import { AppShell } from '@/components/app-shell';
 import Animation from '@/components/custom/animation';
 import { Button } from '@/components/ui/button';
 import IconDynamic from '@/components/ui/icon-dynamic';
+import { Toaster } from '@/components/ui/sonner';
 import { cn } from '@/lib/utils';
-import { Link } from '@inertiajs/react';
+import { PageProps } from '@inertiajs/core';
+import { Link, usePage } from '@inertiajs/react';
 import { CoffeeIcon, HomeIcon, QrCodeIcon } from 'lucide-react';
 import { useEffect, useState, type PropsWithChildren } from 'react';
+import { toast } from 'sonner';
+
+interface FlashProps extends PageProps {
+    flash: {
+        success?: string;
+        error?: string;
+    };
+}
 
 export default function AppHeaderLayoutCustomer({
     page,
@@ -16,6 +26,16 @@ export default function AppHeaderLayoutCustomer({
     children,
 }: PropsWithChildren<{ page: string; rightIcon?: string; rightIconHref?: string }>) {
     const [scrolled, setScrolled] = useState(false);
+
+    const { flash } = usePage<FlashProps>().props;
+
+    useEffect(() => {
+        if (flash?.success) {
+            toast.success(flash.success);
+        } else if (flash?.error) {
+            toast.error(flash.error);
+        }
+    }, [flash]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -28,6 +48,7 @@ export default function AppHeaderLayoutCustomer({
 
     return (
         <AppShell>
+            <Toaster richColors position="top-right" />
             <header
                 className={`bg-makeshift-primary sticky top-0 z-50 w-full text-white transition-all duration-300 ${
                     scrolled ? 'pt-2' : 'pt-6'
@@ -72,10 +93,12 @@ export default function AppHeaderLayoutCustomer({
                 {rightIcon && rightIconHref && (
                     <Animation isVertical>
                         <Link href={rightIconHref}>
-                            <Button 
-                            className={`absolute right-4 rounded-full bg-white text-makeshift-primary shadow-lg transition-all duration-300 ${
-                                scrolled ? 'bottom-3 size-8' : 'bottom-5 size-10'
-                            }`} size="icon">
+                            <Button
+                                className={`text-makeshift-primary absolute right-4 rounded-full bg-white shadow-lg transition-all duration-300 ${
+                                    scrolled ? 'bottom-3 size-8' : 'bottom-5 size-10'
+                                }`}
+                                size="icon"
+                            >
                                 <IconDynamic name={rightIcon} className="size-5" />
                             </Button>
                         </Link>
@@ -95,7 +118,9 @@ export default function AppHeaderLayoutCustomer({
                         <CoffeeIcon
                             className={cn('size-8 transition-all duration-300', {
                                 'text-makeshift-primary':
-                                    route().current('spaces') || route().current('spaces.show'),
+                                    route().current('spaces') ||
+                                    route().current('spaces.show') ||
+                                    route().current('reservation.inquire'),
                             })}
                         />
                     </Link>

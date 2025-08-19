@@ -137,7 +137,7 @@ class SpaceController extends Controller
             // Bookings: with Pending or Confirmed status from date/time
             foreach ($availableTimes as $time) {
                 $bookings = Booking::where('room_id', $room->id)
-                    ->whereNotIn('status', [config('global.booking_status.draft')[0], config('global.booking_status.canceled')[0]])
+                    ->whereNotIn('status', config('global.no_reserve_status'))
                     ->where('start_date', $request->date)
                     ->where('start_time', '<=', $time)
                     ->where('end_time', '>', $time)

@@ -1,5 +1,5 @@
 import { Toaster } from '@/components/ui/sonner';
-import AppLayoutTemplate from '@/layouts/app/app-sidebar-layout';
+import AppHeaderLayoutCustomer from '@/layouts/app/app-header-layout-customer';
 import { PageProps } from '@inertiajs/core';
 import { usePage } from '@inertiajs/react';
 import { useEffect, type ReactNode } from 'react';
@@ -28,9 +28,9 @@ export default ({ children, ...props }: AppLayoutCustomerProps) => {
     }, [flash]);
 
     return (
-        <AppLayoutTemplate {...props}>
+        <AppHeaderLayoutCustomer page="Home" {...props}>
             <Toaster richColors position="top-right" />
             {children}
-        </AppLayoutTemplate>
+        </AppHeaderLayoutCustomer>
     );
 };

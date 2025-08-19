@@ -4,14 +4,13 @@ import { Input } from '@/components/custom/makeshift/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
-    Drawer,
-    DrawerContent,
-    DrawerDescription,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerTrigger,
-} from '@/components/ui/drawer';
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import AppLayoutHeaderCustomer from '@/layouts/app/app-header-layout-customer';
 import { Room } from '@/types';
 import { Head, router } from '@inertiajs/react';
@@ -21,7 +20,7 @@ import { useState } from 'react';
 export default function Index({ rooms }: { rooms: Room[] }) {
     const [appliedDate, setAppliedDate] = useState<string>(route().params.date || '');
     const [draftDate, setDraftDate] = useState<string>(route().params.date || '');
-    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     const handleFilterChange = () => {
         setAppliedDate(draftDate);
@@ -34,19 +33,19 @@ export default function Index({ rooms }: { rooms: Room[] }) {
             }
         );
 
-        setDrawerOpen(false);
+        setDialogOpen(false);
     };
 
     const handleClearFilter = () => {
         setAppliedDate('');
         setDraftDate('');
         router.get(route('spaces'), { date: '' }, { preserveState: true, replace: true });
-        setDrawerOpen(false);
+        setDialogOpen(false);
     };
 
     // Reset draft date when drawer opens to match applied date
-    const handleDrawerOpenChange = (open: boolean) => {
-        setDrawerOpen(open);
+    const handleDialogOpenChange = (open: boolean) => {
+        setDialogOpen(open);
         if (open) {
             setDraftDate(appliedDate);
         }
@@ -55,8 +54,8 @@ export default function Index({ rooms }: { rooms: Room[] }) {
     return (
         <AppLayoutHeaderCustomer page="Spaces">
             <Head title="Spaces" />
-            <Drawer open={drawerOpen} onOpenChange={handleDrawerOpenChange}>
-                <DrawerTrigger asChild>
+            <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
+                <DialogTrigger asChild>
                     <Button
                         variant="makeshiftDefault"
                         size="makeshiftXl"
@@ -72,33 +71,27 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                               })
                             : 'Filter by Date'}
                     </Button>
-                </DrawerTrigger>
-                <DrawerContent>
-                    <div className="mx-auto w-full max-w-sm">
-                        <DrawerHeader>
-                            <DrawerTitle>Filter by Date</DrawerTitle>
-                            <DrawerDescription>Select preferred date</DrawerDescription>
-                        </DrawerHeader>
-                        <div className="p-4 pb-0">
-                            <div className="flex items-center justify-center space-x-2">
-                                <Input
-                                    type="date"
-                                    min={
-                                        new Date(Date.now() + 24 * 60 * 60 * 1000)
-                                            .toISOString()
-                                            .split('T')[0]
-                                    }
-                                    className="w-full"
-                                    onChange={(e) => setDraftDate(e.target.value)}
-                                    value={draftDate}
-                                />
-                            </div>
-                        </div>
-                        <DrawerFooter className="pb-10">
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Filter by Date</DialogTitle>
+                        <DialogDescription className="mt-4 flex flex-col items-center justify-center gap-4">
+                            <Input
+                                type="date"
+                                min={
+                                    new Date(Date.now() + 24 * 60 * 60 * 1000)
+                                        .toISOString()
+                                        .split('T')[0]
+                                }
+                                className="w-full"
+                                onChange={(e) => setDraftDate(e.target.value)}
+                                value={draftDate}
+                            />
                             <Button
                                 variant="makeshiftDefault"
                                 size="makeshiftXl"
                                 onClick={handleFilterChange}
+                                className="w-full"
                             >
                                 Apply
                             </Button>
@@ -106,13 +99,14 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                                 variant="makeshiftOutline"
                                 size="makeshiftXl"
                                 onClick={handleClearFilter}
+                                className="w-full"
                             >
                                 Clear
                             </Button>
-                        </DrawerFooter>
-                    </div>
-                </DrawerContent>
-            </Drawer>
+                        </DialogDescription>
+                    </DialogHeader>
+                </DialogContent>
+            </Dialog>
             <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
                 {rooms.map((room) => (
                     <div key={room.id.toString()} className="w-full">

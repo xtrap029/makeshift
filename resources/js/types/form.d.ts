@@ -106,3 +106,14 @@ export interface PaymentForm {
     attachment_name: string | null;
     status: number;
 }
+
+export interface InquiryForm {
+    name: string;
+    email: string;
+    phone: string;
+    date: string;
+    start_time: string;
+    end_time: string;
+    layout: string;
+    note: string;
+}
