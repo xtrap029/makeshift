@@ -19,7 +19,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/spaces', [SpaceController::class, 'index'])->name('spaces');
 Route::get('/spaces/{space}', [SpaceController::class, 'show'])->name('spaces.show');
 Route::get('/reservation/inquire/{roomName}', [ReservationController::class, 'inquire'])->name('reservation.inquire');
-Route::post('/reservation/inquire/{roomName}', [ReservationController::class, 'inquirePost'])->name('reservation.inquire.post');
+Route::post('/reservation/inquire/{roomName}', [ReservationController::class, 'inquireStore'])->name('reservation.inquire.post');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {

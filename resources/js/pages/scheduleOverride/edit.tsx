@@ -19,7 +19,7 @@ export default function Edit({
     rooms: Room[];
 }) {
     const { errors } = usePage().props;
-    const { data, setData, processing, put } = useForm<Partial<ScheduleOverrideForm>>({
+    const { data, setData, processing, put } = useForm<ScheduleOverrideForm>({
         id: scheduleOverride.id,
         date: scheduleOverride.date,
         time_start: scheduleOverride.time_start,

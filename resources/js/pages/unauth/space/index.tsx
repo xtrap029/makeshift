@@ -1,6 +1,7 @@
 import Animation from '@/components/custom/animation';
 import ImageWithFallback from '@/components/custom/imageWithFallback';
 import { Input } from '@/components/custom/makeshift/input';
+import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -16,13 +17,33 @@ import { Room } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import { CalendarIcon, SquareDashed, Users } from 'lucide-react';
 import { useState } from 'react';
+import { z } from 'zod';
+
+const validationSchema = z.object({
+    date: z.string().min(1, 'Date is required'),
+});
 
 export default function Index({ rooms }: { rooms: Room[] }) {
     const [appliedDate, setAppliedDate] = useState<string>(route().params.date || '');
     const [draftDate, setDraftDate] = useState<string>(route().params.date || '');
     const [dialogOpen, setDialogOpen] = useState(false);
 
+    const [zodErrors, setZodErrors] = useState<Record<string, string>>({});
+
     const handleFilterChange = () => {
+        const result = validationSchema.safeParse({ date: draftDate });
+
+        if (!result.success) {
+            setZodErrors(
+                Object.fromEntries(
+                    result.error.issues.map((err) => [err.path[0]?.toString(), err.message])
+                )
+            );
+            return;
+        }
+
+        setZodErrors({});
+
         setAppliedDate(draftDate);
         router.get(
             route('spaces'),
@@ -87,6 +108,7 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                                 onChange={(e) => setDraftDate(e.target.value)}
                                 value={draftDate}
                             />
+                            <InputError message={zodErrors.date} />
                             <Button
                                 variant="makeshiftDefault"
                                 size="makeshiftXl"

@@ -73,6 +73,14 @@ class SpaceController extends Controller
      */
     public function show(string $name, Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'date' => 'nullable|date|after:' . now()->format('Y-m-d'),
+        ]);
+
+        if ($validator->fails()) {
+            return to_route('spaces')->withError('Invalid date');
+        }
+
         $room = Room::select(
             'id',
             'name',
@@ -155,29 +163,5 @@ class SpaceController extends Controller
             'availableTimes' => $availableTimes,
             'selectedDate' => $request->date,
         ]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

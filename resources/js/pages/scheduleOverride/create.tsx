@@ -12,7 +12,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Create({ rooms }: { rooms: Room[] }) {
-    const { data, setData, post, processing, errors } = useForm<Partial<ScheduleOverrideForm>>({
+    const { data, setData, post, processing, errors } = useForm<ScheduleOverrideForm>({
         date: '',
         is_open: false,
         note: '',

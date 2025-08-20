@@ -21,7 +21,7 @@ export default function Create({
     layouts: Layout[];
     schedules: Schedule[];
 }) {
-    const { data, setData, post, processing, errors } = useForm<Partial<RoomForm>>({
+    const { data, setData, post, processing, errors } = useForm<RoomForm>({
         name: '',
         price: 0,
         is_active: true,
@@ -30,7 +30,7 @@ export default function Create({
         sqm: 0,
         qty: 0,
         cap: 0,
-        schedule_id: undefined,
+        schedule_id: 0,
         amenities: [],
         layouts: [],
         image: null,

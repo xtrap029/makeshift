@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Unauth\StoreInquireRequest;
 use App\Models\Room;
 use App\Services\RoomAvailabilityService;
 use Illuminate\Http\Request;
@@ -19,14 +20,9 @@ class ReservationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function inquire(string $roomName, Request $request)
+    public function inquire(string $roomName, StoreInquireRequest $request)
     {
-        $validated = $request->validate([
-            'date' => 'required|date',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i',
-            'layout' => 'required|exists:layouts,name',
-        ]);
+        $validated = $request->validated();
 
         $room = Room::select(
             'id',
@@ -44,9 +40,9 @@ class ReservationController extends Controller
             return to_route('spaces')->withError('Space not found');
         }
 
-        $availability = $this->roomAvailabilityService->verifyRoomAvailability($room, 1, $request->date, $request->start_time, $request->end_time);
+        $availability = $this->roomAvailabilityService->verifyRoomAvailability($room, 1, $validated['date'], $validated['start_time'], $validated['end_time']);
         if (!$availability['status']) {
-            return to_route('spaces', ['date' => $request->date])->withError($availability['message']);
+            return to_route('spaces', ['date' => $validated['date']])->withError($availability['message']);
         }
 
         return Inertia::render('unauth/reservation/inquire', [
@@ -55,18 +51,9 @@ class ReservationController extends Controller
         ]);
     }
 
-    public function inquirePost(string $roomName, Request $request)
+    public function inquireStore(string $roomName, StoreInquireRequest $request)
     {
-        $request->validate([
-            'date' => 'required|date',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i',
-            'layout' => 'required|exists:layouts,name',
-            'name' => 'required|string|max:' . config('form.validation.name.max') . '|min:' . config('form.validation.name.min'),
-            'email' => 'required|email|max:' . config('form.validation.email.max'),
-            'phone' => 'required|string|min:' . config('form.validation.phone.min'),
-            'note' => 'nullable|string|max:' . config('form.validation.note.max'),
-        ]);
+        $validated = $request->validated();
 
         $room = Room::select(
             'id',
@@ -84,11 +71,11 @@ class ReservationController extends Controller
             return to_route('spaces')->withError('Space not found');
         }
 
-        $availability = $this->roomAvailabilityService->verifyRoomAvailability($room, 1, $request->date, $request->start_time, $request->end_time);
+        $availability = $this->roomAvailabilityService->verifyRoomAvailability($room, 1, $validated['date'], $validated['start_time'], $validated['end_time']);
         if (!$availability['status']) {
-            return to_route('spaces', ['date' => $request->date])->withError($availability['message']);
+            return to_route('spaces', ['date' => $validated['date']])->withError($availability['message']);
         }
 
-        return to_route('spaces', ['date' => $request->date])->withSuccess('Inquiry submitted successfully');
+        return to_route('spaces', ['date' => $validated['date']])->withSuccess('Inquiry submitted successfully');
     }
 }

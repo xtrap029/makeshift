@@ -6,7 +6,7 @@ export interface UserForm {
 }
 
 export interface RoomForm {
-    id: number;
+    id?: number;
     name: string;
     price: number;
     is_active: boolean;
@@ -19,7 +19,7 @@ export interface RoomForm {
     amenities: number[];
     layouts: number[];
     image: File | null;
-    image_name: string | null;
+    image_name?: string | null;
 }
 
 export interface AmenityForm {
@@ -58,10 +58,10 @@ export interface ScheduleForm {
 }
 
 export interface ScheduleOverrideForm {
-    id: number;
+    id?: number;
     date: string;
-    time_start: string;
-    time_end: string;
+    time_start?: string;
+    time_end?: string;
     is_open: boolean;
     note: string;
     rooms: number[];

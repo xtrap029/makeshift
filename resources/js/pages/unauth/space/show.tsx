@@ -1,5 +1,6 @@
 import { Input } from '@/components/custom/makeshift/input';
 import { SelectTrigger } from '@/components/custom/makeshift/selectTrigger';
+import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,6 +20,14 @@ import { priceDisplay } from '@/utils/formatters';
 import { Head, router } from '@inertiajs/react';
 import { Check, Dot, SquareDashed, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { z } from 'zod';
+
+const validationSchema = z.object({
+    date: z.string().min(1, 'Date is required'),
+    start_time: z.string().min(1, 'Start time is required'),
+    end_time: z.string().min(1, 'End time is required'),
+    layout: z.string().min(1, 'Layout is required'),
+});
 
 export default function Show({
     room,
@@ -37,6 +46,8 @@ export default function Show({
         end_time: '',
         layout: '',
     });
+
+    const [zodErrors, setZodErrors] = useState<Record<string, string>>({});
 
     const generateEndTimes = (times: string[], startTime: string): string[] => {
         // Helper: convert HH:mm to minutes
@@ -97,6 +108,19 @@ export default function Show({
     };
 
     const handleNext = () => {
+        const result = validationSchema.safeParse(inquiryForm);
+
+        if (!result.success) {
+            setZodErrors(
+                Object.fromEntries(
+                    result.error.issues.map((err) => [err.path[0]?.toString(), err.message])
+                )
+            );
+            return;
+        }
+
+        setZodErrors({});
+
         router.get(route('reservation.inquire', room.name), {
             ...inquiryForm,
         });
@@ -202,6 +226,7 @@ export default function Show({
                                                 value={inquiryForm.date}
                                                 onChange={(e) => handleDateChange(e.target.value)}
                                             />
+                                            <InputError message={zodErrors.date} className="ml-3" />
                                         </div>
                                         <div>
                                             <div className="text-muted-foreground mb-1 ml-3">
@@ -240,6 +265,10 @@ export default function Show({
                                                     )}
                                                 </SelectContent>
                                             </Select>
+                                            <InputError
+                                                message={zodErrors.start_time}
+                                                className="ml-3"
+                                            />
                                         </div>
                                         <div>
                                             <div className="text-muted-foreground mb-1 ml-3">
@@ -274,6 +303,10 @@ export default function Show({
                                                     )}
                                                 </SelectContent>
                                             </Select>
+                                            <InputError
+                                                message={zodErrors.end_time}
+                                                className="ml-3"
+                                            />
                                         </div>
                                         <div className="col-span-2">
                                             <div className="text-muted-foreground mb-1 ml-3">
@@ -302,6 +335,10 @@ export default function Show({
                                                     ))}
                                                 </SelectContent>
                                             </Select>
+                                            <InputError
+                                                message={zodErrors.layout}
+                                                className="ml-3"
+                                            />
                                         </div>
                                         <div className="col-span-2 py-4 text-center">
                                             <div className="text-makeshift-primary text-2xl font-bold">
