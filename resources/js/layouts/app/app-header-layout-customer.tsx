@@ -54,7 +54,7 @@ export default function AppHeaderLayoutCustomer({
                     scrolled ? 'pt-2' : 'pt-6'
                 }`}
             >
-                <div className="flex max-w-screen-xl items-center justify-between px-4 transition-all duration-300">
+                <div className="m-auto flex max-w-screen-xl items-center justify-between px-4 transition-all duration-300">
                     <div
                         className={`flex aspect-square items-center justify-center rounded-md transition-all duration-300 ${
                             scrolled ? 'size-4' : 'text-makeshift-primary size-8 bg-white'
@@ -84,59 +84,85 @@ export default function AppHeaderLayoutCustomer({
                     </div>
                 </div>
                 <h1
-                    className={`max-w-screen-xl pr-[70px] pl-4 font-extrabold transition-all duration-300 ${
+                    className={`m-auto max-w-screen-xl pr-[70px] pl-4 font-extrabold transition-all duration-300 ${
                         scrolled ? 'pt-4 pb-2 text-4xl' : 'pt-8 pb-4 text-5xl'
                     }`}
                 >
                     <Animation>{page.charAt(0).toUpperCase() + page.slice(1)}</Animation>
                 </h1>
-                {rightIcon && rightIconHref && (
-                    <Animation isVertical>
-                        <Link href={rightIconHref}>
-                            <Button
-                                className={`text-makeshift-primary absolute right-4 rounded-full bg-white shadow-lg transition-all duration-300 ${
-                                    scrolled ? 'bottom-3 size-8' : 'bottom-5 size-10'
-                                }`}
-                                size="icon"
-                            >
-                                <IconDynamic name={rightIcon} className="size-5" />
-                            </Button>
-                        </Link>
-                    </Animation>
-                )}
+                <div className="relative m-auto max-w-screen-xl">
+                    {rightIcon && rightIconHref && (
+                        <Animation isVertical>
+                            <Link href={rightIconHref}>
+                                <Button
+                                    className={`text-makeshift-primary absolute right-4 rounded-full bg-white shadow-lg transition-all duration-300 ${
+                                        scrolled ? 'bottom-3 size-8' : 'bottom-5 size-10'
+                                    }`}
+                                    size="icon"
+                                >
+                                    <IconDynamic name={rightIcon} className="size-5" />
+                                </Button>
+                            </Link>
+                        </Animation>
+                    )}
+                </div>
             </header>
             <div className="bg-makeshift-primary">
-                <div className="h-5 rounded-t-2xl bg-white"></div>
+                <div className="h-5 rounded-t-2xl bg-white md:rounded-t-none"></div>
             </div>
             <AppContentCustomer>
                 {children}
                 <div className="h-[70px]"></div>
             </AppContentCustomer>
-            <div className="fixed right-0 bottom-0 left-0 border-t-2 border-gray-200 bg-white px-4 py-6">
+            <div className="fixed right-0 bottom-0 left-0 m-auto max-w-screen-xl border-t-2 border-gray-200 bg-white px-4 py-6">
                 <div className="flex items-center justify-around">
-                    <Link href="/spaces">
+                    <Link href="/spaces" className="flex items-center gap-2">
                         <CoffeeIcon
-                            className={cn('size-8 transition-all duration-300', {
+                            className={cn('size-8', {
                                 'text-makeshift-primary':
                                     route().current('spaces') ||
                                     route().current('spaces.show') ||
                                     route().current('reservation.inquire'),
                             })}
                         />
+                        <div
+                            className={cn('ml-2 hidden text-xl font-bold md:block', {
+                                'text-makeshift-primary':
+                                    route().current('spaces') ||
+                                    route().current('spaces.show') ||
+                                    route().current('reservation.inquire'),
+                            })}
+                        >
+                            Spaces
+                        </div>
                     </Link>
-                    <Link href="/">
+                    <Link href="/" className="flex items-center gap-2">
                         <HomeIcon
-                            className={cn('size-8 transition-all duration-300', {
+                            className={cn('size-8', {
                                 'text-makeshift-primary': route().current('home'),
                             })}
                         />
+                        <div
+                            className={cn('ml-2 hidden text-xl font-bold md:block', {
+                                'text-makeshift-primary': route().current('home'),
+                            })}
+                        >
+                            Home
+                        </div>
                     </Link>
-                    <Link href="/">
+                    <Link href="/" className="flex items-center gap-2">
                         <QrCodeIcon
-                            className={cn('size-8 transition-all duration-300', {
+                            className={cn('size-8', {
                                 'text-makeshift-primary': route().current('qr'),
                             })}
                         />
+                        <div
+                            className={cn('ml-2 hidden text-xl font-bold md:block', {
+                                'text-makeshift-primary': route().current('qr'),
+                            })}
+                        >
+                            QR
+                        </div>
                     </Link>
                 </div>
             </div>

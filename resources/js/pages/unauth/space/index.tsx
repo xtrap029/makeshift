@@ -80,7 +80,7 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                     <Button
                         variant="makeshiftDefault"
                         size="makeshiftXl"
-                        className="shadow-lg transition-all duration-300"
+                        className="shadow-lg transition-all duration-300 md:w-fit md:self-end"
                     >
                         <CalendarIcon className="size-5" />
                         {appliedDate
@@ -129,7 +129,7 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                     </DialogHeader>
                 </DialogContent>
             </Dialog>
-            <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                 {rooms.map((room) => (
                     <div key={room.id.toString()} className="w-full">
                         <Animation isRandom>

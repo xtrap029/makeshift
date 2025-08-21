@@ -1,4 +1,3 @@
-import { Animation } from '@/components/custom';
 import { Input } from '@/components/custom/makeshift/input';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -88,123 +87,130 @@ export default function Inquire({ inquiry, room }: { inquiry: InquiryForm; room:
         >
             <Head title="Inquire" />
             <form onSubmit={handleSubmit}>
-                <div className="flex flex-col gap-4">
-                    <Animation isVertical>
-                        <div className="text-foreground flex flex-col gap-2 rounded-2xl border bg-gray-100 p-4 text-center">
-                            <h2 className="text-lg font-bold">{room.name}</h2>
-                            <div className="mt-2 flex flex-row items-center gap-4 text-sm">
-                                <div className="flex flex-1 items-center justify-center gap-1">
-                                    <Users className="size-4" />
-                                    <div>{room.cap} pax</div>
-                                </div>
-                                <div className="flex flex-1 items-center justify-center gap-1">
-                                    <SquareDashed className="size-4" />
-                                    <div>{room.sqm} sqm</div>
-                                </div>
+                <div className="grid grid-cols-3 gap-6 text-sm">
+                    <div className="text-foreground col-span-3 flex flex-col gap-2 rounded-2xl border bg-gray-100 p-4 text-center md:col-span-1">
+                        <h2 className="text-lg font-bold">{room.name}</h2>
+                        <div className="mt-2 flex flex-row items-center gap-4">
+                            <div className="flex flex-1 items-center justify-center gap-1">
+                                <Users className="size-4" />
+                                <div>{room.cap} pax</div>
                             </div>
-                            <div className="mt-2 flex flex-row gap-2 border-t border-gray-200 pt-3">
-                                <div className="flex flex-1 flex-col gap-2">
-                                    <div className="text-muted-foreground text-sm">Date</div>
-                                    <div className="text-sm">
-                                        {dayjs(inquiry.date).format('DD MMM YYYY')}
-                                    </div>
-                                </div>
-                                <div className="flex flex-1 flex-col gap-2">
-                                    <div className="text-muted-foreground text-sm">Time</div>
-                                    <div className="text-sm">
-                                        {inquiry.start_time} - {inquiry.end_time}
-                                    </div>
-                                </div>
-                                <div className="flex flex-1 flex-col gap-2">
-                                    <div className="text-muted-foreground text-sm">Layout</div>
-                                    <div className="text-sm">{inquiry.layout}</div>
-                                </div>
-                            </div>
-                            <div className="mt-2 border-t border-gray-200 pt-3">
-                                <div className="text-makeshift-primary text-2xl font-bold">
-                                    {priceDisplay(
-                                        inquiry.end_time && inquiry.start_time
-                                            ? room.price *
-                                                  (Number(inquiry.end_time.split(':')[0]) -
-                                                      Number(inquiry.start_time.split(':')[0]))
-                                            : 0
-                                    )}
-                                </div>
-                                <div className="text-muted-foreground text-sm">Total Price</div>
+                            <div className="flex flex-1 items-center justify-center gap-1">
+                                <SquareDashed className="size-4" />
+                                <div>{room.sqm} sqm</div>
                             </div>
                         </div>
-                    </Animation>
-                    <div className="mt-2 flex flex-1 flex-col gap-2 text-sm">
-                        <div className="text-muted-foreground ml-3">Full Name</div>
-                        <Input
-                            id="name"
-                            type="text"
-                            autoFocus
-                            autoComplete="name"
-                            value={data.name}
-                            onChange={(e) => setData('name', e.target.value)}
-                            placeholder="Enter Full Name"
-                            disabled={processing}
-                        />
-                        <InputError message={zodErrors.name || errors.name} className="ml-3" />
+                        <div className="mt-2 flex flex-row gap-2 border-t border-gray-200 pt-3">
+                            <div className="flex flex-1 flex-col gap-2">
+                                <div className="text-muted-foreground">Date</div>
+                                <div className="text-sm">
+                                    {dayjs(inquiry.date).format('DD MMM YYYY')}
+                                </div>
+                            </div>
+                            <div className="flex flex-1 flex-col gap-2">
+                                <div className="text-muted-foreground">Time</div>
+                                <div className="text-sm">
+                                    {inquiry.start_time} - {inquiry.end_time}
+                                </div>
+                            </div>
+                            <div className="flex flex-1 flex-col gap-2">
+                                <div className="text-muted-foreground">Layout</div>
+                                <div className="text-sm">{inquiry.layout}</div>
+                            </div>
+                        </div>
+                        <div className="mt-2 border-t border-gray-200 pt-3">
+                            <div className="text-makeshift-primary text-2xl font-bold">
+                                {priceDisplay(
+                                    inquiry.end_time && inquiry.start_time
+                                        ? room.price *
+                                              (Number(inquiry.end_time.split(':')[0]) -
+                                                  Number(inquiry.start_time.split(':')[0]))
+                                        : 0
+                                )}
+                            </div>
+                            <div className="text-muted-foreground">Total Price</div>
+                        </div>
                     </div>
-                    <div className="flex flex-1 flex-col gap-2 text-sm">
-                        <div className="text-muted-foreground ml-3">Email</div>
-                        <Input
-                            id="email"
-                            type="email"
-                            autoComplete="email"
-                            value={data.email}
-                            onChange={(e) => setData('email', e.target.value)}
-                            placeholder="Enter Email"
-                            disabled={processing}
-                        />
-                        <InputError message={zodErrors.email || errors.email} className="ml-3" />
+                    <div className="col-span-3 grid grid-cols-2 gap-4 md:col-span-2">
+                        <div className="col-span-2">
+                            <div className="text-muted-foreground mb-2 ml-3">Full Name</div>
+                            <Input
+                                id="name"
+                                type="text"
+                                autoFocus
+                                autoComplete="name"
+                                value={data.name}
+                                onChange={(e) => setData('name', e.target.value)}
+                                placeholder="Enter Full Name"
+                                disabled={processing}
+                            />
+                            <InputError message={zodErrors.name || errors.name} className="ml-3" />
+                        </div>
+                        <div className="col-span-2 md:col-span-1">
+                            <div className="text-muted-foreground mb-2 ml-3">Email</div>
+                            <Input
+                                id="email"
+                                type="email"
+                                autoComplete="email"
+                                value={data.email}
+                                onChange={(e) => setData('email', e.target.value)}
+                                placeholder="Enter Email"
+                                disabled={processing}
+                            />
+                            <InputError
+                                message={zodErrors.email || errors.email}
+                                className="ml-3"
+                            />
+                        </div>
+                        <div className="col-span-2 md:col-span-1">
+                            <div className="text-muted-foreground mb-2 ml-3">Phone</div>
+                            <Input
+                                id="phone"
+                                type="tel"
+                                autoComplete="phone"
+                                value={data.phone}
+                                onChange={(e) => setData('phone', e.target.value)}
+                                placeholder="Enter Phone Number"
+                                disabled={processing}
+                            />
+                            <InputError
+                                message={zodErrors.phone || errors.phone}
+                                className="ml-3"
+                            />
+                        </div>
+                        <div className="col-span-2">
+                            <div className="text-muted-foreground mb-2 ml-3">Note</div>
+                            <Textarea
+                                id="note"
+                                rows={4}
+                                value={data.note}
+                                onChange={(e) => setData('note', e.target.value)}
+                                placeholder="Enter Note"
+                                className="rounded-2xl"
+                                disabled={processing}
+                            />
+                            <InputError message={zodErrors.note || errors.note} className="ml-3" />
+                        </div>
+                        <div className="col-span-2 flex flex-col gap-2 md:flex-row md:justify-end">
+                            <Button
+                                variant="makeshiftDefault"
+                                size="makeshiftXl"
+                                className="md:order-2"
+                                disabled={processing}
+                                type="submit"
+                            >
+                                Submit Inquiry
+                            </Button>
+                            <Button
+                                variant="makeshiftOutline"
+                                size="makeshiftXl"
+                                onClick={() => router.visit(`/spaces/${room.name}`)}
+                                className="md:order-1"
+                            >
+                                Cancel
+                            </Button>
+                        </div>
                     </div>
-                    <div className="flex flex-1 flex-col gap-2 text-sm">
-                        <div className="text-muted-foreground ml-3">Phone</div>
-                        <Input
-                            id="phone"
-                            type="tel"
-                            autoComplete="phone"
-                            value={data.phone}
-                            onChange={(e) => setData('phone', e.target.value)}
-                            placeholder="Enter Phone Number"
-                            disabled={processing}
-                        />
-                        <InputError message={zodErrors.phone || errors.phone} className="ml-3" />
-                    </div>
-                    <div className="flex flex-1 flex-col gap-2 text-sm">
-                        <div className="text-muted-foreground ml-3">Note</div>
-                        <Textarea
-                            id="note"
-                            rows={4}
-                            value={data.note}
-                            onChange={(e) => setData('note', e.target.value)}
-                            placeholder="Enter Note"
-                            className="rounded-2xl"
-                            disabled={processing}
-                        />
-                        <InputError message={zodErrors.note || errors.note} className="ml-3" />
-                    </div>
-                    <Button
-                        variant="makeshiftDefault"
-                        size="makeshiftXl"
-                        className="col-span-2"
-                        disabled={processing}
-                        type="submit"
-                    >
-                        Submit Inquiry
-                    </Button>
-
-                    <Button
-                        variant="makeshiftOutline"
-                        size="makeshiftXl"
-                        onClick={() => router.visit(`/spaces/${room.name}`)}
-                        className="col-span-2"
-                    >
-                        Cancel
-                    </Button>
                 </div>
             </form>
         </AppLayoutHeaderCustomer>

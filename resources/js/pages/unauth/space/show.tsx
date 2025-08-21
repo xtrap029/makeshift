@@ -140,66 +140,70 @@ export default function Show({
     return (
         <AppLayoutHeaderCustomer page={room.name} rightIcon="arrow-left" rightIconHref="/spaces">
             <Head title={room.name} />
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center gap-4">
                 <img
                     src={`/storage/${room.image?.name}`}
                     alt={room.name}
-                    className="mb-3 h-50 w-full rounded-2xl object-cover shadow-lg"
+                    className="h-50 w-full rounded-2xl object-cover shadow-lg md:h-100"
                 />
                 <div className="flex flex-col gap-2">
-                    <div className="flex justify-between gap-2">
-                        <h2 className="text-foreground text-lg font-bold">{room.name}</h2>
+                    <div className="flex justify-between">
+                        <div className="text-foreground text-md flex items-center gap-4 md:text-lg">
+                            <div className="flex items-center gap-1">
+                                <Users className="size-4" />
+                                <div>{room.cap} pax</div>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <SquareDashed className="size-4" />
+                                <div>{room.sqm} sqm</div>
+                            </div>
+                        </div>
                         <Badge
                             variant="outline"
-                            className="text-destructive text-md rounded-full font-bold shadow-sm"
+                            className="text-destructive text-md rounded-full font-bold shadow-sm md:text-xl"
                         >
                             {room.price ? priceDisplay(Number(room.price)) : '-'}
                             <span className="text-muted-foreground text-xs">/hr</span>
                         </Badge>
                     </div>
-                    <div className="text-foreground flex items-center gap-4 text-sm">
-                        <div className="flex items-center gap-1">
-                            <Users className="size-4" />
-                            <div>{room.cap} pax</div>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            <SquareDashed className="size-4" />
-                            <div>{room.sqm} sqm</div>
-                        </div>
+                    <div className="text-muted-foreground mt-4 text-sm md:text-base">
+                        <h2 className="text-foreground mb-2 text-xl">About this space</h2>
+                        {room.description}
                     </div>
-                    <div className="text-muted-foreground mt-4 text-sm">{room.description}</div>
-                    <div className="text-foreground mt-4 grid grid-cols-2 gap-2">
-                        <div className="text-muted-foreground col-span-2 text-sm">Amenities</div>
-                        {room.amenities.map((amenity) => {
-                            return (
-                                <div className="flex items-center gap-3" key={amenity.name}>
-                                    {amenity.icon ? (
-                                        <IconDynamic name={amenity.icon} className="size-4" />
-                                    ) : (
-                                        <Check className="size-4" />
-                                    )}
-                                    <div>{amenity.name}</div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                    <div className="text-foreground my-4 grid grid-cols-2 gap-2">
-                        <div className="text-muted-foreground col-span-2 text-sm">Layouts</div>
-                        {room.layouts.map((layout) => {
-                            return (
-                                <div className="flex items-center gap-3" key={layout.name}>
-                                    <Dot className="size-4" />
-                                    <div>{layout.name}</div>
-                                </div>
-                            );
-                        })}
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="text-foreground col-span-2 mt-4 grid grid-cols-2 gap-2 self-start text-sm md:col-span-1 md:text-base">
+                            <h2 className="text-foreground col-span-2 text-xl">Amenities</h2>
+                            {room.amenities.map((amenity) => {
+                                return (
+                                    <div className="flex items-center gap-3" key={amenity.name}>
+                                        {amenity.icon ? (
+                                            <IconDynamic name={amenity.icon} className="size-4" />
+                                        ) : (
+                                            <Check className="size-4" />
+                                        )}
+                                        <div>{amenity.name}</div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <div className="text-foreground col-span-2 mt-4 grid grid-cols-2 gap-2 self-start text-sm md:col-span-1 md:text-base">
+                            <h2 className="text-foreground col-span-2 text-xl">Layouts</h2>
+                            {room.layouts.map((layout) => {
+                                return (
+                                    <div className="flex items-center gap-3" key={layout.name}>
+                                        <Dot className="size-4" />
+                                        <div>{layout.name}</div>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                         <DialogTrigger asChild>
                             <Button
                                 variant="makeshiftDefault"
                                 size="makeshiftXl"
-                                className="shadow-lg transition-all duration-300"
+                                className="mt-5 shadow-lg transition-all duration-300 md:w-fit md:self-center"
                             >
                                 Inquire Now
                             </Button>
