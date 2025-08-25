@@ -12,6 +12,7 @@ use App\Models\ScheduleOverrideRoom;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class RoomController extends Controller
 {
@@ -72,12 +73,20 @@ class RoomController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Room $room)
+    public function show(Room $room, Request $request)
     {
         $room->load('image', 'amenities', 'layouts', 'schedule');
         if ($room->schedule) {
             $room->schedule->max_date = Carbon::parse($room->schedule->max_date)->diffForHumans();
         }
+
+        $booking_date = $request->filled('booking') ? $request->booking : now()->format('Y-m-d');
+
+        $room->load(['bookings' => function ($query) use ($booking_date) {
+            $query->where('start_date', $booking_date)
+                ->whereIn('status', [config('global.booking_status.pending')[0], config('global.booking_status.confirmed')[0]])
+                ->with('layout');
+        }]);
 
         $room->overrides = ScheduleOverrideRoom::where('room_id', $room->id)
             ->join('schedule_overrides', 'schedule_override_rooms.schedule_override_id', '=', 'schedule_overrides.id')

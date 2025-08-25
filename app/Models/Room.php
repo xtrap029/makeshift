@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Room extends Model
 {
-    /** @use HasFactory<\Database\Factories\RoomFactory> */
     use HasFactory, SoftDeletes, TracksUser;
 
     protected $fillable = [
@@ -51,5 +50,10 @@ class Room extends Model
     public function scheduleOverrideRooms()
     {
         return $this->hasMany(ScheduleOverrideRoom::class);
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class)->orderBy('start_date', 'asc')->orderBy('start_time', 'asc');
     }
 }

@@ -57,6 +57,7 @@ export interface Room {
     layouts: Layout[];
     overrides: ScheduleOverride[];
     image: File | null;
+    bookings: Booking[];
     created_at?: string;
     updated_at?: string;
     deleted_at?: string | null;

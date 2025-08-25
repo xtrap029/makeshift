@@ -2,6 +2,7 @@ import WeekSchedule from '@/components/custom/week-schedule';
 import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
 import IconDynamic from '@/components/ui/icon-dynamic';
+import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import {
     Sheet,
@@ -11,12 +12,14 @@ import {
     SheetTitle,
 } from '@/components/ui/sheet';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@/components/ui/table';
+import { bookingStatus } from '@/constants';
 import { useDelete } from '@/hooks/use-delete';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { BreadcrumbItem, Room } from '@/types';
 import { priceDisplay } from '@/utils/formatters';
 import { Head, Link, router } from '@inertiajs/react';
+import dayjs from 'dayjs';
 import { Check, Clock, Dot, Eye, SquareDashed, Users } from 'lucide-react';
 import { useState } from 'react';
 
@@ -31,6 +34,16 @@ export default function Show({ room }: { room: Room }) {
 
     const [openPreview, setOpenPreview] = useState(false);
     const [is24Hour, setIs24Hour] = useState(true);
+    const [bookingDate, setBookingDate] = useState(dayjs().format('YYYY-MM-DD'));
+
+    const handleBookingDateChange = (date: string) => {
+        setBookingDate(date);
+        router.get(
+            route('rooms.show', { room: room.id }),
+            { booking: date },
+            { preserveState: true, replace: true }
+        );
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -219,6 +232,70 @@ export default function Show({ room }: { room: Room }) {
                             <WeekSchedule schedule={room.schedule} is24Hour={is24Hour} />
                         </>
                     )}
+                    <Separator className="my-4" />
+                    <div className="flex justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                            <h1 className="text-xl font-bold">Bookings</h1>
+                            <Badge variant="outline" className="text-sm">
+                                <b>Pending</b> and <b>Confirmed</b> only
+                            </Badge>
+                        </div>
+                        <div className="float-right">
+                            <Input
+                                type="date"
+                                value={bookingDate}
+                                onChange={(e) => handleBookingDateChange(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <Table>
+                        <TableBody>
+                            <TableRow>
+                                <TableHead>ID</TableHead>
+                                <TableHead>Customer</TableHead>
+                                <TableHead>Layout</TableHead>
+                                <TableHead>Time</TableHead>
+                                <TableHead>Status</TableHead>
+                            </TableRow>
+                            {room.bookings.map((booking) => {
+                                return (
+                                    <TableRow key={booking.id}>
+                                        <TableCell>
+                                            <Link
+                                                href={`/bookings/${booking.id}`}
+                                                target="_blank"
+                                                className="underline"
+                                            >
+                                                {booking.booking_id}
+                                            </Link>
+                                        </TableCell>
+                                        <TableCell>{booking.customer_name}</TableCell>
+                                        <TableCell>{booking.layout?.name}</TableCell>
+                                        <TableCell>
+                                            {booking.start_time.slice(0, 5)} -{' '}
+                                            {booking.end_time.slice(0, 5)}
+                                        </TableCell>
+                                        <TableCell>
+                                            <Badge
+                                                variant="outline"
+                                                className={cn(
+                                                    bookingStatus.find(
+                                                        (status) => status.id === booking.status
+                                                    )?.badgeClass
+                                                )}
+                                            >
+                                                {
+                                                    bookingStatus.find(
+                                                        (status) => status.id === booking.status
+                                                    )?.label
+                                                }
+                                            </Badge>
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })}
+                        </TableBody>
+                    </Table>
                 </div>
             </div>
             <Sheet open={openPreview} onOpenChange={setOpenPreview}>
