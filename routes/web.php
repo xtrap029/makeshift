@@ -8,6 +8,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Unauth\HomeController;
 use App\Http\Controllers\Unauth\SpaceController;
 use App\Http\Controllers\LayoutController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\PaymentProviderController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ScheduleOverrideController;
@@ -40,6 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('bookings/{booking}/send-acknowledged-email', [BookingController::class, 'sendAcknowledgedEmail'])
         ->name('bookings.sendAcknowledgedEmail');
     Route::resource('payments', PaymentController::class);
+    Route::get('logs/mail', [LogController::class, 'mail'])->name('logs.mail');
 });
 
 require __DIR__ . '/settings.php';

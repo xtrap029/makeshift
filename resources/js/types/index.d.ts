@@ -190,3 +190,13 @@ export interface Payment {
     owner?: User;
     updater?: User;
 }
+
+export interface MailLog {
+    id: number;
+    to: string;
+    subject: string;
+    status: boolean;
+    error_message: string | null;
+    created_at?: string;
+    updated_at?: string;
+}

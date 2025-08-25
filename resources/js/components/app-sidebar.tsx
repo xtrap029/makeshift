@@ -20,6 +20,7 @@ import {
     ConciergeBell,
     CreditCard,
     LayoutGrid,
+    Mail,
     Puzzle,
     User,
     Wallet,
@@ -92,6 +93,17 @@ const mainNavItems: NavItem[] = [
                 title: 'Payment Providers',
                 href: '/payment-providers',
                 icon: Wallet,
+            },
+        ],
+    },
+    {
+        title: 'Logs',
+        href: '',
+        items: [
+            {
+                title: 'Mails',
+                href: '/logs/mail',
+                icon: Mail,
             },
         ],
     },
