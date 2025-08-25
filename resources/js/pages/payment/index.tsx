@@ -44,6 +44,7 @@ export default function Index({ payments }: { payments: PaginatedData<Payment> }
                             <TableHead>Reference Number</TableHead>
                             <TableHead>Payment Provider</TableHead>
                             <TableHead>Booking</TableHead>
+                            <TableHead>Room</TableHead>
                             <TableHead>Created At</TableHead>
                             <TableHead>Amount</TableHead>
                             <TableHead>Status</TableHead>
@@ -62,7 +63,16 @@ export default function Index({ payments }: { payments: PaginatedData<Payment> }
                                         target="_blank"
                                         className="underline"
                                     >
-                                        #{payment.booking?.id} - {payment.booking?.room?.name}
+                                        #{payment.booking?.booking_id}
+                                    </a>
+                                </TableCell>
+                                <TableCell>
+                                    <a
+                                        href={`/rooms/${payment.booking?.room?.id}`}
+                                        target="_blank"
+                                        className="underline"
+                                    >
+                                        {payment.booking?.room?.name}
                                     </a>
                                 </TableCell>
                                 <TableCell>

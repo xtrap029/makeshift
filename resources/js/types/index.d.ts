@@ -141,6 +141,7 @@ export interface PaymentProvider {
 
 export interface Booking {
     id: number;
+    booking_id: string;
     customer_name: string;
     customer_email: string;
     customer_phone: string;

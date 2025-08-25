@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\BookingStatusService;
+use App\Services\BookingService;
 use Illuminate\Console\Command;
 
 class UpdateExpiredBookings extends Command
@@ -26,6 +26,6 @@ class UpdateExpiredBookings extends Command
      */
     public function handle()
     {
-        BookingStatusService::updateExpiredBookings();
+        BookingService::updateExpiredBookings();
     }
 }

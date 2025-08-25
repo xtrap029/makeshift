@@ -103,8 +103,7 @@ export default function Show({ payment }: { payment: Payment }) {
                                                 target="_blank"
                                                 className="underline"
                                             >
-                                                #{payment.booking?.id} -{' '}
-                                                {payment.booking?.room?.name}
+                                                #{payment.booking?.booking_id}
                                             </a>
                                             <Badge
                                                 variant="outline"
@@ -122,6 +121,18 @@ export default function Show({ payment }: { payment: Payment }) {
                                                     )?.label
                                                 }
                                             </Badge>
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableHead className={labelWidth}>Room</TableHead>
+                                        <TableCell>
+                                            <a
+                                                href={`/rooms/${payment.booking?.room?.id}`}
+                                                target="_blank"
+                                                className="underline"
+                                            >
+                                                {payment.booking?.room?.name}
+                                            </a>
                                         </TableCell>
                                     </TableRow>
                                     <TableRow>

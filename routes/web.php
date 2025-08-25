@@ -12,12 +12,13 @@ use App\Http\Controllers\PaymentProviderController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ScheduleOverrideController;
 use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\Unauth\ReservationController;
 use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/spaces', [SpaceController::class, 'index'])->name('spaces');
 Route::get('/spaces/{space}', [SpaceController::class, 'show'])->name('spaces.show');
+Route::get('/reservation/inquire/success', [ReservationController::class, 'inquireSuccess'])->name('reservation.inquire.success');
 Route::get('/reservation/inquire/{roomName}', [ReservationController::class, 'inquire'])->name('reservation.inquire');
 Route::post('/reservation/inquire/{roomName}', [ReservationController::class, 'inquireStore'])->name('reservation.inquire.post');
 
@@ -36,6 +37,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('bookings', BookingController::class);
     Route::put('bookings/{booking}/edit-status', [BookingController::class, 'updateStatus'])
         ->name('bookings.updateStatus');
+    Route::get('bookings/{booking}/send-acknowledged-email', [BookingController::class, 'sendAcknowledgedEmail'])
+        ->name('bookings.sendAcknowledgedEmail');
     Route::resource('payments', PaymentController::class);
 });
 

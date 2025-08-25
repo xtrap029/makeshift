@@ -8,10 +8,15 @@ use App\Http\Requests\UpdateBookingStatusRequest;
 use App\Models\Booking;
 use App\Models\Layout;
 use App\Models\Room;
-use App\Models\Schedule;
-use App\Models\ScheduleOverride;
 use App\Services\RoomAvailabilityService;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\InquiryAcknowledged;
+use App\Mail\InquiryConfirmed;
+use App\Mail\InquiryCancelled;
+use App\Services\BookingService;
+use App\Services\VoucherService;
 use Inertia\Inertia;
+
 
 class BookingController extends Controller
 {
@@ -126,7 +131,9 @@ class BookingController extends Controller
                     return back()->withError($failed_message . $availability['message']);
                 }
 
-                $booking->update(['status' => config('global.booking_status.pending')[0]]);
+                $booking->update([
+                    'status' => config('global.booking_status.pending')[0]
+                ]);
                 break;
             case 'draft':
                 // Booking should be pending
@@ -147,7 +154,31 @@ class BookingController extends Controller
                     return back()->withError($failed_message . 'Total paid is less than total price');
                 }
 
-                $booking->update(['status' => config('global.booking_status.confirmed')[0]]);
+                $voucherCode = VoucherService::generate();
+
+                $booking->update([
+                    'status' => config('global.booking_status.confirmed')[0],
+                    'voucher_code' => $voucherCode,
+                ]);
+
+                Mail::to($booking->customer_email)->send(new InquiryConfirmed([
+                    'name' => $booking->customer_name,
+                    'booking_id' => BookingService::generateBookingId($booking),
+                    'booking_date' => $booking->start_date,
+                    'booking_time' => $booking->start_time . ' - ' . $booking->end_time,
+                    'booking_room' => $booking->room->name . ' (' . $booking->layout->name . ')',
+                    'booking_note' => $booking->note,
+                    'booking_room_price' => 'PHP ' . number_format($booking->room->price, 2, '.', ','),
+                    'booking_total_hours' => $booking->total_hours(),
+                    'booking_total_price' => 'PHP ' . number_format($booking->total_price(), 2, '.', ','),
+                    'voucher_code' => $voucherCode,
+                    'qr_code' => asset('storage/vouchers/' . $voucherCode . '.png'),
+                ]));
+
+                $booking->update([
+                    'voucher_sent_at' => now(),
+                ]);
+
                 break;
             case 'canceled':
                 // Booking should be pending
@@ -156,6 +187,12 @@ class BookingController extends Controller
                 }
 
                 $booking->update(['status' => config('global.booking_status.canceled')[0]]);
+
+                Mail::to($booking->customer_email)->send(new InquiryCancelled([
+                    'name' => $booking->customer_name,
+                    'booking_id' => BookingService::generateBookingId($booking),
+                    'cancellation_reason' => $booking->cancellation_reason ?? 'Payment deadline exceeded or space unavailability',
+                ]));
                 break;
             default:
                 return back()->withError($failed_message . 'Invalid status');
@@ -164,6 +201,31 @@ class BookingController extends Controller
         $booking->update(['expires_at' => null]);
 
         return to_route('bookings.show', $booking)->withSuccess('Booking status updated successfully!');
+    }
+
+    public function sendAcknowledgedEmail(Booking $booking)
+    {
+        if ($booking->status !== config('global.booking_status.pending')[0]) {
+            return back()->withError('Booking is not pending');
+        }
+
+        Mail::to($booking->customer_email)->send(new InquiryAcknowledged([
+            'name' => $booking->customer_name,
+            'payment_method' => 'Bank Transfer',
+            'account_details' => 'Account: 1234567890',
+            'amount' => 'PHP ' . number_format($booking->total_price(), 2, '.', ','),
+            'deadline' => $booking->expires_at,
+            'booking_id' => BookingService::generateBookingId($booking),
+            'booking_room' => $booking->room->name . ' (' . $booking->layout->name . ')',
+            'booking_date' => $booking->start_date,
+            'booking_time' => $booking->start_time . ' - ' . $booking->end_time,
+            'booking_note' => $booking->note,
+            'booking_room_price' => 'PHP ' . number_format($booking->room->price, 2, '.', ','),
+            'booking_total_hours' => $booking->total_hours(),
+            'booking_total_price' => 'PHP ' . number_format($booking->total_price(), 2, '.', ','),
+        ]));
+
+        return back()->withSuccess('Acknowledged email sent successfully!');
     }
 
     /**
@@ -176,6 +238,12 @@ class BookingController extends Controller
         }
 
         $booking->delete();
+
+        Mail::to($booking->customer_email)->send(new InquiryCancelled([
+            'name' => $booking->customer_name,
+            'booking_id' => BookingService::generateBookingId($booking),
+            'cancellation_reason' => 'Inquiry deleted. Space unavailable for selected date and time.',
+        ]));
 
         return to_route('bookings.index')->withSuccess('Booking deleted successfully!');
     }

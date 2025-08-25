@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Services\BookingService;
 use App\Traits\TracksUser;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
 
 class Booking extends Model
 {
@@ -29,6 +31,8 @@ class Booking extends Model
         'voucher_code',
         'voucher_sent_at',
     ];
+
+    protected $appends = ['booking_id'];
 
     public function room()
     {
@@ -54,7 +58,6 @@ class Booking extends Model
     {
         $start = Carbon::createFromFormat('H:i:s', $this->start_time);
         $end = Carbon::createFromFormat('H:i:s', $this->end_time);
-
         return $start->diffInMinutes($end) / 60;
     }
 
@@ -71,5 +74,10 @@ class Booking extends Model
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_id');
+    }
+
+    public function getBookingIdAttribute()
+    {
+        return BookingService::generateBookingId($this);
     }
 }

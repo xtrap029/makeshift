@@ -69,8 +69,8 @@ export default function Index({ bookings }: { bookings: PaginatedData<Booking> }
                         </Link>
                     </div>
                 </Header>
-                <div className="mt-4 rounded-lg border p-4">
-                    {isCalendarView && (
+                {isCalendarView && (
+                    <div className="mt-4 rounded-lg border p-4">
                         <Calendar
                             localizer={localizer}
                             events={events}
@@ -85,72 +85,72 @@ export default function Index({ bookings }: { bookings: PaginatedData<Booking> }
                                 )?.calendarClass,
                             })}
                         />
-                    )}
-                    {!isCalendarView && (
-                        <>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>ID</TableHead>
-                                        <TableHead>Customer</TableHead>
-                                        <TableHead>Room</TableHead>
-                                        <TableHead>Date</TableHead>
-                                        <TableHead>Time</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead></TableHead>
+                    </div>
+                )}
+                {!isCalendarView && (
+                    <>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>ID</TableHead>
+                                    <TableHead>Customer</TableHead>
+                                    <TableHead>Room</TableHead>
+                                    <TableHead>Date</TableHead>
+                                    <TableHead>Time</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead></TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {bookings.data.map((booking) => (
+                                    <TableRow key={booking.id}>
+                                        <TableCell>{booking.booking_id}</TableCell>
+                                        <TableCell>{booking.customer_name}</TableCell>
+                                        <TableCell>
+                                            <a
+                                                href={`/rooms/${booking.room.id}`}
+                                                target="_blank"
+                                                className="underline"
+                                            >
+                                                {booking.room.name}
+                                            </a>
+                                        </TableCell>
+                                        <TableCell>{booking.start_date}</TableCell>
+                                        <TableCell>
+                                            {booking.start_time.slice(0, 5)} -{' '}
+                                            {booking.end_time.slice(0, 5)}
+                                        </TableCell>
+                                        <TableCell>
+                                            <Badge
+                                                variant="outline"
+                                                className={
+                                                    bookingStatusConstants.find(
+                                                        (status) => status.id === booking.status
+                                                    )?.badgeClass
+                                                }
+                                            >
+                                                {
+                                                    bookingStatusConstants.find(
+                                                        (status) => status.id === booking.status
+                                                    )?.label
+                                                }
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className="flex justify-end gap-2">
+                                            <Link
+                                                className={buttonVariants({ variant: 'ghost' })}
+                                                href={`/bookings/${booking.id}`}
+                                            >
+                                                <Eye />
+                                            </Link>
+                                        </TableCell>
                                     </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {bookings.data.map((booking) => (
-                                        <TableRow key={booking.id}>
-                                            <TableCell>{booking.id}</TableCell>
-                                            <TableCell>{booking.customer_name}</TableCell>
-                                            <TableCell>
-                                                <a
-                                                    href={`/rooms/${booking.room.id}`}
-                                                    target="_blank"
-                                                    className="underline"
-                                                >
-                                                    {booking.room.name}
-                                                </a>
-                                            </TableCell>
-                                            <TableCell>{booking.start_date}</TableCell>
-                                            <TableCell>
-                                                {booking.start_time.slice(0, 5)} -{' '}
-                                                {booking.end_time.slice(0, 5)}
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge
-                                                    variant="outline"
-                                                    className={
-                                                        bookingStatusConstants.find(
-                                                            (status) => status.id === booking.status
-                                                        )?.badgeClass
-                                                    }
-                                                >
-                                                    {
-                                                        bookingStatusConstants.find(
-                                                            (status) => status.id === booking.status
-                                                        )?.label
-                                                    }
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell className="flex justify-end gap-2">
-                                                <Link
-                                                    className={buttonVariants({ variant: 'ghost' })}
-                                                    href={`/bookings/${booking.id}`}
-                                                >
-                                                    <Eye />
-                                                </Link>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                            <Pagination links={bookings.links} />
-                        </>
-                    )}
-                </div>
+                                ))}
+                            </TableBody>
+                        </Table>
+                        <Pagination links={bookings.links} />
+                    </>
+                )}
             </div>
         </AppLayout>
     );

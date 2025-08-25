@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils';
 import { BreadcrumbItem, Room } from '@/types';
 import { priceDisplay } from '@/utils/formatters';
 import { Head, Link, router } from '@inertiajs/react';
-import { Check, Dot, SquareDashed, Users } from 'lucide-react';
+import { Check, Clock, Dot, Eye, SquareDashed, Users } from 'lucide-react';
 import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -46,6 +46,7 @@ export default function Show({ room }: { room: Room }) {
                             onClick={() => setOpenPreview(true)}
                             disabled={processing}
                         >
+                            <Eye size={16} />
                             Preview
                         </Button>
                         <Button
@@ -53,6 +54,7 @@ export default function Show({ room }: { room: Room }) {
                             onClick={() => setIs24Hour(!is24Hour)}
                             disabled={processing}
                         >
+                            <Clock size={16} />
                             View in {is24Hour ? '12 Hour' : '24 Hour'} format
                         </Button>
                     </div>
@@ -298,14 +300,7 @@ export default function Show({ room }: { room: Room }) {
                                         })}
                                     </div>
                                     <Button className="bg-destructive/80 hover:bg-destructive/90 mt-4 w-full rounded-full py-6 text-lg font-bold text-white">
-                                        BOOK NOW
-                                    </Button>
-                                    <Button
-                                        variant="secondary"
-                                        className="w-full rounded-full py-6 text-lg font-bold"
-                                        onClick={() => setOpenPreview(false)}
-                                    >
-                                        BACK
+                                        Inquire Now
                                     </Button>
                                 </div>
                             </div>

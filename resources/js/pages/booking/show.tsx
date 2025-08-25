@@ -1,6 +1,13 @@
 import Countdown from '@/components/custom/countdown';
 import { Badge } from '@/components/ui/badge';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -16,9 +23,18 @@ import { useUpdateStatus } from '@/hooks/use-update-status';
 import AppLayout from '@/layouts/app-layout';
 import { Booking, BreadcrumbItem } from '@/types';
 import { priceDisplay } from '@/utils/formatters';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import dayjs from 'dayjs';
-import { CheckCircle, Circle, CircleDashed, CircleX } from 'lucide-react';
+import {
+    CheckCircle,
+    Circle,
+    CircleDashed,
+    CircleFadingArrowUp,
+    CircleX,
+    Loader2,
+    Send,
+} from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import ShowPayment from './show-payment';
 
@@ -45,13 +61,15 @@ export default function Show({ booking }: { booking: Booking }) {
         useUpdateStatus('canceled');
     const { updateStatus: updateToConfirmedStatus, processing: updateToConfirmedProcessing } =
         useUpdateStatus('confirmed');
+    const [isEmailProcessing, setIsEmailProcessing] = useState(false);
 
     const isAnyProcessing =
         deleteProcessing ||
         updateToDraftProcessing ||
         updateToPendingProcessing ||
         updateToCanceledProcessing ||
-        updateToConfirmedProcessing;
+        updateToConfirmedProcessing ||
+        isEmailProcessing;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -59,15 +77,18 @@ export default function Show({ booking }: { booking: Booking }) {
             <div className="p-4">
                 <div className="mb-8 flex justify-between gap-2">
                     <div className="flex gap-2">
-                        <Button variant="outline" asChild>
-                            <Link href="/bookings">Back</Link>
-                        </Button>
+                        <Link href="/bookings">
+                            <Button variant="outline" disabled={isAnyProcessing}>
+                                Back
+                            </Button>
+                        </Link>
                         {bookingStatus.find((status) => status.id === booking.status)?.label !==
                             'Confirmed' && (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="outline" disabled={isAnyProcessing}>
-                                        Change Status
+                                        <CircleFadingArrowUp size={16} />
+                                        Status
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-50" align="start">
@@ -139,18 +160,40 @@ export default function Show({ booking }: { booking: Booking }) {
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         )}
+                        {['Pending'].includes(
+                            bookingStatus.find((status) => status.id === booking.status)?.label ||
+                                ''
+                        ) && (
+                            <Button
+                                variant="outline"
+                                disabled={isAnyProcessing}
+                                onClick={() => {
+                                    if (confirm('Are you sure you want to notify the customer?')) {
+                                        setIsEmailProcessing(true);
+                                        router.get(
+                                            `/bookings/${booking.id}/send-acknowledged-email`
+                                        );
+                                    }
+                                }}
+                            >
+                                {isEmailProcessing ? (
+                                    <Loader2 className="animate-spin" />
+                                ) : (
+                                    <Send size={16} />
+                                )}
+                                {isEmailProcessing ? 'Sending...' : 'Notify'}
+                            </Button>
+                        )}
                     </div>
                     <div className="flex gap-2">
                         {['Draft', 'Pending'].includes(
                             bookingStatus.find((status) => status.id === booking.status)?.label ||
                                 ''
                         ) && (
-                            <Link
-                                className={buttonVariants({ variant: 'default' })}
-                                href={`/bookings/${booking.id}/edit`}
-                                disabled={isAnyProcessing}
-                            >
-                                Edit
+                            <Link href={`/bookings/${booking.id}/edit`}>
+                                <Button variant="default" disabled={isAnyProcessing}>
+                                    Edit
+                                </Button>
                             </Link>
                         )}
                         {bookingStatus.find((status) => status.id === booking.status)?.label ===
@@ -170,7 +213,7 @@ export default function Show({ booking }: { booking: Booking }) {
                 <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-4">
                         <h1 className="text-2xl font-bold">
-                            #{booking.id}{' '}
+                            #{booking.booking_id}{' '}
                             <a
                                 href={`/rooms/${booking.room.id}`}
                                 target="_blank"
@@ -276,6 +319,34 @@ export default function Show({ booking }: { booking: Booking }) {
                                         <TableHead className={labelWidth}>Total Hours</TableHead>
                                         <TableCell>{booking.total_hours}</TableCell>
                                     </TableRow>
+                                    {booking.voucher_code && (
+                                        <TableRow>
+                                            <TableHead className={labelWidth}>
+                                                Voucher Code
+                                            </TableHead>
+                                            <TableCell>
+                                                <Dialog>
+                                                    <DialogTrigger className="cursor-pointer underline">
+                                                        {booking.voucher_code}
+                                                    </DialogTrigger>
+                                                    <DialogContent className="w-75 p-3">
+                                                        <DialogHeader>
+                                                            <DialogDescription className="flex flex-col items-center justify-center gap-2">
+                                                                <img
+                                                                    src={`/storage/vouchers/${booking.voucher_code}.png`}
+                                                                    alt="Voucher Code"
+                                                                    className="w-full"
+                                                                />
+                                                                <p className="text-center text-lg font-bold">
+                                                                    {booking.voucher_code}
+                                                                </p>
+                                                            </DialogDescription>
+                                                        </DialogHeader>
+                                                    </DialogContent>
+                                                </Dialog>
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
                                 </TableBody>
                             </Table>
                         </div>
@@ -314,6 +385,18 @@ export default function Show({ booking }: { booking: Booking }) {
                                                 : '-'}
                                         </TableCell>
                                     </TableRow>
+                                    {booking.voucher_sent_at && (
+                                        <TableRow>
+                                            <TableHead className={labelWidth}>
+                                                Voucher Sent
+                                            </TableHead>
+                                            <TableCell>
+                                                {dayjs(booking.voucher_sent_at).format(
+                                                    'YYYY-MM-DD HH:mm'
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
                                 </TableBody>
                             </Table>
                         </div>
@@ -332,14 +415,14 @@ export default function Show({ booking }: { booking: Booking }) {
                                         <TableHead className={labelWidth}>Created</TableHead>
                                         <TableCell>
                                             {dayjs(booking.created_at).format('YYYY-MM-DD HH:mm')}{' '}
-                                            by {booking.owner?.name || 'N/A'}
+                                            by {booking.owner?.name || 'Customer'}
                                         </TableCell>
                                     </TableRow>
                                     <TableRow>
                                         <TableHead className={labelWidth}>Updated</TableHead>
                                         <TableCell>
                                             {dayjs(booking.updated_at).format('YYYY-MM-DD HH:mm')}{' '}
-                                            by {booking.updater?.name || 'N/A'}
+                                            by {booking.updater?.name || 'Customer'}
                                         </TableCell>
                                     </TableRow>
                                     {bookingStatus.find((status) => status.id === booking.status)

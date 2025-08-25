@@ -1,12 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Unauth;
 
 use App\Http\Requests\Unauth\StoreInquireRequest;
 use App\Models\Room;
 use App\Services\RoomAvailabilityService;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\Booking;
+use App\Models\Layout;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use App\Mail\InquirySubmitted;
+use Illuminate\Support\Facades\Mail;
+use App\Services\BookingService;
 
 class ReservationController extends Controller
 {
@@ -76,6 +82,49 @@ class ReservationController extends Controller
             return to_route('spaces', ['date' => $validated['date']])->withError($availability['message']);
         }
 
-        return to_route('spaces', ['date' => $validated['date']])->withSuccess('Inquiry submitted successfully');
+        try {
+            $booking = Booking::create([
+                'customer_name' => $validated['name'],
+                'customer_email' => $validated['email'],
+                'customer_phone' => $validated['phone'],
+                'room_id' => $room->id,
+                'layout_id' => Layout::where('name', $validated['layout'])->first()->id,
+                'note' => $validated['note'],
+                'qty' => 1,
+                'start_date' => $validated['date'],
+                'start_time' => $validated['start_time'],
+                'end_time' => $validated['end_time'],
+                'status' => config('global.booking_status.draft')[0],
+            ]);
+
+            $booking = $booking->fresh();
+
+            Mail::to($validated['email'])->send(new InquirySubmitted([
+                'name' => $validated['name'],
+                'booking_id' => BookingService::generateBookingId($booking),
+                'booking_room' => $room->name . ' (' . $validated['layout'] . ')',
+                'booking_date' => $booking->start_date,
+                'booking_time' => $booking->start_time . ' - ' . $booking->end_time,
+                'booking_note' => $booking->note,
+                'booking_room_price' => 'PHP ' . number_format($room->price, 2, '.', ','),
+                'booking_total_hours' => $booking->total_hours(),
+                'booking_total_price' => 'PHP ' . number_format($booking->total_price(), 2, '.', ','),
+            ]));
+
+            return to_route('reservation.inquire.success');
+        } catch (\Exception $e) {
+            Log::error('Booking creation failed', [
+                'error' => $e->getMessage(),
+                'data'  => $validated,
+            ]);
+            return to_route('spaces')->withError('Failed to submit inquiry');
+        }
+    }
+
+    public function inquireSuccess()
+    {
+        return Inertia::render('unauth/reservation/success', [
+            'type' => 'inquire',
+        ]);
     }
 }

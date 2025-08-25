@@ -4,9 +4,8 @@ namespace App\Services;
 
 use App\Models\Booking;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
-class BookingStatusService
+class BookingService
 {
     public static function updateExpiredBookings(): void
     {
@@ -18,5 +17,12 @@ class BookingStatusService
                 'status' => config('global.booking_status.canceled')[0],
                 'cancel_reason' => 'Expired: ' . $now->format('Y-m-d H:i:s'),
             ]);
+    }
+
+    public static function generateBookingId(Booking $booking): string
+    {
+        $booking->load('room');
+
+        return 'MS-' . $booking->created_at->format('Ymd') . '-' . $booking->id;
     }
 }
