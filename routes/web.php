@@ -13,6 +13,7 @@ use App\Http\Controllers\PaymentProviderController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ScheduleOverrideController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Unauth\ContactUsController;
 use App\Http\Controllers\Unauth\ReservationController;
 use Inertia\Inertia;
 
@@ -22,6 +23,8 @@ Route::get('/spaces/{space}', [SpaceController::class, 'show'])->name('spaces.sh
 Route::get('/reservation/inquire/success', [ReservationController::class, 'inquireSuccess'])->name('reservation.inquire.success');
 Route::get('/reservation/inquire/{roomName}', [ReservationController::class, 'inquire'])->name('reservation.inquire');
 Route::post('/reservation/inquire/{roomName}', [ReservationController::class, 'inquireStore'])->name('reservation.inquire.post');
+Route::get('/contact-us', [ContactUsController::class, 'index'])->name('contactus');
+Route::post('/contact-us/resend', [ContactUsController::class, 'resend'])->name('contactus.resend');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {

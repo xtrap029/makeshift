@@ -8,7 +8,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { cn } from '@/lib/utils';
 import { PageProps } from '@inertiajs/core';
 import { Link, usePage } from '@inertiajs/react';
-import { CoffeeIcon, HomeIcon, QrCodeIcon } from 'lucide-react';
+import { CoffeeIcon, HomeIcon, MessageCircleIcon } from 'lucide-react';
 import { useEffect, useState, type PropsWithChildren } from 'react';
 import { toast } from 'sonner';
 
@@ -150,18 +150,18 @@ export default function AppHeaderLayoutCustomer({
                             Home
                         </div>
                     </Link>
-                    <Link href="/" className="flex items-center gap-2">
-                        <QrCodeIcon
+                    <Link href="/contact-us" className="flex items-center gap-2">
+                        <MessageCircleIcon
                             className={cn('size-8', {
-                                'text-makeshift-primary': route().current('qr'),
+                                'text-makeshift-primary': route().current('contactus'),
                             })}
                         />
                         <div
                             className={cn('ml-2 hidden text-xl font-bold md:block', {
-                                'text-makeshift-primary': route().current('qr'),
+                                'text-makeshift-primary': route().current('contactus'),
                             })}
                         >
-                            QR
+                            Contact Us
                         </div>
                     </Link>
                 </div>
