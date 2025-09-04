@@ -54,8 +54,8 @@ export default function Index() {
         <AppLayoutHeaderCustomer page="Contact Us">
             <Head title="Contact Us" />
             <form onSubmit={handleSubmit}>
-                <div className="flex flex-col gap-3">
-                    <div className="flex flex-col gap-3">
+                <div className="grid grid-cols-3 gap-3">
+                    <div className="col-span-3 flex w-auto flex-col gap-3 md:col-span-1">
                         <h2 className="text-foreground text-xl">Stay in touch</h2>
                         <div className="flex flex-col gap-3">
                             <div className="flex flex-col gap-1">
@@ -72,8 +72,8 @@ export default function Index() {
                             </div>
                         </div>
                     </div>
-                    <Separator className="my-4" />
-                    <div className="flex flex-col gap-3">
+                    <Separator className="col-span-3 my-4 md:hidden" />
+                    <div className="col-span-3 flex w-full flex-col gap-3 md:col-span-2">
                         <h2 className="text-foreground text-xl">Your reservations?</h2>
                         <p className="text-muted-foreground text-sm">
                             No worries! We'll send you your active reservations. Just provide your
@@ -95,6 +95,7 @@ export default function Index() {
                             size="makeshiftXl"
                             disabled={processing}
                             type="submit"
+                            className="self-end md:w-fit"
                         >
                             Send Email
                         </Button>

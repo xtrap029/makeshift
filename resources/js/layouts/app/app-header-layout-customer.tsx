@@ -51,7 +51,7 @@ export default function AppHeaderLayoutCustomer({
             <Toaster richColors position="top-right" />
             <header
                 className={`bg-makeshift-primary sticky top-0 z-50 w-full text-white transition-all duration-300 ${
-                    scrolled ? 'pt-2' : 'pt-6'
+                    scrolled ? 'pt-2 drop-shadow-[0_5px_5px_rgba(0,0,0,0.50)]' : 'pt-6'
                 }`}
             >
                 <div className="m-auto flex max-w-screen-xl items-center justify-between px-4 transition-all duration-300">
@@ -83,9 +83,14 @@ export default function AppHeaderLayoutCustomer({
                         </span>
                     </div>
                 </div>
-                <h1
+                {/* <h1
                     className={`m-auto max-w-screen-xl pr-[70px] pl-4 font-extrabold transition-all duration-300 ${
                         scrolled ? 'pt-4 pb-2 text-4xl' : 'pt-8 pb-4 text-5xl'
+                    }`}
+                > */}
+                <h1
+                    className={`m-auto max-w-screen-xl pr-[70px] pb-3 pl-4 text-4xl font-extrabold transition-all duration-300 ${
+                        scrolled ? 'pt-2' : 'pt-6'
                     }`}
                 >
                     <Animation>{page.charAt(0).toUpperCase() + page.slice(1)}</Animation>
