@@ -125,3 +125,8 @@ export interface WebsiteAppearanceForm {
     siteEmail?: string;
     sitePhone?: string;
 }
+
+export interface EmailAppearanceForm {
+    bankAccount?: string;
+    supportLink?: string;
+}

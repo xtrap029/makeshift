@@ -212,7 +212,7 @@ class BookingController extends Controller
         Mail::to($booking->customer_email)->send(new InquiryAcknowledged([
             'name' => $booking->customer_name,
             'payment_method' => 'Bank Transfer',
-            'account_details' => 'Account: 1234567890',
+            'account_details' => null,
             'amount' => 'PHP ' . number_format($booking->total_price(), 2, '.', ','),
             'deadline' => $booking->expires_at,
             'booking_id' => BookingService::generateBookingId($booking),

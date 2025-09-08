@@ -25,8 +25,8 @@ export default function AppHeaderLayoutCustomer({
     rightIconHref,
     children,
 }: PropsWithChildren<{ page: string; rightIcon?: string; rightIconHref?: string }>) {
+    const { websiteSettings } = usePage().props;
     const [scrolled, setScrolled] = useState(false);
-
     const { flash } = usePage<FlashProps>().props;
 
     useEffect(() => {
@@ -79,7 +79,7 @@ export default function AppHeaderLayoutCustomer({
                                 scrolled ? 'hidden' : ''
                             }`}
                         >
-                            Your office, reimagined.
+                            {websiteSettings.siteDescription}
                         </span>
                     </div>
                 </div>

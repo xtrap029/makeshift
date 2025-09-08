@@ -57,6 +57,8 @@ class AppearanceController extends Controller
             $validated['favicon']->move(public_path(), 'favicon.ico');
         }
 
+        cache()->forget('website_settings');
+
         return to_route('settings.website.appearance')->withSuccess('Appearance updated successfully!');
     }
 }

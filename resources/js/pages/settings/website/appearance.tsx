@@ -13,7 +13,7 @@ import { FormEventHandler, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Profile appearance settings',
+        title: 'Website appearance settings',
         href: '/settings/appearance',
     },
 ];
@@ -61,13 +61,13 @@ export default function Appearance({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Profile appearance settings" />
+            <Head title="Website appearance settings" />
 
             <SettingsLayout>
                 <form onSubmit={submit} className="space-y-6">
                     <HeadingSmall
                         title="Display"
-                        description="Update your account's display settings"
+                        description="Update your website's display settings"
                     />
                     <div className="flex gap-4">
                         <div className="grid w-full gap-2">

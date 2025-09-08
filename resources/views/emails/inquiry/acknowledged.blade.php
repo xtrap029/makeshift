@@ -78,7 +78,7 @@
         <div style="background: white; border-radius: 6px; padding: 20px; border: 1px solid #e2e8f0;">
             <p style="color: #4a5568; margin: 0 0 15px; font-size: 15px; line-height: 1.6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
                 <strong>Payment Method:</strong> {{ $data['payment_method'] ?? 'Bank Transfer' }}<br>
-                <strong>Account Details:</strong> {{ $data['account_details'] ?? 'Will be provided separately' }}<br>
+                <strong>Account Details:</strong> {{ $data['account_details'] ?? $websiteSettings['bankAccount'] }}<br>
                 <strong>Amount Due:</strong> {{ $data['amount'] ?? 'Contact us for pricing' }}
             </p>
         </div>

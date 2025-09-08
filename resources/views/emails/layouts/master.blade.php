@@ -125,9 +125,9 @@
                                 <p style="color: #718096; margin: 0 0 20px; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
                                     Have questions? Feel free to reply to this email or contact us directly.
                                 </p>
-                                <div style="display: inline-block; background: #ff5a5f; color: white; padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: 500; font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                                    Contact Support
-                                </div>
+                                <a href="{{ $websiteSettings['supportLink'] }}" style="display: inline-block; background: #ff5a5f; color: white; padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: 500; font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                                   Contact Support
+                                </a>
                             </div>
 
                             <!-- Thank You -->

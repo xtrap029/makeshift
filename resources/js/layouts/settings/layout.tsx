@@ -5,7 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { type PropsWithChildren } from 'react';
+import React, { type PropsWithChildren } from 'react';
 
 const sidebarNavItems: NavItem[] = [
     {
@@ -43,6 +43,21 @@ const sidebarNavItems: NavItem[] = [
         href: '/settings/website/appearance',
         icon: null,
     },
+    {
+        title: '',
+        href: '',
+        icon: null,
+    },
+    {
+        title: 'Email',
+        href: '',
+        icon: null,
+    },
+    {
+        title: 'Appearance',
+        href: '/settings/email/appearance',
+        icon: null,
+    },
 ];
 
 export default function SettingsLayout({ children }: PropsWithChildren) {
@@ -60,25 +75,22 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
             <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
                 <aside className="w-full max-w-xl lg:w-48">
                     <nav className="flex flex-col space-y-1 space-x-0">
-                        {sidebarNavItems.map((item) => (
-                            <>
+                        {sidebarNavItems.map((item, index) => (
+                            <React.Fragment key={index}>
                                 {item.href === '' && item.title !== '' && (
-                                    <Label
-                                        key={item.title}
-                                        className="text-muted-foreground mb-2 ml-3 text-xs"
-                                    >
+                                    <Label className="mb-2 ml-3 text-xs font-bold">
                                         {item.title}
                                     </Label>
                                 )}
                                 {item.href === '' && item.title === '' && <br />}
                                 {item.href && (
                                     <Button
-                                        key={item.title}
                                         size="sm"
                                         variant="ghost"
                                         asChild
                                         className={cn('w-full justify-start', {
                                             'bg-muted': currentPath === item.href,
+                                            'text-muted-foreground': currentPath !== item.href,
                                         })}
                                     >
                                         <Link href={item.href} prefetch>
@@ -86,7 +98,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                         </Link>
                                     </Button>
                                 )}
-                            </>
+                            </React.Fragment>
                         ))}
                     </nav>
                 </aside>
