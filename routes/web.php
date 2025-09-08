@@ -13,6 +13,7 @@ use App\Http\Controllers\PaymentProviderController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ScheduleOverrideController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Settings\Website\AppearanceController;
 use App\Http\Controllers\Unauth\ContactUsController;
 use App\Http\Controllers\Unauth\ReservationController;
 use Inertia\Inertia;
@@ -45,6 +46,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('bookings.sendAcknowledgedEmail');
     Route::resource('payments', PaymentController::class);
     Route::get('logs/mail', [LogController::class, 'mail'])->name('logs.mail');
+
+    Route::get('settings/website/appearance', [AppearanceController::class, 'index'])->name('settings.website.appearance');
+    Route::put('settings/website/appearance', [AppearanceController::class, 'update'])->name('settings.website.appearance.update');
 });
 
 require __DIR__ . '/settings.php';

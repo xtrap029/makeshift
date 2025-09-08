@@ -117,3 +117,11 @@ export interface InquiryForm {
     layout: string;
     note: string;
 }
+
+export interface WebsiteAppearanceForm {
+    logo?: File | null;
+    favicon?: File | null;
+    siteDescription?: string;
+    siteEmail?: string;
+    sitePhone?: string;
+}

@@ -100,8 +100,8 @@ export default function AppHeaderLayoutCustomer({
                         <Animation isVertical>
                             <Link href={rightIconHref}>
                                 <Button
-                                    className={`text-makeshift-primary absolute right-4 rounded-full bg-white shadow-lg transition-all duration-300 ${
-                                        scrolled ? 'bottom-3 size-8' : 'bottom-5 size-10'
+                                    className={`text-makeshift-primary absolute right-4 bottom-4 rounded-full bg-white shadow-lg transition-all duration-300 ${
+                                        scrolled ? 'size-8' : 'size-10'
                                     }`}
                                     size="icon"
                                 >

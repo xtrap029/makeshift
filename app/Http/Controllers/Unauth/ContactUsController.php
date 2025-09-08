@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Unauth;
 use App\Http\Controllers\Controller;
 use App\Mail\InquiryResend;
 use App\Models\Booking;
+use App\Models\Settings;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
@@ -17,7 +17,13 @@ class ContactUsController extends Controller
      */
     public function index()
     {
-        return Inertia::render('unauth/contactUs/index');
+        $data = Settings::whereIn('key', ['SITE_EMAIL', 'SITE_PHONE'])->pluck('value', 'key');
+        return Inertia::render('unauth/contactUs/index', [
+            'contact' => [
+                'siteEmail' => $data['SITE_EMAIL'] ?? null,
+                'sitePhone' => $data['SITE_PHONE'] ?? null,
+            ],
+        ]);
     }
 
     /**

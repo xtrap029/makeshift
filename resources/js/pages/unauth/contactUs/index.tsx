@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { formValidation } from '@/constants/form';
 import AppLayoutHeaderCustomer from '@/layouts/app/app-header-layout-customer';
+import { WebsiteAppearanceForm } from '@/types/form';
 import { Head, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import z from 'zod';
@@ -17,7 +18,7 @@ const validationSchema = z.object({
         ),
 });
 
-export default function Index() {
+export default function Index({ contact }: { contact: WebsiteAppearanceForm }) {
     const { data, setData, processing, errors, post } = useForm<{ email: string }>({
         email: '',
     });
@@ -61,13 +62,13 @@ export default function Index() {
                             <div className="flex flex-col gap-1">
                                 <h3 className="text-foreground text-md">Email</h3>
                                 <p className="text-muted-foreground text-sm">
-                                    <a href="mailto:support@makeshift.com">support@makeshift.com</a>
+                                    <a href={`mailto:${contact.siteEmail}`}>{contact.siteEmail}</a>
                                 </p>
                             </div>
                             <div className="flex flex-col gap-1">
                                 <h3 className="text-foreground text-md">Phone</h3>
                                 <p className="text-muted-foreground text-sm">
-                                    <a href="tel:+6591234567">+65 9123 4567</a>
+                                    <a href={`tel:${contact.sitePhone}`}>{contact.sitePhone}</a>
                                 </p>
                             </div>
                         </div>

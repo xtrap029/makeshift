@@ -1,5 +1,6 @@
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { type NavItem } from '@/types';
@@ -7,6 +8,11 @@ import { Link } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
 
 const sidebarNavItems: NavItem[] = [
+    {
+        title: 'Profile',
+        href: '',
+        icon: null,
+    },
     {
         title: 'Profile',
         href: '/settings/profile',
@@ -20,6 +26,21 @@ const sidebarNavItems: NavItem[] = [
     {
         title: 'Appearance',
         href: '/settings/appearance',
+        icon: null,
+    },
+    {
+        title: '',
+        href: '',
+        icon: null,
+    },
+    {
+        title: 'Website',
+        href: '',
+        icon: null,
+    },
+    {
+        title: 'Appearance',
+        href: '/settings/website/appearance',
         icon: null,
     },
 ];
@@ -40,19 +61,32 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                 <aside className="w-full max-w-xl lg:w-48">
                     <nav className="flex flex-col space-y-1 space-x-0">
                         {sidebarNavItems.map((item) => (
-                            <Button
-                                key={item.href}
-                                size="sm"
-                                variant="ghost"
-                                asChild
-                                className={cn('w-full justify-start', {
-                                    'bg-muted': currentPath === item.href,
-                                })}
-                            >
-                                <Link href={item.href} prefetch>
-                                    {item.title}
-                                </Link>
-                            </Button>
+                            <>
+                                {item.href === '' && item.title !== '' && (
+                                    <Label
+                                        key={item.title}
+                                        className="text-muted-foreground mb-2 ml-3 text-xs"
+                                    >
+                                        {item.title}
+                                    </Label>
+                                )}
+                                {item.href === '' && item.title === '' && <br />}
+                                {item.href && (
+                                    <Button
+                                        key={item.title}
+                                        size="sm"
+                                        variant="ghost"
+                                        asChild
+                                        className={cn('w-full justify-start', {
+                                            'bg-muted': currentPath === item.href,
+                                        })}
+                                    >
+                                        <Link href={item.href} prefetch>
+                                            {item.title}
+                                        </Link>
+                                    </Button>
+                                )}
+                            </>
                         ))}
                     </nav>
                 </aside>
