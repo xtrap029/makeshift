@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Settings;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Storage;
 
 class AppearanceController extends Controller
 {
@@ -22,6 +21,12 @@ class AppearanceController extends Controller
                 'siteDescription' => $data['SITE_DESCRIPTION'] ?? null,
                 'siteEmail' => $data['SITE_EMAIL'] ?? null,
                 'sitePhone' => $data['SITE_PHONE'] ?? null,
+                'siteAddress' => $data['OFFICE_ADDRESS'] ?? null,
+                'siteGoogleMap' => $data['OFFICE_GOOGLE_MAP'] ?? null,
+                'homeYoutubeText' => $data['HOME_YOUTUBE_TEXT'] ?? null,
+                'homeYoutubeLink' => $data['HOME_YOUTUBE_LINK'] ?? null,
+                'homeMapText' => $data['HOME_MAP_TEXT'] ?? null,
+                'homeMapLink' => $data['HOME_MAP_LINK'] ?? null,
             ],
         ]);
     }
@@ -32,17 +37,29 @@ class AppearanceController extends Controller
     public function update(Request $request)
     {
         $validated = $request->validate([
-            'logo' => 'nullable|image|mimes:' . config('global.settings.logo_mimes') . '|max:' . config('global.settings.logo_max_size'),
-            'favicon' => 'nullable|mimes:' . config('global.settings.favicon_mimes') . '|max:' . config('global.settings.favicon_max_size'),
-            'siteDescription' => 'nullable|string|max:' . config('global.settings.site_description_max_size'),
+            'logo' => 'nullable|image|mimes:'.config('global.settings.logo_mimes').'|max:'.config('global.settings.logo_max_size'),
+            'favicon' => 'nullable|mimes:'.config('global.settings.favicon_mimes').'|max:'.config('global.settings.favicon_max_size'),
+            'siteDescription' => 'nullable|string|max:'.config('global.settings.site_description_max_size'),
             'siteEmail' => 'required|email|max:255',
             'sitePhone' => 'required|string|max:255',
+            'siteAddress' => 'nullable|string|max:255',
+            'siteGoogleMap' => 'nullable|string|max:'.config('form.validation.map.max'),
+            'homeYoutubeText' => 'nullable|string|max:255',
+            'homeYoutubeLink' => 'nullable|string|max:'.config('form.validation.youtube.max'),
+            'homeMapText' => 'nullable|string|max:255',
+            'homeMapLink' => 'nullable|string|max:'.config('form.validation.map.max'),
         ]);
 
         $settings = [
             'SITE_DESCRIPTION' => $validated['siteDescription'],
-            'SITE_EMAIL'       => $validated['siteEmail'],
-            'SITE_PHONE'       => $validated['sitePhone'],
+            'SITE_EMAIL' => $validated['siteEmail'],
+            'SITE_PHONE' => $validated['sitePhone'],
+            'OFFICE_ADDRESS' => $validated['siteAddress'],
+            'OFFICE_GOOGLE_MAP' => $validated['siteGoogleMap'],
+            'HOME_YOUTUBE_TEXT' => $validated['homeYoutubeText'],
+            'HOME_YOUTUBE_LINK' => $validated['homeYoutubeLink'],
+            'HOME_MAP_TEXT' => $validated['homeMapText'],
+            'HOME_MAP_LINK' => $validated['homeMapLink'],
         ];
 
         foreach ($settings as $key => $value) {

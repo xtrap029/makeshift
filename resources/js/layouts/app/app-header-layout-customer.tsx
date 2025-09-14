@@ -50,35 +50,25 @@ export default function AppHeaderLayoutCustomer({
         <AppShell>
             <Toaster richColors position="top-right" />
             <header
-                className={`bg-makeshift-primary sticky top-0 z-50 w-full text-white transition-all duration-300 ${
-                    scrolled ? 'pt-2 drop-shadow-[0_5px_5px_rgba(0,0,0,0.50)]' : 'pt-6'
+                className={`bg-makeshift-primary sticky top-0 z-50 w-full pt-2 pt-6 text-white transition-all duration-300 ${
+                    scrolled ? 'drop-shadow-[0_5px_5px_rgba(0,0,0,0.50)]' : ''
                 }`}
             >
                 <div className="m-auto flex max-w-screen-xl items-center justify-between px-4 transition-all duration-300">
                     <div
-                        className={`flex aspect-square items-center justify-center rounded-md transition-all duration-300 ${
-                            scrolled ? 'size-4' : 'text-makeshift-primary size-8 bg-white'
-                        }`}
+                        className={`text-makeshift-primary flex aspect-square size-8 items-center justify-center rounded-md bg-white transition-all duration-300`}
                     >
                         <AppLogoIcon
-                            className={`fill-current transition-all duration-300 ${
-                                scrolled ? 'size-4' : 'size-6'
-                            }`}
+                            className={`size-6 fill-current transition-all duration-300`}
                         />
                     </div>
                     <div className="ml-2 grid flex-1 text-left text-sm">
                         <span
-                            className={`truncate leading-none font-semibold transition-all duration-300 ${
-                                scrolled ? '' : 'mb-0.5'
-                            }`}
+                            className={`mb-0.5 truncate leading-none font-semibold transition-all duration-300`}
                         >
                             MakeShift
                         </span>
-                        <span
-                            className={`text-xs transition-all duration-300 ${
-                                scrolled ? 'hidden' : ''
-                            }`}
-                        >
+                        <span className={`text-xs transition-all duration-300`}>
                             {websiteSettings.siteDescription}
                         </span>
                     </div>

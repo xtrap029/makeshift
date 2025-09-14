@@ -44,6 +44,11 @@ const sidebarNavItems: NavItem[] = [
         icon: null,
     },
     {
+        title: 'Legal',
+        href: '/settings/website/legal',
+        icon: null,
+    },
+    {
         title: '',
         href: '',
         icon: null,

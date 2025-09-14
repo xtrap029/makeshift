@@ -124,6 +124,18 @@ export interface WebsiteAppearanceForm {
     siteDescription?: string;
     siteEmail?: string;
     sitePhone?: string;
+    siteAddress?: string;
+    siteGoogleMap?: string;
+    homeYoutubeText?: string;
+    homeYoutubeLink?: string;
+    homeMapText?: string;
+    homeMapLink?: string;
+}
+
+export interface LegalAppearanceForm {
+    legalTerms?: string;
+    legalPrivacy?: string;
+    legalRules?: string;
 }
 
 export interface EmailAppearanceForm {

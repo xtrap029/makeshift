@@ -13,7 +13,19 @@ import { FormEventHandler, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Website appearance settings',
+        title: 'Dashboard',
+        href: '/dashboard',
+    },
+    {
+        title: 'Settings',
+        href: '',
+    },
+    {
+        title: 'Website',
+        href: '',
+    },
+    {
+        title: 'Appearance',
         href: '/settings/appearance',
     },
 ];
@@ -32,6 +44,12 @@ export default function Appearance({
         siteDescription: websiteAppearance.siteDescription,
         siteEmail: websiteAppearance.siteEmail,
         sitePhone: websiteAppearance.sitePhone,
+        siteAddress: websiteAppearance.siteAddress,
+        siteGoogleMap: websiteAppearance.siteGoogleMap,
+        homeYoutubeText: websiteAppearance.homeYoutubeText,
+        homeYoutubeLink: websiteAppearance.homeYoutubeLink,
+        homeMapText: websiteAppearance.homeMapText,
+        homeMapLink: websiteAppearance.homeMapLink,
     });
 
     const submit: FormEventHandler = (e) => {
@@ -116,9 +134,55 @@ export default function Appearance({
                         />
                     </div>
                     <br />
+                    <HeadingSmall title="Home Page" description="Update Home page appearance" />
+                    <div className="grid gap-2">
+                        <Label htmlFor="homeYoutubeText">Youtube Text</Label>
+                        <Input
+                            id="homeYoutubeText"
+                            type="text"
+                            value={data.homeYoutubeText}
+                            onChange={(e) => setData('homeYoutubeText', e.target.value)}
+                            disabled={processing}
+                            placeholder="Youtube Text"
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="homeYoutubeText">Youtube ID</Label>
+                        <Input
+                            id="homeYoutubeLink"
+                            type="text"
+                            value={data.homeYoutubeLink}
+                            onChange={(e) => setData('homeYoutubeLink', e.target.value)}
+                            disabled={processing}
+                            placeholder="Youtube Link"
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="homeMapText">Map Text</Label>
+                        <Input
+                            id="homeMapText"
+                            type="text"
+                            value={data.homeMapText}
+                            onChange={(e) => setData('homeMapText', e.target.value)}
+                            disabled={processing}
+                            placeholder="Map Text"
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="homeMapLink">Map Link</Label>
+                        <Input
+                            id="homeMapLink"
+                            type="text"
+                            value={data.homeMapLink}
+                            onChange={(e) => setData('homeMapLink', e.target.value)}
+                            disabled={processing}
+                            placeholder="Map Link"
+                        />
+                    </div>
+                    <br />
                     <HeadingSmall
-                        title="Contact Information"
-                        description="Update Contact Us information"
+                        title="Contact Page"
+                        description="Update Contact Us page appearance"
                     />
                     <div className="grid gap-2">
                         <Label htmlFor="siteEmail">Email</Label>
@@ -140,6 +204,28 @@ export default function Appearance({
                             onChange={(e) => setData('sitePhone', e.target.value)}
                             disabled={processing}
                             placeholder="Site Phone"
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="siteAddress">Address</Label>
+                        <Input
+                            id="siteAddress"
+                            type="text"
+                            value={data.siteAddress}
+                            onChange={(e) => setData('siteAddress', e.target.value)}
+                            disabled={processing}
+                            placeholder="Office Address"
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="siteGoogleMap">Google Map</Label>
+                        <Input
+                            id="siteGoogleMap"
+                            type="text"
+                            value={data.siteGoogleMap}
+                            onChange={(e) => setData('siteGoogleMap', e.target.value)}
+                            disabled={processing}
+                            placeholder="Office Google Map"
                         />
                     </div>
 

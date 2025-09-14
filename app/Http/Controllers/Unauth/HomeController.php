@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Unauth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Settings;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -13,7 +14,16 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return Inertia::render('unauth/home/index');
+        $data = Settings::pluck('value', 'key');
+
+        return Inertia::render('unauth/home/index', [
+            'websiteAppearance' => [
+                'homeYoutubeText' => $data['HOME_YOUTUBE_TEXT'] ?? null,
+                'homeYoutubeLink' => $data['HOME_YOUTUBE_LINK'] ?? null,
+                'homeMapText' => $data['HOME_MAP_TEXT'] ?? null,
+                'homeMapLink' => $data['HOME_MAP_LINK'] ?? null,
+            ],
+        ]);
     }
 
     /**

@@ -13,7 +13,19 @@ import { FormEventHandler } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Email appearance settings',
+        title: 'Dashboard',
+        href: '/dashboard',
+    },
+    {
+        title: 'Settings',
+        href: '',
+    },
+    {
+        title: 'Email',
+        href: '',
+    },
+    {
+        title: 'Appearance',
         href: '/settings/appearance',
     },
 ];
