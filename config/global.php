@@ -3,7 +3,7 @@
 return [
     'pagination_limit' => 10,
     'booking_status' => [
-        'draft' => [1, 'Draft'],
+        'inquiry' => [1, 'Inquiry'],
         'pending' => [2, 'Pending'],
         'confirmed' => [3, 'Confirmed'],
         'canceled' => [4, 'Canceled'],

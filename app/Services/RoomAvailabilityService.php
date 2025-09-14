@@ -73,8 +73,20 @@ class RoomAvailabilityService
             $bookings = Booking::where('room_id', $room->id)
                 ->whereNotIn('status', config('global.no_reserve_status'))
                 ->where('start_date', $date)
-                ->where('start_time', '<=', $i < $startTime ? sprintf('%02d:00', $i) : sprintf('%02d:59', $i - 1))
-                ->where('end_time', '>=', $i < $endTime ? sprintf('%02d:01', $i) : sprintf('%02d:00', $i))
+                ->where(
+                    'start_time',
+                    '<=',
+                    $i < $startTime
+                        ? sprintf('%02d:00', $i)
+                        : sprintf('%02d:59', $i > 0 ? $i - 1 : 0)
+                )
+                ->where(
+                    'end_time',
+                    '>=',
+                    $i < $endTime
+                        ? sprintf('%02d:01', $i)
+                        : sprintf('%02d:00', $i)
+                )
                 ->get();
 
             if ($bookings->count() > 0 && $room->qty - $bookings->sum('qty') < $qty) {

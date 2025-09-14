@@ -94,7 +94,7 @@ class ReservationController extends Controller
                 'start_date' => $validated['date'],
                 'start_time' => $validated['start_time'],
                 'end_time' => $validated['end_time'],
-                'status' => config('global.booking_status.draft')[0],
+                'status' => config('global.booking_status.inquiry')[0],
             ]);
 
             $booking = $booking->fresh();

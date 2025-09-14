@@ -53,8 +53,8 @@ export default function Show({ booking }: { booking: Booking }) {
         id: booking.id,
         label: `#${booking.id}`,
     };
-    const { updateStatus: updateToDraftStatus, processing: updateToDraftProcessing } =
-        useUpdateStatus('draft');
+    const { updateStatus: updateToInquiryStatus, processing: updateToInquiryProcessing } =
+        useUpdateStatus('inquiry');
     const { updateStatus: updateToPendingStatus, processing: updateToPendingProcessing } =
         useUpdateStatus('pending');
     const { updateStatus: updateToCanceledStatus, processing: updateToCanceledProcessing } =
@@ -65,7 +65,7 @@ export default function Show({ booking }: { booking: Booking }) {
 
     const isAnyProcessing =
         deleteProcessing ||
-        updateToDraftProcessing ||
+        updateToInquiryProcessing ||
         updateToPendingProcessing ||
         updateToCanceledProcessing ||
         updateToConfirmedProcessing ||
@@ -113,7 +113,7 @@ export default function Show({ booking }: { booking: Booking }) {
                                         </DropdownMenuItem>
                                     )}
                                     {bookingStatus.find((status) => status.id === booking.status)
-                                        ?.label === 'Draft' && (
+                                        ?.label === 'Inquiry' && (
                                         <DropdownMenuItem
                                             onClick={() =>
                                                 updateToPendingStatus(updateStatusConfig)
@@ -131,10 +131,12 @@ export default function Show({ booking }: { booking: Booking }) {
                                             ?.label || ''
                                     ) && (
                                         <DropdownMenuItem
-                                            onClick={() => updateToDraftStatus(updateStatusConfig)}
+                                            onClick={() =>
+                                                updateToInquiryStatus(updateStatusConfig)
+                                            }
                                             className="cursor-pointer"
                                         >
-                                            Draft
+                                            Inquiry
                                             <DropdownMenuShortcut>
                                                 <CircleDashed size={16} />
                                             </DropdownMenuShortcut>
@@ -186,7 +188,7 @@ export default function Show({ booking }: { booking: Booking }) {
                         )}
                     </div>
                     <div className="flex gap-2">
-                        {['Draft', 'Pending'].includes(
+                        {['Inquiry', 'Pending'].includes(
                             bookingStatus.find((status) => status.id === booking.status)?.label ||
                                 ''
                         ) && (
@@ -197,7 +199,7 @@ export default function Show({ booking }: { booking: Booking }) {
                             </Link>
                         )}
                         {bookingStatus.find((status) => status.id === booking.status)?.label ===
-                            'Draft' && (
+                            'Inquiry' && (
                             <Button
                                 variant="destructive"
                                 onClick={() =>

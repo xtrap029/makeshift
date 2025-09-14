@@ -206,6 +206,7 @@ export default function Inquire({ inquiry, room }: { inquiry: InquiryForm; room:
                                 size="makeshiftXl"
                                 onClick={() => router.visit(`/spaces/${room.name}`)}
                                 className="md:order-1"
+                                disabled={processing}
                             >
                                 Cancel
                             </Button>

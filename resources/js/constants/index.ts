@@ -1,7 +1,7 @@
 export const bookingStatus = [
     {
         id: 1,
-        label: 'Draft',
+        label: 'Inquiry',
         badgeClass: 'text-white bg-gray-500',
         calendarClass: 'bg-gray-500',
         calendarTextClass: '!bg-gray-100 !border-gray-700 !text-gray-700',

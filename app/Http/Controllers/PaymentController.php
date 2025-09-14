@@ -129,7 +129,7 @@ class PaymentController extends Controller
     public function destroy(Payment $payment)
     {
         if (!in_array($payment->booking->status, [
-            config('global.booking_status.draft')[0],
+            config('global.booking_status.inquiry')[0],
             config('global.booking_status.pending')[0],
             config('global.booking_status.canceled')[0]
         ])) {

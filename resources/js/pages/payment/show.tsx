@@ -30,7 +30,7 @@ export default function Show({ payment }: { payment: Payment }) {
                         </Button>
                     </div>
                     <div className="flex gap-2">
-                        {['Draft', 'Pending'].includes(
+                        {['Inquiry', 'Pending'].includes(
                             bookingStatus.find((status) => status.id === payment.booking.status)
                                 ?.label || ''
                         ) && (
@@ -42,7 +42,7 @@ export default function Show({ payment }: { payment: Payment }) {
                                 Edit
                             </Link>
                         )}
-                        {['Draft', 'Pending'].includes(
+                        {['Inquiry', 'Pending'].includes(
                             bookingStatus.find((status) => status.id === payment.booking.status)
                                 ?.label || ''
                         ) && (

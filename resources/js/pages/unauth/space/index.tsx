@@ -25,13 +25,13 @@ const validationSchema = z.object({
 
 export default function Index({ rooms }: { rooms: Room[] }) {
     const [appliedDate, setAppliedDate] = useState<string>(route().params.date || '');
-    const [draftDate, setDraftDate] = useState<string>(route().params.date || '');
+    const [inquiryDate, setInquiryDate] = useState<string>(route().params.date || '');
     const [dialogOpen, setDialogOpen] = useState(false);
 
     const [zodErrors, setZodErrors] = useState<Record<string, string>>({});
 
     const handleFilterChange = () => {
-        const result = validationSchema.safeParse({ date: draftDate });
+        const result = validationSchema.safeParse({ date: inquiryDate });
 
         if (!result.success) {
             setZodErrors(
@@ -44,10 +44,10 @@ export default function Index({ rooms }: { rooms: Room[] }) {
 
         setZodErrors({});
 
-        setAppliedDate(draftDate);
+        setAppliedDate(inquiryDate);
         router.get(
             route('spaces'),
-            { date: draftDate },
+            { date: inquiryDate },
             {
                 preserveState: true,
                 replace: true,
@@ -59,16 +59,16 @@ export default function Index({ rooms }: { rooms: Room[] }) {
 
     const handleClearFilter = () => {
         setAppliedDate('');
-        setDraftDate('');
+        setInquiryDate('');
         router.get(route('spaces'), { date: '' }, { preserveState: true, replace: true });
         setDialogOpen(false);
     };
 
-    // Reset draft date when drawer opens to match applied date
+    // Reset inquiry date when drawer opens to match applied date
     const handleDialogOpenChange = (open: boolean) => {
         setDialogOpen(open);
         if (open) {
-            setDraftDate(appliedDate);
+            setInquiryDate(appliedDate);
         }
     };
 
@@ -105,8 +105,8 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                                         .split('T')[0]
                                 }
                                 className="w-full"
-                                onChange={(e) => setDraftDate(e.target.value)}
-                                value={draftDate}
+                                onChange={(e) => setInquiryDate(e.target.value)}
+                                value={inquiryDate}
                             />
                             <InputError message={zodErrors.date} />
                             <Button

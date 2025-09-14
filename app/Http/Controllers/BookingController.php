@@ -17,7 +17,6 @@ use App\Services\BookingService;
 use App\Services\VoucherService;
 use Inertia\Inertia;
 
-
 class BookingController extends Controller
 {
     protected $roomAvailabilityService;
@@ -55,7 +54,7 @@ class BookingController extends Controller
     {
         $validated = $request->validated();
 
-        $validated['status'] = config('global.booking_status.draft')[0];
+        $validated['status'] = config('global.booking_status.inquiry')[0];
 
         $booking = Booking::create($validated);
 
@@ -97,7 +96,7 @@ class BookingController extends Controller
     public function update(UpdateBookingRequest $request, Booking $booking)
     {
         if (
-            $booking->status !== config('global.booking_status.draft')[0]
+            $booking->status !== config('global.booking_status.inquiry')[0]
             && $booking->status !== config('global.booking_status.pending')[0]
         ) {
             return back()->withError(config('messages.not_allowed'));
@@ -121,9 +120,9 @@ class BookingController extends Controller
 
         switch ($validated['status']) {
             case 'pending':
-                // Booking should be draft
-                if ($booking->status !== config('global.booking_status.draft')[0]) {
-                    return back()->withError($failed_message . ' Booking is not draft');
+                // Booking should be inquiry
+                if ($booking->status !== config('global.booking_status.inquiry')[0]) {
+                    return back()->withError($failed_message . ' Booking is not inquiry');
                 }
 
                 $availability = $this->roomAvailabilityService->verifyRoomAvailability($booking->room, $booking->qty, $booking->start_date, $booking->start_time, $booking->end_time);
@@ -135,13 +134,13 @@ class BookingController extends Controller
                     'status' => config('global.booking_status.pending')[0]
                 ]);
                 break;
-            case 'draft':
+            case 'inquiry':
                 // Booking should be pending
                 if ($booking->status !== config('global.booking_status.pending')[0] && $booking->status !== config('global.booking_status.canceled')[0]) {
                     return back()->withError($failed_message . 'Booking is not pending or canceled');
                 }
 
-                $booking->update(['status' => config('global.booking_status.draft')[0]]);
+                $booking->update(['status' => config('global.booking_status.inquiry')[0]]);
                 break;
             case 'confirmed':
                 // Booking should be pending
@@ -233,7 +232,7 @@ class BookingController extends Controller
      */
     public function destroy(Booking $booking)
     {
-        if ($booking->status !== config('global.booking_status.draft')[0]) {
+        if ($booking->status !== config('global.booking_status.inquiry')[0]) {
             return back()->withError(config('messages.not_allowed'));
         }
 
