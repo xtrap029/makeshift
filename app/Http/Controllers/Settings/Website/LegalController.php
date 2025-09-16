@@ -14,7 +14,11 @@ class LegalController extends Controller
      */
     public function index()
     {
-        $data = Settings::pluck('value', 'key');
+        $data = Settings::whereIn('key', [
+            'LEGAL_TERMS',
+            'LEGAL_PRIVACY',
+            'LEGAL_RULES',
+        ])->pluck('value', 'key');
 
         return Inertia::render('settings/website/legal', [
             'legalAppearance' => [

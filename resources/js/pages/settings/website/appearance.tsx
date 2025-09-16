@@ -158,7 +158,7 @@ export default function Appearance({
                         />
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="homeMapText">Map Text</Label>
+                        <Label htmlFor="homeMapText">Google Map Text</Label>
                         <Input
                             id="homeMapText"
                             type="text"
@@ -169,7 +169,7 @@ export default function Appearance({
                         />
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="homeMapLink">Map Link</Label>
+                        <Label htmlFor="homeMapLink">Google Map</Label>
                         <Input
                             id="homeMapLink"
                             type="text"

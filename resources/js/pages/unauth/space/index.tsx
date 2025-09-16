@@ -100,7 +100,7 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                             <Input
                                 type="date"
                                 min={
-                                    new Date(Date.now() + 24 * 60 * 60 * 1000)
+                                    new Date(Date.now() + 48 * 60 * 60 * 1000)
                                         .toISOString()
                                         .split('T')[0]
                                 }

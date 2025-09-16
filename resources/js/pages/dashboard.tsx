@@ -267,7 +267,7 @@ export default function Dashboard({ todaysBookings }: { todaysBookings: Paginate
                                     onClick={() => setIsScanning(!isScanning)}
                                 >
                                     {isScanning ? <X /> : <Scan />}
-                                    {isScanning ? 'Stop Scanning' : 'Scan QR code'}
+                                    {isScanning ? 'Stop scanning' : 'Scan QR code'}
                                 </Button>
                             </div>
                         </CardContent>

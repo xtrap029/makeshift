@@ -11,6 +11,7 @@ use App\Models\Layout;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use App\Mail\InquirySubmitted;
+use App\Models\Settings;
 use Illuminate\Support\Facades\Mail;
 use App\Services\BookingService;
 
@@ -51,9 +52,16 @@ class ReservationController extends Controller
             return to_route('spaces', ['date' => $validated['date']])->withError($availability['message']);
         }
 
+        $legal = Settings::whereIn('key', ['LEGAL_TERMS', 'LEGAL_PRIVACY', 'LEGAL_RULES'])->pluck('value', 'key');
+
         return Inertia::render('unauth/reservation/inquire', [
             'inquiry' => $validated,
             'room' => $room,
+            'legal' => [
+                'terms' => $legal['LEGAL_TERMS'] ?? null,
+                'privacy' => $legal['LEGAL_PRIVACY'] ?? null,
+                'rules' => $legal['LEGAL_RULES'] ?? null,
+            ],
         ]);
     }
 

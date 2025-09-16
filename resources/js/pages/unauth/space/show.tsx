@@ -223,7 +223,7 @@ export default function Show({
                                             <Input
                                                 type="date"
                                                 min={
-                                                    new Date(Date.now() + 24 * 60 * 60 * 1000)
+                                                    new Date(Date.now() + 48 * 60 * 60 * 1000)
                                                         .toISOString()
                                                         .split('T')[0]
                                                 }

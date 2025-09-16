@@ -1,11 +1,19 @@
 import { Input } from '@/components/custom/makeshift/input';
+import RichText from '@/components/custom/richText';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { formValidation } from '@/constants/form';
 import AppLayoutHeaderCustomer from '@/layouts/app/app-header-layout-customer';
 import { Room } from '@/types';
-import { InquiryForm } from '@/types/form';
+import { InquiryForm, LegalAppearanceForm } from '@/types/form';
 import { priceDisplay } from '@/utils/formatters';
 import { Head, router, useForm } from '@inertiajs/react';
 import dayjs from 'dayjs';
@@ -42,7 +50,15 @@ const validationSchema = z.object({
         .optional(),
 });
 
-export default function Inquire({ inquiry, room }: { inquiry: InquiryForm; room: Room }) {
+export default function Inquire({
+    inquiry,
+    room,
+    legal,
+}: {
+    inquiry: InquiryForm;
+    room: Room;
+    legal: LegalAppearanceForm;
+}) {
     const { data, setData, processing, errors, post } = useForm<Partial<InquiryForm>>({
         name: '',
         email: '',
@@ -55,6 +71,9 @@ export default function Inquire({ inquiry, room }: { inquiry: InquiryForm; room:
     });
 
     const [zodErrors, setZodErrors] = useState<Record<string, string>>({});
+
+    const [legalDialogOpen, setLegalDialogOpen] = useState(false);
+    const [selectedLegal, setSelectedLegal] = useState<string | null>(null);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -86,6 +105,40 @@ export default function Inquire({ inquiry, room }: { inquiry: InquiryForm; room:
             rightIconHref={`/spaces/${room.name}`}
         >
             <Head title="Inquire" />
+            <Dialog open={legalDialogOpen} onOpenChange={setLegalDialogOpen}>
+                <DialogContent className="max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>
+                            {selectedLegal === 'terms'
+                                ? 'Terms and Conditions'
+                                : selectedLegal === 'privacy'
+                                  ? 'Privacy Policy'
+                                  : 'House Rules'}
+                        </DialogTitle>
+                        <DialogDescription
+                            className="mt-4 items-center justify-center text-left"
+                            asChild
+                        >
+                            <div>
+                                <RichText
+                                    html={legal[selectedLegal as keyof LegalAppearanceForm] ?? ''}
+                                />
+                                <Button
+                                    variant="makeshiftOutline"
+                                    size="makeshiftXl"
+                                    onClick={() => {
+                                        setLegalDialogOpen(false);
+                                        setSelectedLegal(null);
+                                    }}
+                                    className="mt-4 w-full"
+                                >
+                                    Close
+                                </Button>
+                            </div>
+                        </DialogDescription>
+                    </DialogHeader>
+                </DialogContent>
+            </Dialog>
             <form onSubmit={handleSubmit}>
                 <div className="grid grid-cols-3 gap-6 text-sm">
                     <div className="text-foreground col-span-3 flex flex-col gap-2 rounded-2xl border bg-gray-100 p-4 text-center md:col-span-1">
@@ -192,6 +245,39 @@ export default function Inquire({ inquiry, room }: { inquiry: InquiryForm; room:
                             <InputError message={zodErrors.note || errors.note} className="ml-3" />
                         </div>
                         <div className="col-span-2 flex flex-col gap-2 md:flex-row md:justify-end">
+                            <p className="text-muted-foreground py-3 text-center">
+                                By clicking ‘Submit Inquiry’, you agree to the{' '}
+                                <span
+                                    className="text-makeshift-primary underline"
+                                    onClick={() => {
+                                        setLegalDialogOpen(true);
+                                        setSelectedLegal('terms');
+                                    }}
+                                >
+                                    Terms and Conditions
+                                </span>
+                                ,{' '}
+                                <span
+                                    className="text-makeshift-primary underline"
+                                    onClick={() => {
+                                        setLegalDialogOpen(true);
+                                        setSelectedLegal('privacy');
+                                    }}
+                                >
+                                    Privacy Policy
+                                </span>
+                                and{' '}
+                                <span
+                                    className="text-makeshift-primary underline"
+                                    onClick={() => {
+                                        setLegalDialogOpen(true);
+                                        setSelectedLegal('rules');
+                                    }}
+                                >
+                                    House Rules
+                                </span>
+                                .
+                            </p>
                             <Button
                                 variant="makeshiftDefault"
                                 size="makeshiftXl"

@@ -14,7 +14,17 @@ class AppearanceController extends Controller
      */
     public function index()
     {
-        $data = Settings::pluck('value', 'key');
+        $data = Settings::whereIn('key', [
+            'SITE_DESCRIPTION',
+            'SITE_EMAIL',
+            'SITE_PHONE',
+            'OFFICE_ADDRESS',
+            'OFFICE_GOOGLE_MAP',
+            'HOME_YOUTUBE_TEXT',
+            'HOME_YOUTUBE_LINK',
+            'HOME_MAP_TEXT',
+            'HOME_MAP_LINK'
+        ])->pluck('value', 'key');
 
         return Inertia::render('settings/website/appearance', [
             'websiteAppearance' => [
@@ -37,17 +47,17 @@ class AppearanceController extends Controller
     public function update(Request $request)
     {
         $validated = $request->validate([
-            'logo' => 'nullable|image|mimes:'.config('global.settings.logo_mimes').'|max:'.config('global.settings.logo_max_size'),
-            'favicon' => 'nullable|mimes:'.config('global.settings.favicon_mimes').'|max:'.config('global.settings.favicon_max_size'),
-            'siteDescription' => 'nullable|string|max:'.config('global.settings.site_description_max_size'),
+            'logo' => 'nullable|image|mimes:' . config('global.settings.logo_mimes') . '|max:' . config('global.settings.logo_max_size'),
+            'favicon' => 'nullable|mimes:' . config('global.settings.favicon_mimes') . '|max:' . config('global.settings.favicon_max_size'),
+            'siteDescription' => 'nullable|string|max:' . config('global.settings.site_description_max_size'),
             'siteEmail' => 'required|email|max:255',
             'sitePhone' => 'required|string|max:255',
             'siteAddress' => 'nullable|string|max:255',
-            'siteGoogleMap' => 'nullable|string|max:'.config('form.validation.map.max'),
+            'siteGoogleMap' => 'nullable|string|max:' . config('form.validation.map.max'),
             'homeYoutubeText' => 'nullable|string|max:255',
-            'homeYoutubeLink' => 'nullable|string|max:'.config('form.validation.youtube.max'),
+            'homeYoutubeLink' => 'nullable|string|max:' . config('form.validation.youtube.max'),
             'homeMapText' => 'nullable|string|max:255',
-            'homeMapLink' => 'nullable|string|max:'.config('form.validation.map.max'),
+            'homeMapLink' => 'nullable|string|max:' . config('form.validation.map.max'),
         ]);
 
         $settings = [
