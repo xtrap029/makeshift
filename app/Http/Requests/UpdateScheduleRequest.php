@@ -16,31 +16,57 @@ class UpdateScheduleRequest extends FormRequest
     }
 
     /**
+     * Modify request data before validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        /** @var \Illuminate\Http\Request $this */
+        $this->merge([
+            'sun_start' => $this->sun_start === 'null' ? null : $this->sun_start,
+            'sun_end' => $this->sun_end === 'null' ? null : $this->sun_end,
+            'mon_start' => $this->mon_start === 'null' ? null : $this->mon_start,
+            'mon_end' => $this->mon_end === 'null' ? null : $this->mon_end,
+            'tue_start' => $this->tue_start === 'null' ? null : $this->tue_start,
+            'tue_end' => $this->tue_end === 'null' ? null : $this->tue_end,
+            'wed_start' => $this->wed_start === 'null' ? null : $this->wed_start,
+            'wed_end' => $this->wed_end === 'null' ? null : $this->wed_end,
+            'thu_start' => $this->thu_start === 'null' ? null : $this->thu_start,
+            'thu_end' => $this->thu_end === 'null' ? null : $this->thu_end,
+            'fri_start' => $this->fri_start === 'null' ? null : $this->fri_start,
+            'fri_end' => $this->fri_end === 'null' ? null : $this->fri_end,
+            'sat_start' => $this->sat_start === 'null' ? null : $this->sat_start,
+            'sat_end' => $this->sat_end === 'null' ? null : $this->sat_end,
+        ]);
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
+        $day_rules = 'nullable|date_format:H:i:s|';
+
         return [
-            'name' => 'required|string|max:255|unique:schedules,name,' . $this->route('schedule')->id,
+            'name' => 'required|string|max:255',
             'is_active' => 'required|boolean',
             'max_day' => 'required|integer|min:0',
             'max_date' => 'required|date',
-            'sun_start' => 'nullable|required_with:sun_end|string|max:255',
-            'sun_end' => 'nullable|required_with:sun_start|string|max:255',
-            'mon_start' => 'nullable|required_with:mon_end|string|max:255',
-            'mon_end' => 'nullable|required_with:mon_start|string|max:255',
-            'tue_start' => 'nullable|required_with:tue_end|string|max:255',
-            'tue_end' => 'nullable|required_with:tue_start|string|max:255',
-            'wed_start' => 'nullable|required_with:wed_end|string|max:255',
-            'wed_end' => 'nullable|required_with:wed_start|string|max:255',
-            'thu_start' => 'nullable|required_with:thu_end|string|max:255',
-            'thu_end' => 'nullable|required_with:thu_start|string|max:255',
-            'fri_start' => 'nullable|required_with:fri_end|string|max:255',
-            'fri_end' => 'nullable|required_with:fri_start|string|max:255',
-            'sat_start' => 'nullable|required_with:sat_end|string|max:255',
-            'sat_end' => 'nullable|required_with:sat_start|string|max:255',
+            'sun_start' => $day_rules . '|required_with:sun_end|before:sun_end',
+            'sun_end' => $day_rules . '|required_with:sun_start|after:sun_start',
+            'mon_start' => $day_rules . '|required_with:mon_end|before:mon_end',
+            'mon_end' => $day_rules . '|required_with:mon_start|after:mon_start',
+            'tue_start' => $day_rules . '|required_with:tue_end|before:tue_end',
+            'tue_end' => $day_rules . '|required_with:tue_start|after:tue_start',
+            'wed_start' => $day_rules . '|required_with:wed_end|before:wed_end',
+            'wed_end' => $day_rules . '|required_with:wed_start|after:wed_start',
+            'thu_start' => $day_rules . '|required_with:thu_end|before:thu_end',
+            'thu_end' => $day_rules . '|required_with:thu_start|after:thu_start',
+            'fri_start' => $day_rules . '|required_with:fri_end|before:fri_end',
+            'fri_end' => $day_rules . '|required_with:fri_start|after:fri_start',
+            'sat_start' => $day_rules . '|required_with:sat_end|before:sat_end',
+            'sat_end' => $day_rules . '|required_with:sat_start|after:sat_start',
         ];
     }
 }
