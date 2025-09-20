@@ -46,27 +46,27 @@ class UpdateScheduleRequest extends FormRequest
      */
     public function rules(): array
     {
-        $day_rules = 'nullable|date_format:H:i:s|';
+        $day_rules = 'nullable|date_format:H:i:s|required_with:';
 
         return [
             'name' => 'required|string|max:255',
             'is_active' => 'required|boolean',
             'max_day' => 'required|integer|min:0',
             'max_date' => 'required|date',
-            'sun_start' => $day_rules . '|required_with:sun_end|before:sun_end',
-            'sun_end' => $day_rules . '|required_with:sun_start|after:sun_start',
-            'mon_start' => $day_rules . '|required_with:mon_end|before:mon_end',
-            'mon_end' => $day_rules . '|required_with:mon_start|after:mon_start',
-            'tue_start' => $day_rules . '|required_with:tue_end|before:tue_end',
-            'tue_end' => $day_rules . '|required_with:tue_start|after:tue_start',
-            'wed_start' => $day_rules . '|required_with:wed_end|before:wed_end',
-            'wed_end' => $day_rules . '|required_with:wed_start|after:wed_start',
-            'thu_start' => $day_rules . '|required_with:thu_end|before:thu_end',
-            'thu_end' => $day_rules . '|required_with:thu_start|after:thu_start',
-            'fri_start' => $day_rules . '|required_with:fri_end|before:fri_end',
-            'fri_end' => $day_rules . '|required_with:fri_start|after:fri_start',
-            'sat_start' => $day_rules . '|required_with:sat_end|before:sat_end',
-            'sat_end' => $day_rules . '|required_with:sat_start|after:sat_start',
+            'sun_start' => $day_rules . 'sun_end|before:sun_end',
+            'sun_end' => $day_rules . 'sun_start|after:sun_start',
+            'mon_start' => $day_rules . 'mon_end|before:mon_end',
+            'mon_end' => $day_rules . 'mon_start|after:mon_start',
+            'tue_start' => $day_rules . 'tue_end|before:tue_end',
+            'tue_end' => $day_rules . 'tue_start|after:tue_start',
+            'wed_start' => $day_rules . 'wed_end|before:wed_end',
+            'wed_end' => $day_rules . 'wed_start|after:wed_start',
+            'thu_start' => $day_rules . 'thu_end|before:thu_end',
+            'thu_end' => $day_rules . 'thu_start|after:thu_start',
+            'fri_start' => $day_rules . 'fri_end|before:fri_end',
+            'fri_end' => $day_rules . 'fri_start|after:fri_start',
+            'sat_start' => $day_rules . 'sat_end|before:sat_end',
+            'sat_end' => $day_rules . 'sat_start|after:sat_start',
         ];
     }
 }

@@ -23,8 +23,8 @@ class StoreScheduleOverrideRequest extends FormRequest
     {
         return [
             'date' => 'required|date',
-            'time_start' => 'required|string|max:255',
-            'time_end' => 'required|string|max:255',
+            'time_start' => 'required|date_format:H:i:s|required_with:time_end|before:time_end',
+            'time_end' => 'required|date_format:H:i:s|required_with:time_start|after:time_start',
             'is_open' => 'required|boolean',
             'note' => 'required|string',
             'rooms' => 'nullable|array',
