@@ -187,7 +187,7 @@ export default function Form({
                     <Label htmlFor="note">Notes</Label>
                     <Textarea
                         id="note"
-                        value={data.note}
+                        value={data.note || ''}
                         onChange={(e) => setData('note', e.target.value)}
                         disabled={processing}
                         placeholder="Notes"
@@ -268,6 +268,12 @@ export default function Form({
                             value={data.expires_at}
                             onChange={(e) => setData('expires_at', e.target.value)}
                             disabled={processing}
+                            min={new Date().toISOString().slice(0, 16)}
+                            max={
+                                data.start_date
+                                    ? new Date(data.start_date).toISOString().slice(0, 16)
+                                    : new Date().toISOString().slice(0, 16)
+                            }
                         />
                         <InputError message={errors.expires_at} className="mt-2" />
                     </div>

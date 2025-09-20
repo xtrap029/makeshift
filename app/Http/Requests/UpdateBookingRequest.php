@@ -32,7 +32,7 @@ class UpdateBookingRequest extends FormRequest
                 'customer_phone' => 'required|string|max:255',
                 'layout_id' => 'required|integer|exists:layouts,id',
                 'note' => 'nullable|string|max:255',
-                'expires_at' => 'nullable|date_format:Y-m-d\TH:i',
+                'expires_at' => 'nullable|date',
             ];
         }
 
