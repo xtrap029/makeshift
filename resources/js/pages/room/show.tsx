@@ -20,8 +20,17 @@ import { BreadcrumbItem, Room } from '@/types';
 import { priceDisplay } from '@/utils/formatters';
 import { Head, Link, router } from '@inertiajs/react';
 import dayjs from 'dayjs';
-import { Check, Clock, Dot, Eye, SquareDashed, Users } from 'lucide-react';
+import { BookImage, Check, Clock, Dot, Eye, SquareDashed, Users } from 'lucide-react';
 import { useState } from 'react';
+
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
+import MultipleImageUploader from './gallery';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
@@ -31,6 +40,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function Show({ room }: { room: Room }) {
     const { destroy, processing } = useDelete();
+    const [openGallery, setOpenGallery] = useState(false);
 
     const [openPreview, setOpenPreview] = useState(false);
     const [is24Hour, setIs24Hour] = useState(true);
@@ -62,6 +72,27 @@ export default function Show({ room }: { room: Room }) {
                             <Eye size={16} />
                             Preview
                         </Button>
+                        <Dialog open={openGallery} onOpenChange={setOpenGallery}>
+                            <DialogTrigger asChild>
+                                <Button variant="outline">
+                                    <BookImage size={16} />
+                                    Gallery
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="w-full md:max-w-3xl">
+                                <DialogHeader>
+                                    <DialogTitle>Gallery</DialogTitle>
+                                </DialogHeader>
+                                <MultipleImageUploader
+                                    initialImages={room.images.map((image) => ({
+                                        url: image.name,
+                                        caption: image.caption ?? '',
+                                    }))}
+                                    roomId={room.id}
+                                    setOpenGallery={setOpenGallery}
+                                />
+                            </DialogContent>
+                        </Dialog>
                         <Button
                             variant="outline"
                             onClick={() => setIs24Hour(!is24Hour)}

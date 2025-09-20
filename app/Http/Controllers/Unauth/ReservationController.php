@@ -41,7 +41,7 @@ class ReservationController extends Controller
             'schedule_id',
             'qty',
             'is_active'
-        )->where('name', $roomName)->first();
+        )->where('name', $roomName)->with('image')->first();
 
         if (!$room) {
             return to_route('spaces')->withError('Space not found');

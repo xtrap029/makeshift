@@ -3,6 +3,7 @@ import { SelectTrigger } from '@/components/custom/makeshift/selectTrigger';
 import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import {
     Dialog,
     DialogContent,
@@ -18,7 +19,7 @@ import { Room } from '@/types';
 import { InquiryForm } from '@/types/form';
 import { priceDisplay } from '@/utils/formatters';
 import { Head, router } from '@inertiajs/react';
-import { Check, Dot, SquareDashed, Users } from 'lucide-react';
+import { Check, ChevronsRight, LayoutGrid, SquareDashed, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
 
@@ -140,58 +141,95 @@ export default function Show({
     return (
         <AppLayoutHeaderCustomer page={room.name} rightIcon="arrow-left" rightIconHref="/spaces">
             <Head title={room.name} />
+            <Carousel
+                opts={{
+                    align: 'start',
+                    loop: true,
+                }}
+                orientation="horizontal"
+                className="w-full"
+            >
+                <CarouselContent className="-mt-1 h-[225px] md:h-[355px]">
+                    <CarouselItem key={0} className="relative pt-1 md:basis-1/2">
+                        <Badge
+                            variant="secondary"
+                            className="absolute top-0 right-0 mt-4 mr-3 animate-pulse"
+                        >
+                            <ChevronsRight />
+                            swipe to view more
+                        </Badge>
+                        <img
+                            src={`/storage/${room.image?.name}`}
+                            alt={room.name}
+                            className="h-[220px] w-full rounded-2xl object-cover md:h-[350px]"
+                        />
+                    </CarouselItem>
+                    {room.images.map((image) => (
+                        <CarouselItem key={image.id} className="relative pt-1 md:basis-1/2">
+                            {image.caption && (
+                                <Badge
+                                    variant="secondary"
+                                    className="absolute top-0 right-0 mt-4 mr-3 text-sm"
+                                >
+                                    {image.caption}
+                                </Badge>
+                            )}
+                            <img
+                                src={`/storage/${image.name}`}
+                                alt={image.caption || image.name}
+                                className="h-[220px] w-full rounded-2xl object-cover md:h-[350px]"
+                            />
+                        </CarouselItem>
+                    ))}
+                </CarouselContent>
+            </Carousel>
             <div className="flex flex-col items-center gap-4">
-                <img
-                    src={`/storage/${room.image?.name}`}
-                    alt={room.name}
-                    className="h-50 w-full rounded-2xl object-cover shadow-lg md:h-100"
-                />
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3">
                     <div className="flex justify-between">
-                        <div className="text-foreground text-md flex items-center gap-4 md:text-lg">
+                        <div className="text-foreground flex items-center gap-4 text-lg">
                             <div className="flex items-center gap-1">
-                                <Users className="size-4" />
+                                <Users className="size-5" />
                                 <div>{room.cap} pax</div>
                             </div>
                             <div className="flex items-center gap-1">
-                                <SquareDashed className="size-4" />
+                                <SquareDashed className="size-5" />
                                 <div>{room.sqm} sqm</div>
                             </div>
                         </div>
                         <Badge
                             variant="outline"
-                            className="text-destructive text-md rounded-full font-bold shadow-sm md:text-xl"
+                            className="text-destructive rounded-full text-lg font-bold shadow-sm md:text-xl"
                         >
                             {room.price ? priceDisplay(Number(room.price)) : '-'}
-                            <span className="text-muted-foreground text-xs">/hr</span>
+                            <span className="text-muted-foreground text-sm">/hr</span>
                         </Badge>
                     </div>
-                    <div className="text-muted-foreground mt-4 text-sm md:text-base">
-                        <h2 className="text-foreground mb-2 text-xl">About this space</h2>
+                    <div className="text-muted-foreground text-md mt-4 md:text-base">
+                        <h2 className="text-foreground mb-2 text-2xl">About this space</h2>
                         {room.description}
                     </div>
                     <div className="grid grid-cols-2 gap-2">
-                        <div className="text-foreground col-span-2 mt-4 grid grid-cols-2 gap-2 self-start text-sm md:col-span-1 md:text-base">
-                            <h2 className="text-foreground col-span-2 text-xl">Amenities</h2>
+                        <div className="text-foreground text-md col-span-2 mt-4 grid grid-cols-2 gap-4 self-start md:col-span-1 md:text-base">
+                            <h2 className="text-foreground col-span-2 text-2xl">Amenities</h2>
                             {room.amenities.map((amenity) => {
                                 return (
                                     <div className="flex items-center gap-3" key={amenity.name}>
                                         {amenity.icon ? (
-                                            <IconDynamic name={amenity.icon} className="size-4" />
+                                            <IconDynamic name={amenity.icon} className="size-5" />
                                         ) : (
-                                            <Check className="size-4" />
+                                            <Check className="size-5" />
                                         )}
                                         <div>{amenity.name}</div>
                                     </div>
                                 );
                             })}
                         </div>
-                        <div className="text-foreground col-span-2 mt-4 grid grid-cols-2 gap-2 self-start text-sm md:col-span-1 md:text-base">
-                            <h2 className="text-foreground col-span-2 text-xl">Layouts</h2>
+                        <div className="text-foreground text-md col-span-2 mt-4 grid grid-cols-2 gap-4 self-start md:col-span-1 md:text-base">
+                            <h2 className="text-foreground col-span-2 text-2xl">Layouts</h2>
                             {room.layouts.map((layout) => {
                                 return (
                                     <div className="flex items-center gap-3" key={layout.name}>
-                                        <Dot className="size-4" />
+                                        <LayoutGrid className="size-5" />
                                         <div>{layout.name}</div>
                                     </div>
                                 );

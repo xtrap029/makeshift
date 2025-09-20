@@ -75,7 +75,7 @@ class RoomController extends Controller
      */
     public function show(Room $room, Request $request)
     {
-        $room->load('image', 'amenities', 'layouts', 'schedule');
+        $room->load('image', 'images', 'amenities', 'layouts', 'schedule');
         if ($room->schedule) {
             $room->schedule->max_date = Carbon::parse($room->schedule->max_date)->diffForHumans();
         }

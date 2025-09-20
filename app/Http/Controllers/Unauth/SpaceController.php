@@ -96,6 +96,9 @@ class SpaceController extends Controller
             ->with(['image' => function ($query) {
                 $query->select('name', 'room_id')->where('is_main', true);
             }])
+            ->with(['images' => function ($query) {
+                $query->select('name', 'room_id', 'caption')->where('is_main', false)->orderBy('order', 'asc');
+            }])
             ->with(['layouts' => function ($query) {
                 $query->select('name', 'room_id')->orderBy('name', 'asc');
             }])

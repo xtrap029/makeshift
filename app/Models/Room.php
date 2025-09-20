@@ -39,7 +39,7 @@ class Room extends Model
 
     public function images()
     {
-        return $this->hasMany(RoomImage::class);
+        return $this->hasMany(RoomImage::class)->where('is_main', false)->orderBy('order', 'asc');
     }
 
     public function schedule()

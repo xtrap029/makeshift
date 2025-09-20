@@ -389,6 +389,28 @@
     color: var(--color-foreground);
 }
 
+/* Dialog z-index fixes */
+[data-radix-dialog-overlay] {
+    z-index: 40 !important;
+}
+
+[data-radix-dialog-content] {
+    z-index: 50 !important;
+}
+
+/* Framer Motion */
+.perspective {
+  perspective: 1000px;
+}
+.backface-hidden {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Date Input */
 input[type="date"] {
   padding-right: 2.5rem; /* enough space for the icon */
   position: relative;

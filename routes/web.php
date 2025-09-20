@@ -24,6 +24,10 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/demo/wysiwyg', function () {
     return inertia('Demo/Wysiwyg');
 })->name('demo.wysiwyg');
+
+Route::get('/demo/image-uploader', function () {
+    return inertia('Demo/ImageUploader');
+})->name('demo.image-uploader');
 Route::get('/spaces', [SpaceController::class, 'index'])->name('spaces');
 Route::get('/spaces/{space}', [SpaceController::class, 'show'])->name('spaces.show');
 Route::get('/reservation/inquire/success', [ReservationController::class, 'inquireSuccess'])->name('reservation.inquire.success');

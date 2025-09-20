@@ -17,7 +17,8 @@ import { InquiryForm, LegalAppearanceForm } from '@/types/form';
 import { priceDisplay } from '@/utils/formatters';
 import { Head, router, useForm } from '@inertiajs/react';
 import dayjs from 'dayjs';
-import { SquareDashed, Users } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Search, SquareDashed, Users } from 'lucide-react';
 import { useState } from 'react';
 import { z } from 'zod';
 
@@ -74,6 +75,8 @@ export default function Inquire({
 
     const [legalDialogOpen, setLegalDialogOpen] = useState(false);
     const [selectedLegal, setSelectedLegal] = useState<string | null>(null);
+
+    const [flipped, setFlipped] = useState(false);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -141,48 +144,117 @@ export default function Inquire({
             </Dialog>
             <form onSubmit={handleSubmit}>
                 <div className="grid grid-cols-3 gap-6 text-sm">
-                    <div className="text-foreground col-span-3 flex flex-col gap-2 rounded-2xl border bg-gray-100 p-4 text-center md:col-span-1">
-                        <h2 className="text-lg font-bold">{room.name}</h2>
-                        <div className="mt-2 flex flex-row items-center gap-4">
-                            <div className="flex flex-1 items-center justify-center gap-1">
-                                <Users className="size-4" />
-                                <div>{room.cap} pax</div>
-                            </div>
-                            <div className="flex flex-1 items-center justify-center gap-1">
-                                <SquareDashed className="size-4" />
-                                <div>{room.sqm} sqm</div>
-                            </div>
-                        </div>
-                        <div className="mt-2 flex flex-row gap-2 border-t border-gray-200 pt-3">
-                            <div className="flex flex-1 flex-col gap-2">
-                                <div className="text-muted-foreground">Date</div>
-                                <div className="text-sm">
-                                    {dayjs(inquiry.date).format('DD MMM YYYY')}
+                    <div
+                        className="perspective col-span-3 h-auto w-full cursor-pointer md:col-span-1"
+                        onClick={() => setFlipped(!flipped)}
+                    >
+                        <motion.div
+                            className="relative h-full w-full"
+                            animate={{ rotateY: flipped ? 180 : 0 }}
+                            transition={{ duration: 0.6 }}
+                            style={{ transformStyle: 'preserve-3d' }}
+                        >
+                            <div className="inset-0 flex flex-col gap-5 rounded-xl border border-gray-200 p-5 backface-hidden">
+                                <div className="flex items-center gap-5">
+                                    <div className="relative">
+                                        <img
+                                            src={`/storage/${room.image?.name}`}
+                                            alt={room.name}
+                                            className="h-25 w-25 rounded-xl object-cover"
+                                        />
+                                        <span className="absolute right-0 bottom-0 m-1 rounded-full bg-white p-1 shadow-sm">
+                                            <Search className="size-4" />
+                                        </span>
+                                    </div>
+                                    <div className="flex-1">
+                                        <h2 className="text-xl font-bold">{room.name}</h2>
+                                        <div className="text-muted-foreground">
+                                            {inquiry.layout} layout
+                                        </div>
+                                        <div className="mt-3 flex flex-row gap-4">
+                                            <div className="flex gap-1">
+                                                <Users className="size-4" />
+                                                <div>{room.cap} pax</div>
+                                            </div>
+                                            <div className="flex gap-1">
+                                                <SquareDashed className="size-4" />
+                                                <div>{room.sqm} sqm</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex flex-row gap-2 border-t border-gray-200 pt-3">
+                                    <div className="flex flex-1 flex-col gap-2">
+                                        <div className="font-bold">Date</div>
+                                        <div className="text-sm">
+                                            {dayjs(inquiry.date).format('DD MMM YYYY')}
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-1 flex-col gap-2">
+                                        <div className="font-bold">Time</div>
+                                        <div className="text-sm">
+                                            {inquiry.start_time} - {inquiry.end_time}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex flex-col gap-2 border-t border-gray-200 pt-3">
+                                    <div className="flex flex-row gap-2">
+                                        <div className="flex flex-1 flex-col gap-2">
+                                            <div className="font-bold">Computation</div>
+                                            <div className="text-sm">
+                                                {priceDisplay(Number(room.price))} x{' '}
+                                                {inquiry.end_time && inquiry.start_time
+                                                    ? Number(inquiry.end_time.split(':')[0]) -
+                                                      Number(inquiry.start_time.split(':')[0])
+                                                    : 0}{' '}
+                                                hours
+                                            </div>
+                                        </div>
+                                        <div className="flex items-end text-right">
+                                            {priceDisplay(
+                                                inquiry.end_time && inquiry.start_time
+                                                    ? room.price *
+                                                          (Number(inquiry.end_time.split(':')[0]) -
+                                                              Number(
+                                                                  inquiry.start_time.split(':')[0]
+                                                              ))
+                                                    : 0
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-row gap-2">
+                                        <div className="flex flex-1 flex-col gap-2">
+                                            Discount / Promo
+                                        </div>
+                                        <div className="flex items-end text-right">
+                                            {priceDisplay(0)}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex flex-1 flex-row items-center border-t border-gray-200 pt-3">
+                                    <div className="font-bold">Total Price</div>
+                                    <div className="flex-1 text-right font-bold">
+                                        {priceDisplay(
+                                            inquiry.end_time && inquiry.start_time
+                                                ? room.price *
+                                                      (Number(inquiry.end_time.split(':')[0]) -
+                                                          Number(inquiry.start_time.split(':')[0]))
+                                                : 0
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                            <div className="flex flex-1 flex-col gap-2">
-                                <div className="text-muted-foreground">Time</div>
-                                <div className="text-sm">
-                                    {inquiry.start_time} - {inquiry.end_time}
-                                </div>
+                            <div className="absolute inset-0 rotate-y-180 backface-hidden">
+                                <img
+                                    src={`/storage/${room.image?.name}`}
+                                    alt="Front"
+                                    className="h-full w-full rounded-xl object-cover shadow-lg"
+                                />
+                                <span className="absolute right-0 bottom-0 m-2 flex-col rounded-full bg-white p-2 shadow-sm">
+                                    See Inquiry Details
+                                </span>
                             </div>
-                            <div className="flex flex-1 flex-col gap-2">
-                                <div className="text-muted-foreground">Layout</div>
-                                <div className="text-sm">{inquiry.layout}</div>
-                            </div>
-                        </div>
-                        <div className="mt-2 border-t border-gray-200 pt-3">
-                            <div className="text-makeshift-primary text-2xl font-bold">
-                                {priceDisplay(
-                                    inquiry.end_time && inquiry.start_time
-                                        ? room.price *
-                                              (Number(inquiry.end_time.split(':')[0]) -
-                                                  Number(inquiry.start_time.split(':')[0]))
-                                        : 0
-                                )}
-                            </div>
-                            <div className="text-muted-foreground">Total Price</div>
-                        </div>
+                        </motion.div>
                     </div>
                     <div className="col-span-3 grid grid-cols-2 gap-4 md:col-span-2">
                         <div className="col-span-2">
@@ -245,7 +317,7 @@ export default function Inquire({
                             <InputError message={zodErrors.note || errors.note} className="ml-3" />
                         </div>
                         <div className="col-span-2 flex flex-col gap-2 md:flex-row md:justify-end">
-                            <p className="text-muted-foreground py-3 text-center">
+                            <p className="text-muted-foreground py-3 text-center md:py-0 md:text-left">
                                 By clicking ‘Submit Inquiry’, you agree to the{' '}
                                 <span
                                     className="text-makeshift-primary underline"

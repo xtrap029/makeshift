@@ -42,6 +42,14 @@ export interface User {
     [key: string]: unknown; // This allows for additional properties...
 }
 
+export interface RoomImage {
+    id: number;
+    name: string;
+    caption: string;
+    order: number;
+    is_main: boolean;
+}
+
 export interface Room {
     id: number;
     name: string;
@@ -57,6 +65,7 @@ export interface Room {
     layouts: Layout[];
     overrides: ScheduleOverride[];
     image: File | null;
+    images: RoomImage[];
     bookings: Booking[];
     created_at?: string;
     updated_at?: string;

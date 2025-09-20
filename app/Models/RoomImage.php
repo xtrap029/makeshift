@@ -10,8 +10,12 @@ class RoomImage extends Model
     use HasFactory;
 
     protected $fillable = [
+        'room_id',
         'name',
         'is_main',
+        'caption',
+        'order',
+        'is_temp',
     ];
 
     public function room()

@@ -158,20 +158,20 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                                                 </h3>
                                                 <div className="flex items-center gap-5">
                                                     <div className="flex items-center gap-1">
-                                                        <Users className="size-4" />
-                                                        <span className="text-sm">
+                                                        <Users className="size-5" />
+                                                        <span className="text-md">
                                                             {room.cap} pax
                                                         </span>
                                                     </div>
                                                     <div className="flex items-center gap-1">
-                                                        <SquareDashed className="size-4" />
-                                                        <span className="text-sm">
+                                                        <SquareDashed className="size-5" />
+                                                        <span className="text-md">
                                                             {room.sqm} sqm
                                                         </span>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <p className="text-muted-foreground mt-2 line-clamp-2 min-h-[2.4rem] text-sm leading-tight">
+                                            <p className="text-muted-foreground text-md mt-1 line-clamp-2 min-h-[2.4rem] leading-tight">
                                                 {room.description}
                                             </p>
                                         </div>
