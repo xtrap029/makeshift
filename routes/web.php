@@ -21,13 +21,6 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/demo/wysiwyg', function () {
-    return inertia('Demo/Wysiwyg');
-})->name('demo.wysiwyg');
-
-Route::get('/demo/image-uploader', function () {
-    return inertia('Demo/ImageUploader');
-})->name('demo.image-uploader');
 Route::get('/spaces', [SpaceController::class, 'index'])->name('spaces');
 Route::get('/spaces/{space}', [SpaceController::class, 'show'])->name('spaces.show');
 Route::get('/reservation/inquire/success', [ReservationController::class, 'inquireSuccess'])->name('reservation.inquire.success');
@@ -48,6 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('overrides', ScheduleOverrideController::class);
     Route::resource('payment-providers', PaymentProviderController::class)->names('paymentProviders');
     Route::resource('bookings', BookingController::class);
+    Route::get('bookings-calendar', [BookingController::class, 'calendar'])->name('bookings.calendar');
     Route::put('bookings/{booking}/edit-status', [BookingController::class, 'updateStatus'])
         ->name('bookings.updateStatus');
     Route::get('bookings/{booking}/send-acknowledged-email', [BookingController::class, 'sendAcknowledgedEmail'])

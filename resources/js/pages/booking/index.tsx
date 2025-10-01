@@ -15,10 +15,11 @@ import AppLayout from '@/layouts/app-layout';
 import { Booking, type BreadcrumbItem } from '@/types';
 import { PaginatedData } from '@/types/pagination';
 import { Head, Link, router } from '@inertiajs/react';
+import axios from 'axios';
 import { Eye } from 'lucide-react';
 
 import moment from 'moment';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Calendar, Event, momentLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 const localizer = momentLocalizer(moment);
@@ -34,19 +35,57 @@ interface CustomEvent extends Event {
 }
 
 export default function Index({ bookings }: { bookings: PaginatedData<Booking> }) {
-    const events: CustomEvent[] = bookings.data.map((booking) => ({
-        id: booking.id,
-        title: `${booking.start_time.slice(0, 2)}-${booking.end_time.slice(0, 2)} ${booking.room.name}`,
-        start: new Date(booking.start_date + ' ' + booking.start_time),
-        end: new Date(booking.start_date + ' ' + booking.end_time),
-        description: booking.customer_name,
-        status: booking.status,
-    }));
-
     const [isCalendarView, setIsCalendarView] = useState(false);
+    const [calendarBookings, setCalendarBookings] = useState<Booking[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [currentDate, setCurrentDate] = useState(new Date());
+
+    const events: CustomEvent[] = calendarBookings.map((booking) => {
+        const startDate = new Date(booking.start_date + ' ' + booking.start_time);
+        const endDate = new Date(booking.start_date + ' ' + booking.end_time);
+
+        return {
+            id: booking.id,
+            title: `${booking.start_time.slice(0, 2)}-${booking.end_time.slice(0, 2)} ${booking.room.name}`,
+            start: startDate,
+            end: endDate,
+            description: booking.customer_name,
+            status: booking.status,
+        };
+    });
+
+    const fetchCalendarData = useCallback(async (date: Date) => {
+        setLoading(true);
+        try {
+            const response = await axios.get(route('bookings.calendar'), {
+                params: {
+                    month: date.getMonth() + 1,
+                    year: date.getFullYear(),
+                },
+            });
+
+            setCalendarBookings(response.data);
+        } catch (error) {
+            console.error('Failed to fetch calendar data:', error);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (isCalendarView && calendarBookings.length === 0) {
+            fetchCalendarData(currentDate);
+        }
+    }, [isCalendarView, calendarBookings.length, fetchCalendarData, currentDate]);
 
     const handleSelectEvent = (event: CustomEvent) => {
         router.visit(route('bookings.show', { booking: event.id }));
+    };
+
+    const handleNavigate = (newDate: Date) => {
+        setCurrentDate(newDate);
+        setCalendarBookings([]);
+        fetchCalendarData(newDate);
     };
 
     return (
@@ -71,20 +110,30 @@ export default function Index({ bookings }: { bookings: PaginatedData<Booking> }
                 </Header>
                 {isCalendarView && (
                     <div className="mt-4 rounded-lg border p-4">
-                        <Calendar
-                            localizer={localizer}
-                            events={events}
-                            startAccessor="start"
-                            endAccessor="end"
-                            onSelectEvent={handleSelectEvent}
-                            style={{ height: 700 }}
-                            popup
-                            eventPropGetter={(event: CustomEvent) => ({
-                                className: bookingStatusConstants.find(
-                                    (status) => status.id === event.status
-                                )?.calendarClass,
-                            })}
-                        />
+                        {loading ? (
+                            <div className="flex h-[700px] items-center justify-center">
+                                <div className="text-center">
+                                    <div className="mb-2 text-lg font-medium">Loading...</div>
+                                </div>
+                            </div>
+                        ) : (
+                            <Calendar
+                                localizer={localizer}
+                                events={events}
+                                startAccessor="start"
+                                endAccessor="end"
+                                onSelectEvent={handleSelectEvent}
+                                onNavigate={handleNavigate}
+                                date={currentDate}
+                                style={{ height: 700 }}
+                                views={['month']}
+                                eventPropGetter={(event: CustomEvent) => ({
+                                    className: bookingStatusConstants.find(
+                                        (status) => status.id === event.status
+                                    )?.calendarClass,
+                                })}
+                            />
+                        )}
                     </div>
                 )}
                 {!isCalendarView && (

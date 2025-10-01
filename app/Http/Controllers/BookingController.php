@@ -15,6 +15,8 @@ use App\Mail\InquiryConfirmed;
 use App\Mail\InquiryCancelled;
 use App\Services\BookingService;
 use App\Services\VoucherService;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class BookingController extends Controller
@@ -34,6 +36,32 @@ class BookingController extends Controller
         return Inertia::render('booking/index', [
             'bookings' => Booking::with('room', 'layout')->orderBy('created_at', 'desc')->paginate(config('global.pagination_limit')),
         ]);
+    }
+
+    /**
+     * Get bookings for calendar view (all bookings for specified month)
+     */
+    public function calendar(Request $request)
+    {
+        $month = (int) $request->get('month', now()->month);
+        $year = (int) $request->get('year', now()->year);
+
+        // Validate month and year
+        $month = max(1, min(12, $month));
+        $year = max(2020, min(2030, $year));
+
+        // Use Carbon::create to avoid setMonth issues
+        $startDate = Carbon::create($year, $month, 1)->startOfMonth();
+        $endDate = Carbon::create($year, $month, 1)->endOfMonth();
+
+        $bookings = Booking::with('room', 'layout')
+            ->where('start_date', '>=', $startDate)
+            ->where('start_date', '<=', $endDate)
+            ->orderBy('start_date')
+            ->orderBy('start_time')
+            ->get();
+
+        return response()->json($bookings);
     }
 
     /**
