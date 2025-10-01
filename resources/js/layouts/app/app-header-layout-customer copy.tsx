@@ -25,10 +25,8 @@ export default function AppHeaderLayoutCustomer({
     rightIconHref,
     children,
 }: PropsWithChildren<{ page: string; rightIcon?: string; rightIconHref?: string }>) {
-    const isHome = usePage().url === '/';
     const { websiteSettings } = usePage().props;
     const [scrolled, setScrolled] = useState(false);
-    const [scrolledBanner, setScrolledBanner] = useState(!isHome);
     const { flash } = usePage<FlashProps>().props;
 
     useEffect(() => {
@@ -42,81 +40,44 @@ export default function AppHeaderLayoutCustomer({
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 10);
-            if (isHome) {
-                setScrolledBanner(window.scrollY > 650);
-            } else {
-                setScrolledBanner(true);
-            }
         };
 
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [isHome]);
-
-    const header = () => {
-        return (
-            <>
-                <div
-                    className={`text-makeshift-primary flex aspect-square items-center justify-center rounded-md transition-all duration-300 ${
-                        scrolledBanner ? 'size-8 bg-white' : 'size-12'
-                    }`}
-                >
-                    <AppLogoIcon />
-                </div>
-                <div
-                    className={`ml-2 grid flex-1 text-left text-sm ${
-                        scrolledBanner ? '' : 'rounded-md p-2 text-white'
-                    }`}
-                >
-                    <span
-                        className={`truncate leading-none font-semibold transition-all duration-300 ${
-                            scrolledBanner
-                                ? 'mb-0.5'
-                                : 'text-lg [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]'
-                        }`}
-                    >
-                        MakeShift
-                    </span>
-                    <span
-                        className={`transition-all duration-300 ${
-                            scrolledBanner
-                                ? 'text-xs'
-                                : 'text-md [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]'
-                        }`}
-                    >
-                        {websiteSettings.siteDescription}
-                    </span>
-                </div>
-            </>
-        );
-    };
+    }, []);
 
     return (
         <AppShell>
             <Toaster richColors position="top-right" />
-            {isHome && (
-                <div
-                    className="h-[600px] bg-cover bg-center bg-no-repeat"
-                    style={{
-                        backgroundImage: `url(/home-banner.jpg)`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat',
-                    }}
-                >
-                    <div className="m-auto flex max-w-screen-xl items-center justify-between px-4 pt-4 transition-all duration-300">
-                        {header()}
-                    </div>
-                </div>
-            )}
             <header
                 className={`bg-makeshift-primary sticky top-0 z-50 w-full pt-2 pt-6 text-white transition-all duration-300 ${
                     scrolled ? 'drop-shadow-[0_5px_5px_rgba(0,0,0,0.50)]' : ''
-                } ${scrolledBanner ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}
+                }`}
             >
                 <div className="m-auto flex max-w-screen-xl items-center justify-between px-4 transition-all duration-300">
-                    {header()}
+                    <div
+                        className={`text-makeshift-primary flex aspect-square size-8 items-center justify-center rounded-md bg-white transition-all duration-300`}
+                    >
+                        <AppLogoIcon
+                            className={`size-6 fill-current transition-all duration-300`}
+                        />
+                    </div>
+                    <div className="ml-2 grid flex-1 text-left text-sm">
+                        <span
+                            className={`mb-0.5 truncate leading-none font-semibold transition-all duration-300`}
+                        >
+                            MakeShift
+                        </span>
+                        <span className={`text-xs transition-all duration-300`}>
+                            {websiteSettings.siteDescription}
+                        </span>
+                    </div>
                 </div>
+                {/* <h1
+                    className={`m-auto max-w-screen-xl pr-[70px] pl-4 font-extrabold transition-all duration-300 ${
+                        scrolled ? 'pt-4 pb-2 text-4xl' : 'pt-8 pb-4 text-5xl'
+                    }`}
+                > */}
                 <h1
                     className={`m-auto max-w-screen-xl pr-[70px] pb-3 pl-4 text-4xl font-extrabold transition-all duration-300 ${
                         scrolled ? 'pt-2' : 'pt-6'
@@ -141,7 +102,7 @@ export default function AppHeaderLayoutCustomer({
                     )}
                 </div>
             </header>
-            <div className={`${scrolledBanner ? 'bg-makeshift-primary' : 'mt-[-40px]'}`}>
+            <div className="bg-makeshift-primary">
                 <div className="-mb-1 h-5 rounded-t-2xl bg-white md:rounded-t-none"></div>
             </div>
             <AppContentCustomer>

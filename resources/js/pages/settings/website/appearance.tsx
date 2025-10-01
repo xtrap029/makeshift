@@ -3,6 +3,7 @@ import { Head, router, useForm } from '@inertiajs/react';
 import HeadingSmall from '@/components/heading-small';
 import { type BreadcrumbItem } from '@/types';
 
+import { Wysiwyg } from '@/components/custom/wysiwyg';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -178,13 +179,9 @@ export default function Appearance({
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="homeWhoDescription">Who We Are Description</Label>
-                        <Input
-                            id="homeWhoDescription"
-                            type="text"
-                            value={data.homeWhoDescription}
-                            onChange={(e) => setData('homeWhoDescription', e.target.value)}
-                            disabled={processing}
-                            placeholder="Who We Are Description"
+                        <Wysiwyg
+                            content={data.homeWhoDescription}
+                            onChange={(content) => setData('homeWhoDescription', content)}
                         />
                     </div>
                     <div className="grid gap-2">

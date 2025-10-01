@@ -1,3 +1,4 @@
+import RichText from '@/components/custom/richText';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
@@ -47,9 +48,11 @@ export default function Index({
                         </div>
                         <p className="mt-3">{websiteAppearance.homeFeaturedDescription}</p>
                     </div>
-                    <div className="col-span-2 md:col-span-2">
+                    <div className="col-span-2 md:col-span-1">
                         <h2 className="text-xl">{websiteAppearance.homeWhoTitle}</h2>
-                        <p className="mt-3">{websiteAppearance.homeWhoDescription}</p>
+                        <div className="mt-3">
+                            <RichText html={websiteAppearance.homeWhoDescription ?? ''} />
+                        </div>
                     </div>
                     <div className="col-span-2 md:col-span-1">
                         <h2 className="text-xl">{websiteAppearance.homeYoutubeText}</h2>
