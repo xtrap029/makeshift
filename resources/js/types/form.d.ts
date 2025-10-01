@@ -130,6 +130,12 @@ export interface WebsiteAppearanceForm {
     homeYoutubeLink?: string;
     homeMapText?: string;
     homeMapLink?: string;
+    homeWhoTitle?: string;
+    homeWhoDescription?: string;
+    homeFeaturedId?: string;
+    homeFeaturedRoom?: Room;
+    homeFeaturedDescription?: string;
+    homeRoomSlider?: string;
 }
 
 export interface LegalAppearanceForm {

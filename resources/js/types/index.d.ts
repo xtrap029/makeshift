@@ -64,7 +64,7 @@ export interface Room {
     amenities: Amenity[];
     layouts: Layout[];
     overrides: ScheduleOverride[];
-    image: File | null;
+    image: RoomImage | null;
     images: RoomImage[];
     bookings: Booking[];
     created_at?: string;

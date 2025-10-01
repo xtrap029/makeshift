@@ -103,7 +103,7 @@ export default function AppHeaderLayoutCustomer({
                 </div>
             </header>
             <div className="bg-makeshift-primary">
-                <div className="h-5 rounded-t-2xl bg-white md:rounded-t-none"></div>
+                <div className="-mb-1 h-5 rounded-t-2xl bg-white md:rounded-t-none"></div>
             </div>
             <AppContentCustomer>
                 {children}

@@ -6,8 +6,16 @@ import { type BreadcrumbItem } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
+import { Room } from '@/types';
 import { WebsiteAppearanceForm } from '@/types/form';
 import { FormEventHandler, useState } from 'react';
 
@@ -32,8 +40,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function Appearance({
     websiteAppearance,
+    rooms,
 }: {
     websiteAppearance: WebsiteAppearanceForm;
+    rooms: Room[];
 }) {
     const [logoPreview, setLogoPreview] = useState('/logo.png');
     const [faviconPreview, setFaviconPreview] = useState('/favicon.ico');
@@ -50,6 +60,11 @@ export default function Appearance({
         homeYoutubeLink: websiteAppearance.homeYoutubeLink,
         homeMapText: websiteAppearance.homeMapText,
         homeMapLink: websiteAppearance.homeMapLink,
+        homeWhoTitle: websiteAppearance.homeWhoTitle,
+        homeWhoDescription: websiteAppearance.homeWhoDescription,
+        homeFeaturedId: websiteAppearance.homeFeaturedId,
+        homeFeaturedDescription: websiteAppearance.homeFeaturedDescription,
+        homeRoomSlider: websiteAppearance.homeRoomSlider,
     });
 
     const submit: FormEventHandler = (e) => {
@@ -60,6 +75,10 @@ export default function Appearance({
             ...data,
         });
     };
+
+    const [selectedFeaturedRoom, setSelectedFeaturedRoom] = useState<string | undefined>(
+        data.homeFeaturedId?.toString() || undefined
+    );
 
     const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -135,6 +154,72 @@ export default function Appearance({
                     </div>
                     <br />
                     <HeadingSmall title="Home Page" description="Update Home page appearance" />
+                    <div className="grid gap-2">
+                        <Label htmlFor="homeRoomSlider">Rooms Slider</Label>
+                        <Input
+                            id="homeRoomSlider"
+                            type="text"
+                            value={data.homeRoomSlider}
+                            onChange={(e) => setData('homeRoomSlider', e.target.value)}
+                            disabled={processing}
+                            placeholder="Rooms Slider"
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="homeYoutubeText">Who We Are Text</Label>
+                        <Input
+                            id="homeWhoTitle"
+                            type="text"
+                            value={data.homeWhoTitle}
+                            onChange={(e) => setData('homeWhoTitle', e.target.value)}
+                            disabled={processing}
+                            placeholder="Who We Are Title"
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="homeWhoDescription">Who We Are Description</Label>
+                        <Input
+                            id="homeWhoDescription"
+                            type="text"
+                            value={data.homeWhoDescription}
+                            onChange={(e) => setData('homeWhoDescription', e.target.value)}
+                            disabled={processing}
+                            placeholder="Who We Are Description"
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="homeFeaturedId">Featured Room</Label>
+                        <Select
+                            value={selectedFeaturedRoom}
+                            onValueChange={(value) => {
+                                setSelectedFeaturedRoom(value);
+                                setData('homeFeaturedId', value);
+                            }}
+                            disabled={processing}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a featured room" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {rooms.map((room) => (
+                                    <SelectItem key={room.id} value={room.id.toString()}>
+                                        {room.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="homeFeaturedId">Featured Room Description</Label>
+                        <Input
+                            id="homeFeaturedDescription"
+                            type="text"
+                            value={data.homeFeaturedDescription}
+                            onChange={(e) => setData('homeFeaturedDescription', e.target.value)}
+                            disabled={processing}
+                            placeholder="Featured Room Description"
+                        />
+                    </div>
                     <div className="grid gap-2">
                         <Label htmlFor="homeYoutubeText">Youtube Text</Label>
                         <Input

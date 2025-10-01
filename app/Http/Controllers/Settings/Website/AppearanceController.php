@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Settings\Website;
 
 use App\Http\Controllers\Controller;
+use App\Models\Room;
 use App\Models\Settings;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -23,8 +24,18 @@ class AppearanceController extends Controller
             'HOME_YOUTUBE_TEXT',
             'HOME_YOUTUBE_LINK',
             'HOME_MAP_TEXT',
-            'HOME_MAP_LINK'
+            'HOME_MAP_LINK',
+            'HOME_WHO_TITLE',
+            'HOME_WHO_DESCRIPTION',
+            'HOME_FEATURED_ID',
+            'HOME_FEATURED_DESCRIPTION',
+            'HOME_ROOM_SLIDER',
         ])->pluck('value', 'key');
+
+        $rooms = Room::select('id', 'name')
+            ->where('is_active', true)
+            ->orderBy('name', 'asc')
+            ->get();
 
         return Inertia::render('settings/website/appearance', [
             'websiteAppearance' => [
@@ -37,7 +48,13 @@ class AppearanceController extends Controller
                 'homeYoutubeLink' => $data['HOME_YOUTUBE_LINK'] ?? null,
                 'homeMapText' => $data['HOME_MAP_TEXT'] ?? null,
                 'homeMapLink' => $data['HOME_MAP_LINK'] ?? null,
+                'homeWhoTitle' => $data['HOME_WHO_TITLE'] ?? null,
+                'homeWhoDescription' => $data['HOME_WHO_DESCRIPTION'] ?? null,
+                'homeFeaturedId' => $data['HOME_FEATURED_ID'] ?? null,
+                'homeFeaturedDescription' => $data['HOME_FEATURED_DESCRIPTION'] ?? null,
+                'homeRoomSlider' => $data['HOME_ROOM_SLIDER'] ?? null,
             ],
+            'rooms' => $rooms,
         ]);
     }
 
@@ -58,6 +75,11 @@ class AppearanceController extends Controller
             'homeYoutubeLink' => 'nullable|string|max:' . config('form.validation.youtube.max'),
             'homeMapText' => 'nullable|string|max:255',
             'homeMapLink' => 'nullable|string|max:' . config('form.validation.map.max'),
+            'homeWhoTitle' => 'nullable|string|max:255',
+            'homeWhoDescription' => 'nullable|string',
+            'homeFeaturedId' => 'nullable|string|max:255',
+            'homeFeaturedDescription' => 'nullable|string',
+            'homeRoomSlider' => 'nullable|string|max:255',
         ]);
 
         $settings = [
@@ -70,6 +92,11 @@ class AppearanceController extends Controller
             'HOME_YOUTUBE_LINK' => $validated['homeYoutubeLink'],
             'HOME_MAP_TEXT' => $validated['homeMapText'],
             'HOME_MAP_LINK' => $validated['homeMapLink'],
+            'HOME_WHO_TITLE' => $validated['homeWhoTitle'],
+            'HOME_WHO_DESCRIPTION' => $validated['homeWhoDescription'],
+            'HOME_FEATURED_ID' => $validated['homeFeaturedId'],
+            'HOME_FEATURED_DESCRIPTION' => $validated['homeFeaturedDescription'],
+            'HOME_ROOM_SLIDER' => $validated['homeRoomSlider'],
         ];
 
         foreach ($settings as $key => $value) {

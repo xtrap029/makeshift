@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Unauth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Room;
 use App\Models\Settings;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -16,13 +17,22 @@ class HomeController extends Controller
     {
         $data = Settings::pluck('value', 'key');
 
+        $featuredRoom = Room::with('image')->find($data['HOME_FEATURED_ID']);
+
+        $roomSlider = Room::with('image')->whereIn('id', explode(',', $data['HOME_ROOM_SLIDER']))->get();
+
         return Inertia::render('unauth/home/index', [
             'websiteAppearance' => [
                 'homeYoutubeText' => $data['HOME_YOUTUBE_TEXT'] ?? null,
                 'homeYoutubeLink' => $data['HOME_YOUTUBE_LINK'] ?? null,
                 'homeMapText' => $data['HOME_MAP_TEXT'] ?? null,
                 'homeMapLink' => $data['HOME_MAP_LINK'] ?? null,
+                'homeWhoTitle' => $data['HOME_WHO_TITLE'] ?? null,
+                'homeWhoDescription' => $data['HOME_WHO_DESCRIPTION'] ?? null,
+                'homeFeaturedRoom' => $featuredRoom,
+                'homeFeaturedDescription' => $data['HOME_FEATURED_DESCRIPTION'] ?? null,
             ],
+            'roomSlider' => $roomSlider,
         ]);
     }
 
