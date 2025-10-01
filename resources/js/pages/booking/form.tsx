@@ -181,7 +181,7 @@ export default function Form({
                             ))}
                         </SelectContent>
                     </Select>
-                    <InputError message={errors.room_id} className="mt-2" />
+                    <InputError message={errors.layout_id} className="mt-2" />
                 </div>
                 <div className="col-span-12 grid gap-2">
                     <Label htmlFor="note">Notes</Label>
