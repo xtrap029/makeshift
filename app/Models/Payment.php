@@ -17,6 +17,7 @@ class Payment extends Model
         'note',
         'status',
         'reference_number',
+        'pr_no',
         'amount',
         'amount_paid',
         'paid_at',

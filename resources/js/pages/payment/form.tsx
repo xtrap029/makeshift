@@ -43,8 +43,6 @@ export default function Form({
         data.payment_provider_id?.toString() || undefined
     );
 
-    // const [withAttachment, setWithAttachment] = useState<boolean>(data.with_attachment || false);
-
     const handleAttachmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -165,6 +163,19 @@ export default function Form({
                         disabled={processing}
                         placeholder="Notes"
                     />
+                </div>
+                <div className="col-span-4 grid gap-2">
+                    <Label htmlFor="reference_number">PR/PO ID</Label>
+                    <Input
+                        id="pr_no"
+                        type="text"
+                        required
+                        value={data.pr_no}
+                        onChange={(e) => setData('pr_no', e.target.value)}
+                        disabled={processing}
+                        placeholder="1234567890"
+                    />
+                    <InputError message={errors.pr_no} className="mt-2" />
                 </div>
                 <div className="col-span-4 grid gap-2">
                     <Label htmlFor="with_attachment">With Attachment</Label>

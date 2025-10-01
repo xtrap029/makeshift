@@ -156,6 +156,22 @@ export default function Show({ payment }: { payment: Payment }) {
                                         </TableCell>
                                     </TableRow>
                                     <TableRow>
+                                        <TableHead className={labelWidth}>PR/PO ID</TableHead>
+                                        <TableCell>
+                                            {payment.pr_no ? (
+                                                <a
+                                                    href={`${import.meta.env.VITE_PRPO_URL}/transaction/view/${payment.pr_no}`}
+                                                    target="_blank"
+                                                    className="underline"
+                                                >
+                                                    {payment.pr_no}
+                                                </a>
+                                            ) : (
+                                                '-'
+                                            )}
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
                                         <TableHead className={labelWidth}>Attachment</TableHead>
                                         <TableCell>
                                             {payment.attachment ? (

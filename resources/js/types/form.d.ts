@@ -98,6 +98,7 @@ export interface PaymentForm {
     payment_provider_id: number;
     note: string;
     reference_number: string;
+    pr_no: string;
     amount: number;
     amount_paid: number;
     paid_at: string;

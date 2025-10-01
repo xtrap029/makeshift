@@ -187,6 +187,7 @@ export interface Payment {
     note: string;
     status: number;
     reference_number: string;
+    pr_no: string;
     amount: number;
     amount_paid: number;
     paid_at: string | null;

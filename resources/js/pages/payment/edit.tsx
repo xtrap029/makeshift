@@ -29,6 +29,7 @@ export default function Edit({
         payment_provider_id: payment.payment_provider.id,
         note: payment.note,
         reference_number: payment.reference_number,
+        pr_no: payment.pr_no,
         amount: payment.amount,
         amount_paid: payment.amount_paid,
         paid_at: payment.paid_at ? dayjs(payment.paid_at).format('YYYY-MM-DDTHH:mm') : '',

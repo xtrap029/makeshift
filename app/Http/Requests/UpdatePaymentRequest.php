@@ -27,6 +27,7 @@ class UpdatePaymentRequest extends FormRequest
             'payment_provider_id' => 'required|integer|exists:payment_providers,id',
             'note' => 'nullable|string|max:255',
             'reference_number' => 'required|string|max:255|unique:payments,reference_number,' . $this->route('payment')->id,
+            'pr_no' => 'nullable|string|max:255',
             'amount' => 'required|numeric',
             'amount_paid' => 'required|numeric',
             'paid_at' => 'nullable|date_format:Y-m-d\TH:i',

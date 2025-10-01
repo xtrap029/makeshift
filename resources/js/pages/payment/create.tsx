@@ -26,6 +26,7 @@ export default function Create({
         payment_provider_id: payment_providers.find((p) => p.is_default)?.id || undefined,
         note: '',
         reference_number: '',
+        pr_no: '',
         amount: 0,
         amount_paid: 0,
         paid_at: '',

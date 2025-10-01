@@ -27,6 +27,7 @@ class StorePaymentRequest extends FormRequest
             'payment_provider_id' => 'required|integer|exists:payment_providers,id',
             'note' => 'nullable|string|max:255',
             'reference_number' => 'required|string|max:255|unique:payments,reference_number',
+            'pr_no' => 'nullable|string|max:255',
             'amount' => 'required|integer',
             'amount_paid' => 'required|integer',
             'paid_at' => 'nullable|date_format:Y-m-d\TH:i',

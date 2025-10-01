@@ -42,7 +42,7 @@ export default function Index({ payments }: { payments: PaginatedData<Payment> }
                         <TableRow>
                             <TableHead>ID</TableHead>
                             <TableHead>Reference Number</TableHead>
-                            <TableHead>Payment Provider</TableHead>
+                            <TableHead>PR/PO ID</TableHead>
                             <TableHead>Booking</TableHead>
                             <TableHead>Room</TableHead>
                             <TableHead>Created At</TableHead>
@@ -56,7 +56,19 @@ export default function Index({ payments }: { payments: PaginatedData<Payment> }
                             <TableRow key={payment.id}>
                                 <TableCell>{payment.id}</TableCell>
                                 <TableCell>{payment.reference_number}</TableCell>
-                                <TableCell>{payment.payment_provider?.name}</TableCell>
+                                <TableCell>
+                                    {payment.pr_no ? (
+                                        <a
+                                            href={`${import.meta.env.VITE_PRPO_URL}/transaction/view/${payment.pr_no}`}
+                                            target="_blank"
+                                            className="underline"
+                                        >
+                                            {payment.pr_no}
+                                        </a>
+                                    ) : (
+                                        '-'
+                                    )}
+                                </TableCell>
                                 <TableCell>
                                     <a
                                         href={`/bookings/${payment.booking.id}`}
