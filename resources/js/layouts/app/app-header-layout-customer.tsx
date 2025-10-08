@@ -43,7 +43,7 @@ export default function AppHeaderLayoutCustomer({
         const handleScroll = () => {
             setScrolled(window.scrollY > 10);
             if (isHome) {
-                setScrolledBanner(window.scrollY > 650);
+                setScrolledBanner(window.scrollY > 450);
             } else {
                 setScrolledBanner(true);
             }
@@ -96,7 +96,7 @@ export default function AppHeaderLayoutCustomer({
             <Toaster richColors position="top-right" />
             {isHome && (
                 <div
-                    className="h-[600px] bg-cover bg-center bg-no-repeat"
+                    className="h-[400px] bg-cover bg-center bg-no-repeat"
                     style={{
                         backgroundImage: `url(/home-banner.jpg)`,
                         backgroundSize: 'cover',
