@@ -347,7 +347,7 @@ export default function Show({ room }: { room: Room }) {
                                         </h2>
                                         <Badge
                                             variant="outline"
-                                            className="text-destructive text-md rounded-full font-bold shadow-sm"
+                                            className="text-destructive text-md rounded-full bg-white font-bold shadow-sm"
                                         >
                                             {room.price ? priceDisplay(Number(room.price)) : '-'}
                                             <span className="text-muted-foreground text-xs">

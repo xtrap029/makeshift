@@ -154,7 +154,7 @@ export default function Inquire({
                             transition={{ duration: 0.6 }}
                             style={{ transformStyle: 'preserve-3d' }}
                         >
-                            <div className="inset-0 flex flex-col gap-5 rounded-xl border border-gray-200 p-5 backface-hidden">
+                            <div className="inset-0 flex flex-col gap-5 rounded-xl border border-gray-200 bg-white p-5 backface-hidden">
                                 <div className="flex items-center gap-5">
                                     <div className="relative">
                                         <img
@@ -311,7 +311,7 @@ export default function Inquire({
                                 value={data.note}
                                 onChange={(e) => setData('note', e.target.value)}
                                 placeholder="Enter Note"
-                                className="rounded-2xl"
+                                className="rounded-2xl bg-white"
                                 disabled={processing}
                             />
                             <InputError message={zodErrors.note || errors.note} className="ml-3" />

@@ -110,9 +110,9 @@ export default function AppHeaderLayoutCustomer({
                 </div>
             )}
             <header
-                className={`bg-makeshift-primary sticky top-0 z-50 w-full pt-2 pt-6 text-white transition-all duration-300 ${
+                className={`bg-makeshift-coral sticky top-0 z-50 w-full pt-2 pt-6 text-white transition-all duration-300 ${
                     scrolled ? 'drop-shadow-[0_5px_5px_rgba(0,0,0,0.50)]' : ''
-                } ${scrolledBanner ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}
+                } ${scrolledBanner ? 'max-h-40 opacity-100' : 'z-[-1] max-h-0 opacity-0'}`}
             >
                 <div className="m-auto flex max-w-screen-xl items-center justify-between px-4 transition-all duration-300">
                     {header()}
@@ -141,8 +141,8 @@ export default function AppHeaderLayoutCustomer({
                     )}
                 </div>
             </header>
-            <div className={`${scrolledBanner ? 'bg-makeshift-primary' : 'mt-[-40px]'}`}>
-                <div className="-mb-1 h-5 rounded-t-2xl bg-white md:rounded-t-none"></div>
+            <div className={`${scrolledBanner ? 'bg-makeshift-coral' : 'mt-[-40px]'}`}>
+                <div className="bg-makeshift-white -mb-1 h-5 rounded-t-2xl md:rounded-t-none"></div>
             </div>
             <AppContentCustomer>
                 {children}
@@ -153,7 +153,7 @@ export default function AppHeaderLayoutCustomer({
                     <Link href="/spaces" className="flex items-center gap-2">
                         <CoffeeIcon
                             className={cn('size-8', {
-                                'text-makeshift-primary':
+                                'text-makeshift-coral':
                                     route().current('spaces') ||
                                     route().current('spaces.show') ||
                                     route().current('reservation.inquire'),
@@ -161,7 +161,7 @@ export default function AppHeaderLayoutCustomer({
                         />
                         <div
                             className={cn('ml-2 hidden text-xl font-bold md:block', {
-                                'text-makeshift-primary':
+                                'text-makeshift-coral':
                                     route().current('spaces') ||
                                     route().current('spaces.show') ||
                                     route().current('reservation.inquire'),
@@ -173,12 +173,12 @@ export default function AppHeaderLayoutCustomer({
                     <Link href="/" className="flex items-center gap-2">
                         <HomeIcon
                             className={cn('size-8', {
-                                'text-makeshift-primary': route().current('home'),
+                                'text-makeshift-coral': route().current('home'),
                             })}
                         />
                         <div
                             className={cn('ml-2 hidden text-xl font-bold md:block', {
-                                'text-makeshift-primary': route().current('home'),
+                                'text-makeshift-coral': route().current('home'),
                             })}
                         >
                             Home
@@ -187,12 +187,12 @@ export default function AppHeaderLayoutCustomer({
                     <Link href="/contact-us" className="flex items-center gap-2">
                         <MessageCircleIcon
                             className={cn('size-8', {
-                                'text-makeshift-primary': route().current('contactus'),
+                                'text-makeshift-coral': route().current('contactus'),
                             })}
                         />
                         <div
                             className={cn('ml-2 hidden text-xl font-bold md:block', {
-                                'text-makeshift-primary': route().current('contactus'),
+                                'text-makeshift-coral': route().current('contactus'),
                             })}
                         >
                             Contact Us

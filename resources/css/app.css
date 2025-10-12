@@ -59,6 +59,8 @@
     --color-sidebar-ring: var(--sidebar-ring);
 
     --color-makeshift-primary: var(--makeshift-primary);
+    --color-makeshift-white: #FCF2DD;
+    --color-makeshift-coral: #EF8576;
 }
 
 /*
@@ -424,4 +426,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
+}
+
+body {
+    background-color: var(--color-makeshift-white) !important;
 }

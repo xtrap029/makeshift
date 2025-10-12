@@ -23,8 +23,8 @@ const buttonVariants = cva(
           "bg-green-600 text-white shadow-xs hover:bg-green-600/90",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        makeshiftDefault: "bg-makeshift-primary text-white shadow-xs hover:bg-makeshift-primary/90",
-        makeshiftOutline: "border border-makeshift-primary text-makeshift-primary shadow-xs hover:bg-makeshift-primary/10",
+        makeshiftDefault: "bg-makeshift-coral text-white shadow-xs hover:bg-makeshift-coral/90",
+        makeshiftOutline: "border border-makeshift-coral text-makeshift-coral shadow-xs hover:bg-makeshift-coral/10",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

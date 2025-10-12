@@ -198,7 +198,7 @@ export default function Show({
                         </div>
                         <Badge
                             variant="outline"
-                            className="text-destructive rounded-full text-lg font-bold shadow-sm md:text-xl"
+                            className="text-destructive rounded-full bg-white text-lg font-bold shadow-sm md:text-xl"
                         >
                             {room.price ? priceDisplay(Number(room.price)) : '-'}
                             <span className="text-muted-foreground text-sm">/hr</span>
