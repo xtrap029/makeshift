@@ -1,17 +1,15 @@
 import { useForm } from '@inertiajs/react';
 
-export function useUpdateStatus(status: string) {
-    const form = useForm<{ status: string }>({
+export function useUpdateStatus(status: string, cancelReason?: string) {
+    const form = useForm<{ status: string; cancel_reason?: string }>({
         status: status,
     });
 
     const updateStatus = ({
-        routeName,
         id,
         label,
         options = {},
     }: {
-        routeName: string;
         id: number | string;
         label: string;
         options?: {
@@ -20,12 +18,15 @@ export function useUpdateStatus(status: string) {
             onError?: () => void;
         };
     }) => {
-        const confirmMsg =
-            options.confirmMessage || `Are you sure you want to update the status of ${label}?`;
+        if (status !== 'canceled') {
+            const confirmMsg =
+                options.confirmMessage || `Are you sure you want to update the status of ${label}?`;
+            if (!confirm(confirmMsg)) return;
+        } else {
+            form.data.cancel_reason = cancelReason;
+        }
 
-        if (!confirm(confirmMsg)) return;
-
-        form.put(route(routeName, { id }), {
+        form.put(route('bookings.updateStatus', { id }), {
             preserveScroll: true,
             preserveState: false,
             onSuccess: options.onSuccess,

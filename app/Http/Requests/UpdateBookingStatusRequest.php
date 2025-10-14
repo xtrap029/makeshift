@@ -24,6 +24,7 @@ class UpdateBookingStatusRequest extends FormRequest
     {
         return [
             'status' => 'required|string|in:' . implode(',', array_keys(config('global.booking_status'))),
+            'cancel_reason' => 'nullable|string|max:255',
         ];
     }
 }

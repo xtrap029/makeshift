@@ -6,6 +6,7 @@ import {
     DialogContent,
     DialogDescription,
     DialogHeader,
+    DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
 import {
@@ -17,6 +18,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
 import { bookingStatus } from '@/constants';
 import { useDelete } from '@/hooks/use-delete';
 import { useUpdateStatus } from '@/hooks/use-update-status';
@@ -34,7 +36,7 @@ import {
     Loader2,
     Send,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import ShowPayment from './show-payment';
 
@@ -44,12 +46,22 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Show', href: '/bookings/show' },
 ];
 
+const CANCEL_REASONS = [
+    'Guest request',
+    'Non-payment',
+    'Room unavailable',
+    'Maintenance issue',
+    'Policy violation',
+    'Other',
+];
+
 export default function Show({ booking }: { booking: Booking }) {
     const labelWidth = 'w-[150px]';
     const { destroy, processing: deleteProcessing } = useDelete();
+    const [isCanceledDialogOpen, setIsCanceledDialogOpen] = useState(false);
+    const [bookingCancelReason, setBookingCancelReason] = useState(booking.cancel_reason || '');
 
     const updateStatusConfig = {
-        routeName: 'bookings.updateStatus',
         id: booking.id,
         label: `#${booking.id}`,
     };
@@ -58,7 +70,7 @@ export default function Show({ booking }: { booking: Booking }) {
     const { updateStatus: updateToPendingStatus, processing: updateToPendingProcessing } =
         useUpdateStatus('pending');
     const { updateStatus: updateToCanceledStatus, processing: updateToCanceledProcessing } =
-        useUpdateStatus('canceled');
+        useUpdateStatus('canceled', bookingCancelReason);
     const { updateStatus: updateToConfirmedStatus, processing: updateToConfirmedProcessing } =
         useUpdateStatus('confirmed');
     const [isEmailProcessing, setIsEmailProcessing] = useState(false);
@@ -70,6 +82,12 @@ export default function Show({ booking }: { booking: Booking }) {
         updateToCanceledProcessing ||
         updateToConfirmedProcessing ||
         isEmailProcessing;
+
+    useEffect(() => {
+        if (!isCanceledDialogOpen) {
+            setBookingCancelReason('');
+        }
+    }, [isCanceledDialogOpen]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -147,9 +165,7 @@ export default function Show({ booking }: { booking: Booking }) {
                                         <>
                                             <DropdownMenuSeparator />
                                             <DropdownMenuItem
-                                                onClick={() =>
-                                                    updateToCanceledStatus(updateStatusConfig)
-                                                }
+                                                onClick={() => setIsCanceledDialogOpen(true)}
                                                 className="cursor-pointer"
                                             >
                                                 Canceled
@@ -443,6 +459,49 @@ export default function Show({ booking }: { booking: Booking }) {
                     </div>
                 </div>
             </div>
+            <Dialog open={isCanceledDialogOpen} onOpenChange={setIsCanceledDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogDescription className="flex flex-col gap-2">
+                            <DialogTitle>Cancel Booking</DialogTitle>
+                            <p className="pt-3">Are you sure you want to cancel this booking?</p>
+                            <Textarea
+                                value={bookingCancelReason}
+                                onChange={(e) => setBookingCancelReason(e.target.value)}
+                                placeholder="Enter Cancel Reason"
+                            />
+                            <div className="flex flex-wrap gap-2">
+                                {CANCEL_REASONS.map((reason) => (
+                                    <Badge
+                                        variant="outline"
+                                        className="cursor-pointer"
+                                        onClick={() => setBookingCancelReason(reason)}
+                                    >
+                                        {reason}
+                                    </Badge>
+                                ))}
+                            </div>
+                            <div className="flex justify-end gap-2">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setIsCanceledDialogOpen(false)}
+                                >
+                                    Back
+                                </Button>
+                                <Button
+                                    variant="destructive"
+                                    onClick={() => {
+                                        updateToCanceledStatus(updateStatusConfig);
+                                        setIsCanceledDialogOpen(false);
+                                    }}
+                                >
+                                    Cancel Now
+                                </Button>
+                            </div>
+                        </DialogDescription>
+                    </DialogHeader>
+                </DialogContent>
+            </Dialog>
         </AppLayout>
     );
 }

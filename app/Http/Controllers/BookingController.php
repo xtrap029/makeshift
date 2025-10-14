@@ -168,7 +168,7 @@ class BookingController extends Controller
                     return back()->withError($failed_message . 'Booking is not pending or canceled');
                 }
 
-                $booking->update(['status' => config('global.booking_status.inquiry')[0]]);
+                $booking->update(['status' => config('global.booking_status.inquiry')[0], 'cancel_reason' => null]);
                 break;
             case 'confirmed':
                 // Booking should be pending
@@ -213,7 +213,10 @@ class BookingController extends Controller
                     return back()->withError($failed_message . 'Booking is not pending');
                 }
 
-                $booking->update(['status' => config('global.booking_status.canceled')[0]]);
+                $booking->update([
+                    'status' => config('global.booking_status.canceled')[0],
+                    'cancel_reason' => $validated['cancel_reason'],
+                ]);
 
                 Mail::to($booking->customer_email)->send(new InquiryCancelled([
                     'name' => $booking->customer_name,
