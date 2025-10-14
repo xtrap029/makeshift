@@ -2,6 +2,31 @@
 
 @plugin 'tailwindcss-animate';
 
+/* Custom Font Face */
+@font-face {
+    font-family: 'Apricot';
+    src: url('/fonts/apricot.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Lato Regular';
+    src: url('/fonts/lato-regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    src: url('/fonts/open-sans.regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
@@ -10,6 +35,9 @@
 @theme {
     --font-sans:
         'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    
+    --font-makeshift-header: 'Apricot', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-makeshift-body: 'Lato Regular', 'Open Sans', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -61,6 +89,7 @@
     --color-makeshift-primary: var(--makeshift-primary);
     --color-makeshift-white: #FCF2DD;
     --color-makeshift-coral: #EF8576;
+    --color-makeshift-black: #232323;
 }
 
 /*
@@ -430,4 +459,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 body {
     background-color: var(--color-makeshift-white) !important;
+    font-family: var(--font-makeshift-body) !important;
+}
+
+.text-makeshift-header {
+    font-family: var(--font-makeshift-header) !important;
 }

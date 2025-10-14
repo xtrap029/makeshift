@@ -118,9 +118,7 @@ export default function AppHeaderLayoutCustomer({
                     {header()}
                 </div>
                 <h1
-                    className={`m-auto max-w-screen-xl pr-[70px] pb-3 pl-4 text-4xl font-extrabold transition-all duration-300 ${
-                        scrolled ? 'pt-2' : 'pt-6'
-                    }`}
+                    className={`text-makeshift-header m-auto max-w-screen-xl pt-6 pr-[70px] pb-3 pl-4 text-4xl font-extrabold transition-all duration-300`}
                 >
                     <Animation>{page.charAt(0).toUpperCase() + page.slice(1)}</Animation>
                 </h1>

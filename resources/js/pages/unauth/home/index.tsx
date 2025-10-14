@@ -20,10 +20,10 @@ export default function Index({
     return (
         <AppLayoutHeaderCustomer page="Welcome">
             <Head title="Home" />
-            <div className="flex flex-col items-center">
-                <div className="grid w-full grid-cols-2 gap-10">
-                    <div className="col-span-2 md:col-span-1">
-                        <h2 className="text-xl">Featured Space</h2>
+            <div className="-mx-4 flex flex-col items-center">
+                <div className="grid w-full grid-cols-2">
+                    <div className="col-span-2 px-4 py-6 md:col-span-1">
+                        <h2 className="text-makeshift-header text-2xl">Featured Space</h2>
                         <div className="relative">
                             <Badge
                                 variant="secondary"
@@ -48,14 +48,18 @@ export default function Index({
                         </div>
                         <p className="mt-3">{websiteAppearance.homeFeaturedDescription}</p>
                     </div>
-                    <div className="col-span-2 md:col-span-1">
-                        <h2 className="text-xl">{websiteAppearance.homeWhoTitle}</h2>
+                    <div className="bg-makeshift-black col-span-2 px-4 pt-6 pb-4 text-white md:col-span-1 md:bg-transparent md:text-black">
+                        <h2 className="text-makeshift-header text-2xl">
+                            {websiteAppearance.homeWhoTitle}
+                        </h2>
                         <div className="mt-3">
                             <RichText html={websiteAppearance.homeWhoDescription ?? ''} />
                         </div>
                     </div>
-                    <div className="col-span-2 md:col-span-1">
-                        <h2 className="text-xl">{websiteAppearance.homeYoutubeText}</h2>
+                    <div className="col-span-2 px-4 py-6 md:col-span-1">
+                        <h2 className="text-makeshift-header text-2xl">
+                            {websiteAppearance.homeYoutubeText}
+                        </h2>
                         <Card className="mt-3 w-full overflow-hidden rounded-2xl p-0 shadow-lg">
                             <CardContent className="p-0">
                                 <iframe
@@ -69,8 +73,8 @@ export default function Index({
                             </CardContent>
                         </Card>
                     </div>
-                    <div className="col-span-2 md:col-span-1">
-                        <h2 className="text-xl">More Spaces</h2>
+                    <div className="bg-makeshift-black col-span-2 px-4 pt-6 pb-4 text-white md:col-span-1 md:bg-transparent md:text-black">
+                        <h2 className="text-makeshift-header text-2xl">More Spaces</h2>
                         <Carousel
                             opts={{
                                 align: 'start',
@@ -129,8 +133,10 @@ export default function Index({
                             </CarouselContent>
                         </Carousel>
                     </div>
-                    <div className="col-span-2 md:col-span-1">
-                        <h2 className="text-xl">{websiteAppearance.homeMapText}</h2>
+                    <div className="col-span-2 px-4 py-6 md:col-span-1">
+                        <h2 className="text-makeshift-header text-2xl">
+                            {websiteAppearance.homeMapText}
+                        </h2>
                         <Card className="mt-3 w-full overflow-hidden rounded-2xl p-0 shadow-lg">
                             <CardContent className="p-0">
                                 <iframe
