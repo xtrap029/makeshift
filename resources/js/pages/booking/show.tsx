@@ -462,41 +462,46 @@ export default function Show({ booking }: { booking: Booking }) {
             <Dialog open={isCanceledDialogOpen} onOpenChange={setIsCanceledDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogDescription className="flex flex-col gap-2">
-                            <DialogTitle>Cancel Booking</DialogTitle>
-                            <p className="pt-3">Are you sure you want to cancel this booking?</p>
-                            <Textarea
-                                value={bookingCancelReason}
-                                onChange={(e) => setBookingCancelReason(e.target.value)}
-                                placeholder="Enter Cancel Reason"
-                            />
-                            <div className="flex flex-wrap gap-2">
-                                {CANCEL_REASONS.map((reason) => (
-                                    <Badge
+                        <DialogDescription className="flex flex-col gap-2" asChild>
+                            <div>
+                                <DialogTitle>Cancel Booking</DialogTitle>
+                                <p className="pt-3">
+                                    Are you sure you want to cancel this booking?
+                                </p>
+                                <Textarea
+                                    value={bookingCancelReason}
+                                    onChange={(e) => setBookingCancelReason(e.target.value)}
+                                    placeholder="Enter Cancel Reason"
+                                />
+                                <div className="flex flex-wrap gap-2">
+                                    {CANCEL_REASONS.map((reason) => (
+                                        <Badge
+                                            key={reason}
+                                            variant="outline"
+                                            className="cursor-pointer"
+                                            onClick={() => setBookingCancelReason(reason)}
+                                        >
+                                            {reason}
+                                        </Badge>
+                                    ))}
+                                </div>
+                                <div className="flex justify-end gap-2">
+                                    <Button
                                         variant="outline"
-                                        className="cursor-pointer"
-                                        onClick={() => setBookingCancelReason(reason)}
+                                        onClick={() => setIsCanceledDialogOpen(false)}
                                     >
-                                        {reason}
-                                    </Badge>
-                                ))}
-                            </div>
-                            <div className="flex justify-end gap-2">
-                                <Button
-                                    variant="outline"
-                                    onClick={() => setIsCanceledDialogOpen(false)}
-                                >
-                                    Back
-                                </Button>
-                                <Button
-                                    variant="destructive"
-                                    onClick={() => {
-                                        updateToCanceledStatus(updateStatusConfig);
-                                        setIsCanceledDialogOpen(false);
-                                    }}
-                                >
-                                    Cancel Now
-                                </Button>
+                                        Back
+                                    </Button>
+                                    <Button
+                                        variant="destructive"
+                                        onClick={() => {
+                                            updateToCanceledStatus(updateStatusConfig);
+                                            setIsCanceledDialogOpen(false);
+                                        }}
+                                    >
+                                        Cancel Now
+                                    </Button>
+                                </div>
                             </div>
                         </DialogDescription>
                     </DialogHeader>
