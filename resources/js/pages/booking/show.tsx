@@ -489,6 +489,7 @@ export default function Show({ booking }: { booking: Booking }) {
                                     <Button
                                         variant="outline"
                                         onClick={() => setIsCanceledDialogOpen(false)}
+                                        className="cursor-pointer"
                                     >
                                         Back
                                     </Button>
@@ -498,6 +499,7 @@ export default function Show({ booking }: { booking: Booking }) {
                                             updateToCanceledStatus(updateStatusConfig);
                                             setIsCanceledDialogOpen(false);
                                         }}
+                                        className="cursor-pointer"
                                     >
                                         Cancel Now
                                     </Button>

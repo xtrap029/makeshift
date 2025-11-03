@@ -13,16 +13,51 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Http\Requests\FilterRoomRequest;
 
 class RoomController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(FilterRoomRequest $request)
     {
+        $filters = $request->validated();
+
+        $rooms = Room::query()
+            ->with('schedule')
+            ->orderBy('name');
+
+        if (isset($filters['schedule_id']) && $filters['schedule_id']) {
+            $rooms->where('schedule_id', $filters['schedule_id']);
+        }
+
+        if (!empty($filters['layouts'])) {
+            foreach ($filters['layouts'] as $layoutId) {
+                $rooms->whereHas('layouts', function ($q) use ($layoutId) {
+                    $q->where('layouts.id', $layoutId);
+                });
+            }
+        }
+
+        if (!empty($filters['amenities'])) {
+            foreach ($filters['amenities'] as $amenityId) {
+                $rooms->whereHas('amenities', function ($q) use ($amenityId) {
+                    $q->where('amenities.id', $amenityId);
+                });
+            }
+        }
+
+        $rooms = $rooms
+            ->paginate(config('global.pagination_limit'))
+            ->withQueryString();
+
         return Inertia::render('room/index', [
-            'rooms' => Room::with('schedule')->orderBy('name')->paginate(config('global.pagination_limit')),
+            'amenities' => Amenity::orderBy('name')->get(),
+            'layouts' => Layout::orderBy('name')->get(),
+            'schedules' => Schedule::orderBy('name')->get(),
+            'rooms' => $rooms,
+            'filters' => $filters,
         ]);
     }
 
