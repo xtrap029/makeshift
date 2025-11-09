@@ -183,7 +183,7 @@ export default function Index({
                 <Pagination links={payments.links} />
             </div>
             <FilterDialog
-                title="Filter Bookings"
+                title="Filter Payments"
                 open={isFilterOpen}
                 onOpenChange={setIsFilterOpen}
                 onApply={applyFilters}
