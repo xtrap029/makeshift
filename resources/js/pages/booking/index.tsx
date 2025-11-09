@@ -1,7 +1,18 @@
+import FilterDialog from '@/components/custom/filter-dialog';
 import Header from '@/components/custom/page/header';
 import Pagination from '@/components/custom/pagination';
 import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { MultiSelect } from '@/components/ui/multi-select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import {
     Table,
     TableBody,
@@ -12,11 +23,11 @@ import {
 } from '@/components/ui/table';
 import { bookingStatus as bookingStatusConstants } from '@/constants';
 import AppLayout from '@/layouts/app-layout';
-import { Booking, type BreadcrumbItem } from '@/types';
+import { Booking, Layout, Room, type BreadcrumbItem } from '@/types';
 import { PaginatedData } from '@/types/pagination';
 import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
-import { Eye } from 'lucide-react';
+import { Eye, SlidersHorizontal } from 'lucide-react';
 
 import moment from 'moment';
 import { useCallback, useEffect, useState } from 'react';
@@ -34,7 +45,23 @@ interface CustomEvent extends Event {
     status: number;
 }
 
-export default function Index({ bookings }: { bookings: PaginatedData<Booking> }) {
+export default function Index({
+    bookings,
+    rooms,
+    layouts,
+    filters,
+}: {
+    bookings: PaginatedData<Booking>;
+    rooms: Room[];
+    layouts: Layout[];
+    filters: {
+        date_from: string | undefined;
+        date_to: string | undefined;
+        rooms: number[];
+        layouts: number[];
+        status: string | undefined;
+    };
+}) {
     const [isCalendarView, setIsCalendarView] = useState(false);
     const [calendarBookings, setCalendarBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(false);
@@ -53,6 +80,29 @@ export default function Index({ bookings }: { bookings: PaginatedData<Booking> }
             status: booking.status,
         };
     });
+
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [resetToken, setResetToken] = useState(0);
+    const [filterData, setFilterData] = useState<{
+        date_from: string | undefined;
+        date_to: string | undefined;
+        rooms: number[];
+        layouts: number[];
+        status: string | undefined;
+    }>({
+        date_from: filters.date_from || undefined,
+        date_to: filters.date_to || undefined,
+        rooms: filters.rooms || [],
+        layouts: filters.layouts || [],
+        status: filters.status || undefined,
+    });
+
+    const applyFilters = () => {
+        router.get(route('bookings.index'), filterData, {
+            preserveState: true,
+            replace: true,
+        });
+    };
 
     const fetchCalendarData = useCallback(async (date: Date) => {
         setLoading(true);
@@ -96,7 +146,15 @@ export default function Index({ bookings }: { bookings: PaginatedData<Booking> }
                     <div className="flex gap-2">
                         <Button
                             variant="outline"
+                            className="cursor-pointer"
+                            onClick={() => setIsFilterOpen(true)}
+                        >
+                            <SlidersHorizontal className="size-4" />
+                        </Button>
+                        <Button
+                            variant="outline"
                             onClick={() => setIsCalendarView(!isCalendarView)}
+                            className="cursor-pointer"
                         >
                             View in {isCalendarView ? 'Table' : 'Calendar'} format
                         </Button>
@@ -201,6 +259,109 @@ export default function Index({ bookings }: { bookings: PaginatedData<Booking> }
                     </>
                 )}
             </div>
+            <FilterDialog
+                title="Filter Bookings"
+                open={isFilterOpen}
+                onOpenChange={setIsFilterOpen}
+                onApply={applyFilters}
+                onClear={() => {
+                    setFilterData({
+                        date_from: undefined,
+                        date_to: undefined,
+                        rooms: [],
+                        layouts: [],
+                        status: undefined,
+                    });
+                    setResetToken((n) => n + 1);
+                }}
+            >
+                <div className="flex flex-wrap gap-2">
+                    <Label htmlFor="status">Status</Label>
+                    <Select
+                        key={`status-${resetToken}`}
+                        value={filterData.status || ''}
+                        onValueChange={(value) => {
+                            setFilterData({
+                                ...filterData,
+                                status: value,
+                            });
+                        }}
+                    >
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {bookingStatusConstants.map((status) => (
+                                <SelectItem key={status.id} value={status.id.toString()}>
+                                    {status.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="flex flex-row gap-2">
+                    <div className="flex flex-wrap gap-2">
+                        <Label htmlFor="date_from">Date From</Label>
+                        <Input
+                            id="date_from"
+                            type="date"
+                            value={filterData.date_from || ''}
+                            onChange={(e) =>
+                                setFilterData({ ...filterData, date_from: e.target.value })
+                            }
+                        />
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        <Label htmlFor="date_to">Date To</Label>
+                        <Input
+                            id="date_to"
+                            type="date"
+                            value={filterData.date_to || ''}
+                            onChange={(e) =>
+                                setFilterData({ ...filterData, date_to: e.target.value })
+                            }
+                        />
+                    </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                    <Label htmlFor="rooms">Rooms</Label>
+                    <MultiSelect
+                        key={`rooms-${resetToken}`}
+                        options={rooms.map((room) => ({
+                            value: room.id.toString(),
+                            label: room.name,
+                        }))}
+                        onValueChange={(tags) => {
+                            setFilterData({
+                                ...filterData,
+                                rooms: tags.map(Number),
+                            });
+                        }}
+                        defaultValue={filterData.rooms.map(String)}
+                        placeholder="Select rooms"
+                        variant="inverted"
+                    />
+                </div>
+                <div className="flex flex-wrap gap-2">
+                    <Label htmlFor="layouts">Layouts</Label>
+                    <MultiSelect
+                        key={`layouts-${resetToken}`}
+                        options={layouts.map((layout) => ({
+                            value: layout.id.toString(),
+                            label: layout.name,
+                        }))}
+                        onValueChange={(tags) => {
+                            setFilterData({
+                                ...filterData,
+                                layouts: tags.map(Number),
+                            });
+                        }}
+                        defaultValue={filterData.layouts.map(String)}
+                        placeholder="Select layouts"
+                        variant="inverted"
+                    />
+                </div>
+            </FilterDialog>
         </AppLayout>
     );
 }

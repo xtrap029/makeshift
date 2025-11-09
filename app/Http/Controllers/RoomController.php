@@ -28,6 +28,10 @@ class RoomController extends Controller
             ->with('schedule')
             ->orderBy('name');
 
+        if (isset($filters['status'])) {
+            $rooms->where('is_active', $filters['status']);
+        }
+
         if (isset($filters['schedule_id']) && $filters['schedule_id']) {
             $rooms->where('schedule_id', $filters['schedule_id']);
         }

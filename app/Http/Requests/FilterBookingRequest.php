@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /** @method \App\Models\Room route(string $key = null) */
-class FilterRoomRequest extends FormRequest
+class FilterBookingRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,10 +23,11 @@ class FilterRoomRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'schedule_id' => 'nullable|integer',
-            'amenities' => 'nullable|array',
+            'rooms' => 'nullable|array',
             'layouts' => 'nullable|array',
-            'status' => 'nullable|string|in:1,0',
+            'status' => 'nullable|string|in:' . implode(',', array_column(config('global.booking_status'), 0)),
+            'date_from' => 'nullable|date',
+            'date_to' => 'nullable|date',
         ];
     }
 }

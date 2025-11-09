@@ -18,6 +18,7 @@ use App\Services\VoucherService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Http\Requests\FilterBookingRequest;
 
 class BookingController extends Controller
 {
@@ -31,10 +32,39 @@ class BookingController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(FilterBookingRequest $request)
     {
+        $filters = $request->validated();
+
+        $bookings = Booking::with('room', 'layout')->orderBy('created_at', 'desc');
+
+        if (isset($filters['date_from'])) {
+            $bookings->where('start_date', '>=', $filters['date_from']);
+        }
+
+        if (isset($filters['date_to'])) {
+            $bookings->where('start_date', '<=', $filters['date_to']);
+        }
+
+        if (isset($filters['rooms'])) {
+            $bookings->whereIn('room_id', $filters['rooms']);
+        }
+
+        if (isset($filters['layouts'])) {
+            $bookings->whereIn('layout_id', $filters['layouts']);
+        }
+
+        if (isset($filters['status'])) {
+            $bookings->where('status', $filters['status']);
+        }
+
+        $bookings = $bookings->paginate(config('global.pagination_limit'))->withQueryString();
+
         return Inertia::render('booking/index', [
-            'bookings' => Booking::with('room', 'layout')->orderBy('created_at', 'desc')->paginate(config('global.pagination_limit')),
+            'bookings' => $bookings,
+            'rooms' => Room::orderBy('name')->get(),
+            'layouts' => Layout::orderBy('name')->get(),
+            'filters' => $filters,
         ]);
     }
 

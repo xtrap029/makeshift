@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FilterScheduleRequest;
 use App\Http\Requests\StoreScheduleRequest;
 use App\Http\Requests\UpdateScheduleRequest;
 use App\Models\Room;
@@ -14,14 +15,27 @@ class ScheduleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(FilterScheduleRequest $request)
     {
-        $schedules = Schedule::orderBy('name')->paginate(config('global.pagination_limit'));
+        $filters = $request->validated();
+
+        $schedules = Schedule::orderBy('name');
+
+        if (isset($filters['status'])) {
+            $schedules->where('is_active', $filters['status']);
+        }
+
+        $schedules = $schedules
+            ->paginate(config('global.pagination_limit'))
+            ->withQueryString();
+
         foreach ($schedules as $schedule) {
             $schedule->max_date = Carbon::parse($schedule->max_date)->diffForHumans();
         }
+
         return Inertia::render('schedule/index', [
             'schedules' => $schedules,
+            'filters' => $filters,
         ]);
     }
 

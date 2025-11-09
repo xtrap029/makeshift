@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /** @method \App\Models\Room route(string $key = null) */
-class FilterRoomRequest extends FormRequest
+class FilterScheduleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,9 +23,6 @@ class FilterRoomRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'schedule_id' => 'nullable|integer',
-            'amenities' => 'nullable|array',
-            'layouts' => 'nullable|array',
             'status' => 'nullable|string|in:1,0',
         ];
     }

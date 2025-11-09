@@ -4,22 +4,55 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
-use App\Http\Requests\UpdatePaymentStatusRequest;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\PaymentProvider;
+use App\Models\Room;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use App\Http\Requests\FilterPaymentRequest;
 
 class PaymentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(FilterPaymentRequest $request)
     {
+        $filters = $request->validated();
+
+        $payments = Payment::with('booking.room', 'payment_provider')->orderBy('created_at', 'desc');
+
+        if (isset($filters['date_from'])) {
+            $payments->where('paid_at', '>=', $filters['date_from']);
+        }
+
+        if (isset($filters['date_to'])) {
+            $payments->where('paid_at', '<=', $filters['date_to']);
+        }
+
+        if (isset($filters['rooms'])) {
+            $payments->whereIn('booking_id', Booking::whereIn('room_id', $filters['rooms'])->pluck('id'));
+        }
+
+        if (isset($filters['status'])) {
+            $payments->where('status', $filters['status']);
+        }
+
+        if (isset($filters['reference_number'])) {
+            $payments->where('reference_number', 'like', '%' . $filters['reference_number'] . '%');
+        }
+
+        if (isset($filters['note'])) {
+            $payments->where('note', 'like', '%' . $filters['note'] . '%');
+        }
+
+        $payments = $payments->paginate(config('global.pagination_limit'))->withQueryString();
+
         return Inertia::render('payment/index', [
-            'payments' => Payment::with('booking.room', 'payment_provider')->orderBy('created_at', 'desc')->paginate(config('global.pagination_limit')),
+            'payments' => $payments,
+            'rooms' => Room::orderBy('name')->get(),
+            'filters' => $filters,
         ]);
     }
 

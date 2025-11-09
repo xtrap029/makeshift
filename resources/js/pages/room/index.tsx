@@ -1,13 +1,7 @@
+import FilterDialog from '@/components/custom/filter-dialog';
 import Header from '@/components/custom/page/header';
 import Pagination from '@/components/custom/pagination';
 import { Button, buttonVariants } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { MultiSelect } from '@/components/ui/multi-select';
 import {
@@ -39,12 +33,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Rooms', href: '/rooms' },
 ];
 
-const initialFilterData = {
-    schedule_id: undefined,
-    amenities: [],
-    layouts: [],
-};
-
 export default function Index({
     rooms,
     amenities,
@@ -60,6 +48,7 @@ export default function Index({
         schedule_id: string | undefined;
         amenities: number[];
         layouts: number[];
+        status: string | undefined;
     };
 }) {
     const { destroy, processing } = useDelete();
@@ -70,10 +59,12 @@ export default function Index({
         schedule_id: string | undefined;
         amenities: number[];
         layouts: number[];
+        status: string | undefined;
     }>({
         schedule_id: filters.schedule_id || undefined,
         amenities: filters.amenities || [],
         layouts: filters.layouts || [],
+        status: filters.status || undefined,
     });
 
     const applyFilters = () => {
@@ -162,116 +153,107 @@ export default function Index({
                 </Table>
                 <Pagination links={rooms.links} />
             </div>
-            <Dialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogDescription className="flex flex-col gap-2" asChild>
-                            <div>
-                                <DialogTitle>Filter Rooms</DialogTitle>
-                                <div className="flex flex-col gap-4 py-3">
-                                    <div className="flex flex-wrap gap-2">
-                                        <Label htmlFor="schedule">Schedule</Label>
-                                        <Select
-                                            value={filterData.schedule_id || ''}
-                                            onValueChange={(value) => {
-                                                setFilterData({
-                                                    ...filterData,
-                                                    schedule_id: value,
-                                                });
-                                            }}
-                                            disabled={processing}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select a schedule" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {schedules.map((schedule) => (
-                                                    <SelectItem
-                                                        key={schedule.id}
-                                                        value={schedule.id.toString()}
-                                                    >
-                                                        {schedule.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="flex flex-wrap gap-2">
-                                        <Label htmlFor="amenities">Amenities</Label>
-                                        <MultiSelect
-                                            key={`amenities-${resetToken}`}
-                                            options={amenities.map((amenity) => ({
-                                                value: amenity.id.toString(),
-                                                label: amenity.name,
-                                            }))}
-                                            onValueChange={(tags) => {
-                                                setFilterData({
-                                                    ...filterData,
-                                                    amenities: tags.map(Number),
-                                                });
-                                            }}
-                                            defaultValue={filterData.amenities.map(String)}
-                                            placeholder="Select amenities"
-                                            variant="inverted"
-                                        />
-                                    </div>
-                                    <div className="flex flex-wrap gap-2">
-                                        <Label htmlFor="layouts">Layouts</Label>
-                                        <MultiSelect
-                                            key={`layouts-${resetToken}`}
-                                            options={layouts.map((layout) => ({
-                                                value: layout.id.toString(),
-                                                label: layout.name,
-                                            }))}
-                                            onValueChange={(tags) => {
-                                                setFilterData({
-                                                    ...filterData,
-                                                    layouts: tags.map(Number),
-                                                });
-                                            }}
-                                            defaultValue={filterData.layouts.map(String)}
-                                            placeholder="Select layouts"
-                                            variant="inverted"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="flex justify-between">
-                                    <div className="flex flex-wrap gap-2">
-                                        <Button
-                                            variant="outline"
-                                            onClick={() => setIsFilterOpen(false)}
-                                            className="cursor-pointer"
-                                        >
-                                            Back
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            className="cursor-pointer"
-                                            onClick={() => {
-                                                setFilterData({
-                                                    ...initialFilterData,
-                                                });
-                                                setResetToken((n) => n + 1);
-                                            }}
-                                            disabled={processing}
-                                        >
-                                            Clear All
-                                        </Button>
-                                    </div>
-                                    <Button
-                                        variant="default"
-                                        className="cursor-pointer"
-                                        disabled={processing}
-                                        onClick={applyFilters}
-                                    >
-                                        Apply Filters
-                                    </Button>
-                                </div>
-                            </div>
-                        </DialogDescription>
-                    </DialogHeader>
-                </DialogContent>
-            </Dialog>
+            <FilterDialog
+                title="Filter Rooms"
+                open={isFilterOpen}
+                onOpenChange={setIsFilterOpen}
+                onApply={applyFilters}
+                onClear={() => {
+                    setFilterData({
+                        schedule_id: undefined,
+                        amenities: [],
+                        layouts: [],
+                        status: undefined,
+                    });
+                    setResetToken((n) => n + 1);
+                }}
+                processing={processing}
+            >
+                <div className="flex flex-wrap gap-2">
+                    <Label htmlFor="status">Status</Label>
+                    <Select
+                        key={`status-${resetToken}`}
+                        value={filterData.status || ''}
+                        onValueChange={(value) => {
+                            setFilterData({
+                                ...filterData,
+                                status: value,
+                            });
+                        }}
+                        disabled={processing}
+                    >
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="1">Active</SelectItem>
+                            <SelectItem value="0">Inactive</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                    <Label htmlFor="schedule">Schedule</Label>
+                    <Select
+                        value={filterData.schedule_id || ''}
+                        onValueChange={(value) => {
+                            setFilterData({
+                                ...filterData,
+                                schedule_id: value,
+                            });
+                        }}
+                        disabled={processing}
+                    >
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a schedule" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {schedules.map((schedule) => (
+                                <SelectItem key={schedule.id} value={schedule.id.toString()}>
+                                    {schedule.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                    <Label htmlFor="amenities">Amenities</Label>
+                    <MultiSelect
+                        key={`amenities-${resetToken}`}
+                        options={amenities.map((amenity) => ({
+                            value: amenity.id.toString(),
+                            label: amenity.name,
+                        }))}
+                        onValueChange={(tags) => {
+                            setFilterData({
+                                ...filterData,
+                                amenities: tags.map(Number),
+                            });
+                        }}
+                        defaultValue={filterData.amenities.map(String)}
+                        placeholder="Select amenities"
+                        variant="inverted"
+                    />
+                </div>
+                <div className="flex flex-wrap gap-2">
+                    <Label htmlFor="layouts">Layouts</Label>
+                    <MultiSelect
+                        key={`layouts-${resetToken}`}
+                        options={layouts.map((layout) => ({
+                            value: layout.id.toString(),
+                            label: layout.name,
+                        }))}
+                        onValueChange={(tags) => {
+                            setFilterData({
+                                ...filterData,
+                                layouts: tags.map(Number),
+                            });
+                        }}
+                        defaultValue={filterData.layouts.map(String)}
+                        placeholder="Select layouts"
+                        variant="inverted"
+                    />
+                </div>
+            </FilterDialog>
         </AppLayout>
     );
 }
