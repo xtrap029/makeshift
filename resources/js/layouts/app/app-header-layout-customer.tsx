@@ -146,7 +146,7 @@ export default function AppHeaderLayoutCustomer({
                 {children}
                 <div className="h-[70px]"></div>
             </AppContentCustomer>
-            <div className="fixed right-0 bottom-0 left-0 m-auto max-w-screen-xl border-t-2 border-gray-200 bg-white px-4 py-6">
+            <div className="fixed right-0 bottom-0 left-0 m-auto max-w-screen-xl border-t-2 border-gray-200 bg-white px-4 py-6 md:mb-6 md:rounded-full md:border-0 md:shadow-lg">
                 <div className="flex items-center justify-around">
                     <Link href="/spaces" className="flex items-center gap-2">
                         <CoffeeIcon
