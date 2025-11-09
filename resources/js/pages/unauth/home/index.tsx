@@ -27,7 +27,7 @@ export default function Index({
                         <div className="relative">
                             <Badge
                                 variant="secondary"
-                                className="absolute top-0 right-0 mt-4 mr-3 animate-pulse"
+                                className="absolute top-0 right-0 mt-4 mr-3 animate-pulse cursor-pointer"
                                 onClick={() =>
                                     router.visit(
                                         route(
@@ -92,7 +92,7 @@ export default function Index({
                                     >
                                         <Badge
                                             variant="secondary"
-                                            className="absolute top-0 right-0 mt-4 mr-3 animate-pulse"
+                                            className="absolute top-0 right-0 mt-4 mr-3 animate-pulse cursor-pointer"
                                             onClick={() =>
                                                 router.visit(
                                                     route('spaces.show', room.name) +
