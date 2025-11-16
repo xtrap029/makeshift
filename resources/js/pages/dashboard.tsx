@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/table';
 import { bookingStatus as bookingStatusConstants } from '@/constants';
 import AppLayout from '@/layouts/app-layout';
-import { Booking, type BreadcrumbItem } from '@/types';
+import { Booking, User, type BreadcrumbItem } from '@/types';
 import { PaginatedData } from '@/types/pagination';
 import { Head, router } from '@inertiajs/react';
 import { Scanner } from '@yudiel/react-qr-scanner';
@@ -30,7 +30,15 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Dashboard({ todaysBookings }: { todaysBookings: PaginatedData<Booking> }) {
+export default function Dashboard({
+    todaysBookings,
+    lastLoginUsers,
+    latestBookings,
+}: {
+    todaysBookings: PaginatedData<Booking>;
+    lastLoginUsers: User[];
+    latestBookings: Booking[];
+}) {
     const [voucherCode, setVoucherCode] = useState('');
     const [isScanning, setIsScanning] = useState(false);
     const [verifiedBooking, setVerifiedBooking] = useState<Booking | null>(null);
@@ -94,8 +102,8 @@ export default function Dashboard({ todaysBookings }: { todaysBookings: Paginate
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-4">
-                    <Card className="col-span-3">
+                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+                    <Card className="col-span-2">
                         <CardHeader>
                             <CardTitle>Today's Bookings</CardTitle>
                             <CardDescription>List of bookings for today</CardDescription>
@@ -274,12 +282,102 @@ export default function Dashboard({ todaysBookings }: { todaysBookings: Paginate
                     </Card>
                 </div>
                 <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                    <div className="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                    <div className="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
+                    <Card className="col-span-2">
+                        <CardHeader>
+                            <CardTitle>Latest Bookings</CardTitle>
+                            <CardDescription>List of latest bookings</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Booking</TableHead>
+                                        <TableHead>Room</TableHead>
+                                        <TableHead>Date</TableHead>
+                                        <TableHead>Time</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="text-right">Created At</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {latestBookings.map((booking) => (
+                                        <TableRow key={booking.id}>
+                                            <TableCell>
+                                                <a
+                                                    href={`/bookings/${booking.id}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="underline"
+                                                >
+                                                    {booking.booking_id}
+                                                </a>
+                                            </TableCell>
+                                            <TableCell>
+                                                <a
+                                                    href={`/rooms/${booking.room.id}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="underline"
+                                                >
+                                                    {booking.room.name}
+                                                </a>
+                                            </TableCell>
+                                            <TableCell>{booking.start_date}</TableCell>
+                                            <TableCell>
+                                                {booking.start_time.slice(0, 5)} -{' '}
+                                                {booking.end_time.slice(0, 5)}
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge
+                                                    variant="outline"
+                                                    className={
+                                                        bookingStatusConstants.find(
+                                                            (status) => status.id === booking.status
+                                                        )?.badgeClass
+                                                    }
+                                                >
+                                                    {
+                                                        bookingStatusConstants.find(
+                                                            (status) => status.id === booking.status
+                                                        )?.label
+                                                    }
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                {booking.created_at_formatted}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                    <Card className="col-span-1">
+                        <CardHeader>
+                            <CardTitle>Last Login Users</CardTitle>
+                            <CardDescription>List of users who logged in last</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Name</TableHead>
+                                        <TableHead className="text-right">Last Login</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {lastLoginUsers.map((user) => (
+                                        <TableRow key={user.id}>
+                                            <TableCell>{user.name}</TableCell>
+                                            <TableCell className="text-right">
+                                                {user.login_at}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
                     <div className="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
                         <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
                     </div>

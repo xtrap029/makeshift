@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Models\User;
+use Carbon\Carbon;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -24,8 +24,20 @@ class DashboardController extends Controller
             $booking->total_hours = $booking->total_hours();
         });
 
+        $lastLoginUsers = User::whereNotNull('login_at')->orderBy('login_at', 'desc')->limit(5)->get();
+        $lastLoginUsers->each(function ($user) {
+            $user->login_at = $user->login_at ? Carbon::parse($user->login_at)->diffForHumans() : '-';
+        });
+
+        $latestBookings = Booking::orderBy('created_at', 'desc')->limit(5)->get();
+        $latestBookings->each(function ($booking) {
+            $booking->created_at_formatted = $booking->created_at ? Carbon::parse($booking->created_at)->diffForHumans() : '-';
+        });
+
         return Inertia::render('dashboard', [
             'todaysBookings' => $todaysBookings,
+            'lastLoginUsers' => $lastLoginUsers,
+            'latestBookings' => $latestBookings,
         ]);
     }
 }

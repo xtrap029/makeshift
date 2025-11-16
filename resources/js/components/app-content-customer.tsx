@@ -16,7 +16,7 @@ export function AppContentCustomer({
 
     return (
         <main
-            className="mx-auto flex h-full w-full max-w-7xl flex-1 flex-col gap-4 rounded-xl px-4 pb-4"
+            className="mx-auto flex h-full w-full max-w-7xl flex-1 flex-col gap-4 rounded-xl px-4 pb-20"
             {...props}
         >
             {children}

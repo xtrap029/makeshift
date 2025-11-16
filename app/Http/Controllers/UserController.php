@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -15,8 +16,13 @@ class UserController extends Controller
      */
     public function index()
     {
+        $users = User::orderBy('name')->paginate(config('global.pagination_limit'));
+        $users->each(function ($user) {
+            $user->login_at = $user->login_at ? Carbon::parse($user->login_at)->diffForHumans() : '-';
+        });
+        
         return Inertia::render('users/index', [
-            'users' => User::orderBy('name')->paginate(config('global.pagination_limit')),
+            'users' => $users,
         ]);
     }
 

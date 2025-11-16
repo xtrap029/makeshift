@@ -42,6 +42,7 @@ export default function Index({ users }: { users: PaginatedData<User> }) {
                         <TableRow>
                             <TableHead>Name</TableHead>
                             <TableHead>Email</TableHead>
+                            <TableHead className="text-right">Last Login</TableHead>
                             <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
@@ -50,6 +51,7 @@ export default function Index({ users }: { users: PaginatedData<User> }) {
                             <TableRow key={user.id}>
                                 <TableCell>{user.name}</TableCell>
                                 <TableCell>{user.email}</TableCell>
+                                <TableCell className="text-right">{user.login_at ? user.login_at : '-'}</TableCell>
                                 <TableCell className="flex justify-end gap-2">
                                     <Link
                                         className={buttonVariants({ variant: 'ghost' })}
