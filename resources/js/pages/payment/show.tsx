@@ -126,13 +126,19 @@ export default function Show({ payment }: { payment: Payment }) {
                                     <TableRow>
                                         <TableHead className={labelWidth}>Room</TableHead>
                                         <TableCell>
-                                            <a
-                                                href={`/rooms/${payment.booking?.room?.id}`}
-                                                target="_blank"
-                                                className="underline"
-                                            >
-                                                {payment.booking?.room?.name}
-                                            </a>
+                                            {payment.booking?.room?.deleted_at ? (
+                                                <span className="text-sm text-gray-500">
+                                                    {payment.booking?.room?.name}
+                                                </span>
+                                            ) : (
+                                                <a
+                                                    href={`/rooms/${payment.booking?.room?.id}`}
+                                                    target="_blank"
+                                                    className="underline"
+                                                >
+                                                    {payment.booking?.room?.name}
+                                                </a>
+                                            )}
                                         </TableCell>
                                     </TableRow>
                                     <TableRow>
