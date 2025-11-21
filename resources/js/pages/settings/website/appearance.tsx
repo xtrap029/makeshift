@@ -132,7 +132,7 @@ export default function Appearance({
                                 type="file"
                                 onChange={handleFaviconChange}
                                 disabled={processing}
-                                accept="image/ico"
+                                accept="image/ico,image/png,image/jpg,image/jpeg"
                             />
                         </div>
                         <img

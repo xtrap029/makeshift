@@ -145,13 +145,19 @@ export default function Dashboard({
                                                         </span>
                                                     </TableCell>
                                                     <TableCell>
-                                                        <a
-                                                            href={`/rooms/${booking.room.id}`}
-                                                            target="_blank"
-                                                            className="underline"
-                                                        >
-                                                            {booking.room.name}
-                                                        </a>
+                                                        {booking.room.deleted_at ? (
+                                                            <span className="text-sm text-gray-500">
+                                                                {booking.room.name}
+                                                            </span>
+                                                        ) : (
+                                                            <a
+                                                                href={`/rooms/${booking.room.id}`}
+                                                                target="_blank"
+                                                                className="underline"
+                                                            >
+                                                                {booking.room.name}
+                                                            </a>
+                                                        )}
                                                         <br />
                                                         <span className="text-sm text-gray-500">
                                                             {booking.layout?.name}
@@ -313,14 +319,20 @@ export default function Dashboard({
                                                 </a>
                                             </TableCell>
                                             <TableCell>
-                                                <a
-                                                    href={`/rooms/${booking.room.id}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="underline"
-                                                >
-                                                    {booking.room.name}
-                                                </a>
+                                                {booking.room.deleted_at ? (
+                                                    <span className="text-sm text-gray-500">
+                                                        {booking.room.name}
+                                                    </span>
+                                                ) : (
+                                                    <a
+                                                        href={`/rooms/${booking.room.id}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="underline"
+                                                    >
+                                                        {booking.room.name}
+                                                    </a>
+                                                )}
                                             </TableCell>
                                             <TableCell>{booking.start_date}</TableCell>
                                             <TableCell>

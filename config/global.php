@@ -20,7 +20,7 @@ return [
     'settings' => [
         'logo_mimes' => 'png',
         'logo_max_size' => 2048,
-        'favicon_mimes' => 'ico',
+        'favicon_mimes' => 'ico,png,jpg,jpeg',
         'favicon_max_size' => 512,
         'banner_mimes' => 'jpeg,png,jpg',
         'banner_max_size' => 2048,

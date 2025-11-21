@@ -232,13 +232,17 @@ export default function Show({ booking }: { booking: Booking }) {
                     <div className="flex items-center gap-4">
                         <h1 className="text-2xl font-bold">
                             #{booking.booking_id}{' '}
-                            <a
-                                href={`/rooms/${booking.room.id}`}
-                                target="_blank"
-                                className="underline"
-                            >
-                                {booking.room.name}
-                            </a>
+                            {booking.room.deleted_at ? (
+                                <span className="text-gray-500">{booking.room.name}</span>
+                            ) : (
+                                <a
+                                    href={`/rooms/${booking.room.id}`}
+                                    target="_blank"
+                                    className="underline"
+                                >
+                                    {booking.room.name}
+                                </a>
+                            )}
                         </h1>
                         <div className="flex items-center gap-1">
                             <Badge
