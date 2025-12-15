@@ -46,23 +46,6 @@
     <!-- What Happens Next -->
     <div style="background: #fef7f7; padding: 25px; border-radius: 8px; margin-bottom: 30px;">
         <h3 style="color: #2d3748; margin: 0 0 15px; font-size: 18px; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">What happens next?</h3>
-        <div style="margin-bottom: 15px;">
-            <div style="background: #ff5a5f; color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-block; margin-right: 15px; vertical-align: top; position: relative;">
-                <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 12px; font-weight: 600; line-height: 2; margin-left: 8px;">1</span>
-            </div>
-            <p style="color: #4a5568; margin: 0; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: inline-block; vertical-align: top; width: calc(100% - 45px);">Our team will review your inquiry within 24 hours</p>
-        </div>
-        <div style="margin-bottom: 15px;">
-            <div style="background: #ff5a5f; color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-block; margin-right: 15px; vertical-align: top; position: relative;">
-                <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 12px; font-weight: 600; line-height: 2; margin-left: 8px;">2</span>
-            </div>
-            <p style="color: #4a5568; margin: 0; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: inline-block; vertical-align: top; width: calc(100% - 45px);">We'll contact you via email to confirm details</p>
-        </div>
-        <div style="margin-bottom: 0;">
-            <div style="background: #ff5a5f; color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-block; margin-right: 15px; vertical-align: top; position: relative;">
-                <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 12px; font-weight: 600; line-height: 2; margin-left: 8px;">3</span>
-            </div>
-            <p style="color: #4a5568; margin: 0; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: inline-block; vertical-align: top; width: calc(100% - 45px);">We'll guide you through the reservation and payment process</p>
-        </div>
+        {!! $emailSettings['templateInquiryWhatsNext'] !!}
     </div>
 @endsection

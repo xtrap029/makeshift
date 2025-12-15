@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Support\EmailSettings;
 use Illuminate\Support\ServiceProvider;
 use App\Support\WebsiteSettings;
 use Illuminate\Support\Facades\View;
@@ -24,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Blade
         View::share('websiteSettings', WebsiteSettings::forBlade());
+        View::share('emailSettings', EmailSettings::forBlade());
 
         // Inertia
         Inertia::share([

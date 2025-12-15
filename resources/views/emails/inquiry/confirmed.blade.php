@@ -67,29 +67,13 @@
     <div style="background: #f0fff4; border: 1px solid #9ae6b4; border-radius: 8px; padding: 25px; margin-bottom: 30px;">
         <h3 style="color: #22543d; margin: 0 0 20px; font-size: 18px; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">📍 Arrival Instructions</h3>
         <div style="background: white; border-radius: 6px; padding: 20px; border: 1px solid #9ae6b4;">
-            <div style="margin-bottom: 15px;">
-                <strong style="color: #22543d;">🚪 Entry Point:</strong>
-                <p style="color: #4a5568; margin: 5px 0 0; font-size: 15px;">{{ $data['entry_point'] ?? 'Main entrance on the ground floor' }}</p>
-            </div>
-            <div style="margin-bottom: 15px;">
-                <strong style="color: #22543d;">📱 What to Bring:</strong>
-                <p style="color: #4a5568; margin: 5px 0 0; font-size: 15px;">Your voucher code, QR code (on phone), and valid ID</p>
-            </div>
-            <div style="margin-bottom: 0;">
-                <strong style="color: #22543d;">ℹ️ Check-in Process:</strong>
-                <p style="color: #4a5568; margin: 5px 0 0; font-size: 15px;">Present your voucher code and ID at the reception desk</p>
-            </div>
+            {!! $emailSettings['templateConfirmedArrival'] !!}
         </div>
     </div>
 
     <!-- Additional Information -->
     <div style="background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 25px; margin-bottom: 30px;">
         <h3 style="color: #2d3748; margin: 0 0 15px; font-size: 18px; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">ℹ️ Additional Information</h3>
-        <ul style="color: #4a5568; margin: 0; padding-left: 20px; font-size: 15px; line-height: 1.6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-            <li style="margin-bottom: 8px;">Free Wi-Fi is available throughout the space</li>
-            <li style="margin-bottom: 8px;">Refreshments and coffee are provided</li>
-            <li style="margin-bottom: 8px;">Parking is available on-site (first come, first served)</li>
-            <li style="margin-bottom: 0;">For any changes or cancellations, contact us at least 24 hours in advance</li>
-        </ul>
+        {!! $emailSettings['templateConfirmedAdditionalInfo'] !!}
     </div>
 @endsection

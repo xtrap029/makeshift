@@ -148,4 +148,19 @@ export interface LegalAppearanceForm {
 export interface EmailAppearanceForm {
     bankAccount?: string;
     supportLink?: string;
+    footer1?: string;
+    footer2?: string;
+    templateInquiryWhatsNext?: string;
+    templateAcknowledgedPaymentSteps?: string;
+    templateAcknowledgedScreenshot?: string;
+    templateAcknowledgedPaymentDeadline?: string;
+    templateConfirmedArrival?: string;
+    templateConfirmedAdditionalInfo?: string;
+    templateCancelledInquiry?: string;
+    templateCancelledMeans?: string;
+    templateCancelledNextSteps?: string;
+    templateCancelledAlternative?: string;
+    templateCancelledPaymentDeadline?: string;
+    templateCancelledPaymentSteps?: string;
+    templateCancelledPaymentSteps?: string;
 }

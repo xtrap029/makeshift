@@ -143,10 +143,10 @@
                     <tr>
                         <td class="footer">
                             <p style="margin: 0 0 10px;">
-                                © {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
+                                {!! $emailSettings['footer1'] !!}
                             </p>
                             <p style="margin: 0; font-size: 12px; color: #999;">
-                                This email was sent to you because you submitted an inquiry on our website.
+                                {!! $emailSettings['footer2'] !!}
                             </p>
                         </td>
                     </tr>

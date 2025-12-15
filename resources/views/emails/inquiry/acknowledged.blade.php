@@ -46,30 +46,7 @@
     <!-- Payment Steps -->
     <div style="background: #fef7f7; padding: 25px; border-radius: 8px; margin-bottom: 30px;">
         <h3 style="color: #2d3748; margin: 0 0 15px; font-size: 18px; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Payment Steps Required</h3>
-        <div style="margin-bottom: 15px;">
-            <div style="background: #ff5a5f; color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-block; margin-right: 15px; vertical-align: top; position: relative;">
-                <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 12px; font-weight: 600; line-height: 2; margin-left: 8px;">1</span>
-            </div>
-            <p style="color: #4a5568; margin: 0; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: inline-block; vertical-align: top; width: calc(100% - 45px);">Complete your payment using the provided payment details</p>
-        </div>
-        <div style="margin-bottom: 15px;">
-            <div style="background: #ff5a5f; color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-block; margin-right: 15px; vertical-align: top; position: relative;">
-                <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 12px; font-weight: 600; line-height: 2; margin-left: 8px;">2</span>
-            </div>
-            <p style="color: #4a5568; margin: 0; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: inline-block; vertical-align: top; width: calc(100% - 45px);">Take a screenshot of your payment confirmation</p>
-        </div>
-        <div style="margin-bottom: 15px;">
-            <div style="background: #ff5a5f; color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-block; margin-right: 15px; vertical-align: top; position: relative;">
-                <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 12px; font-weight: 600; line-height: 2; margin-left: 8px;">3</span>
-            </div>
-            <p style="color: #4a5568; margin: 0; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: inline-block; vertical-align: top; width: calc(100% - 45px);">Reply to this email with the screenshot attached</p>
-        </div>
-        <div style="margin-bottom: 0;">
-            <div style="background: #ff5a5f; color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-block; margin-right: 15px; vertical-align: top; position: relative;">
-                <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 12px; font-weight: 600; line-height: 2; margin-left: 8px;">4</span>
-            </div>
-            <p style="color: #4a5568; margin: 0; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: inline-block; vertical-align: top; width: calc(100% - 45px);">Wait for confirmation from our team</p>
-        </div>
+        {!! $emailSettings['templateAcknowledgedPaymentSteps'] !!}
     </div>
 
     <!-- Payment Details -->
@@ -88,8 +65,7 @@
     <div style="background: #fff5f5; border: 1px solid #fed7d7; border-radius: 8px; padding: 25px; margin-bottom: 30px;">
         <h3 style="color: #c53030; margin: 0 0 15px; font-size: 18px; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">⚠️ Screenshot Requirement</h3>
         <p style="color: #c53030; margin: 0; font-size: 15px; line-height: 1.6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-            <strong>Important:</strong> You must attach a screenshot of your payment confirmation when replying to this email. 
-            This helps us verify your payment quickly and process your reservation.
+            {!! $emailSettings['templateAcknowledgedScreenshot'] !!}
         </p>
     </div>
 
@@ -98,7 +74,7 @@
         <h3 style="color: #c05621; margin: 0 0 15px; font-size: 18px; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">⏰ Payment Deadline</h3>
         <p style="color: #c05621; margin: 0; font-size: 15px; line-height: 1.6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
             <strong>Deadline:</strong> {{ $data['deadline'] ? \Carbon\Carbon::parse($data['deadline'])->format('F j, Y, g:i a') : 'N/A' }}<br>
-            <strong>Note:</strong> If payment is not received by the deadline, your inquiry may be cancelled and the space will be released to other customers.
+            {!! $emailSettings['templateAcknowledgedPaymentDeadline'] !!}
         </p>
     </div>
 @endsection
