@@ -164,3 +164,8 @@ export interface EmailAppearanceForm {
     templateCancelledPaymentSteps?: string;
     templateCancelledPaymentSteps?: string;
 }
+
+export interface DatabaseSettingsForm {
+    backupLimit?: number;
+    backupFrequency?: string;
+}

@@ -3,18 +3,31 @@
 namespace App\Support;
 
 use App\Models\Settings;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 
 class EmailSettings
 {
     public static function all(): array
     {
-        $settings = cache()->rememberForever('email_settings', function () {
+        $cacheStore = config('cache.default', 'array');
+        $cacheTable = config('cache.stores.database.table', 'cache');
+
+        if ($cacheStore === 'database' && ! Schema::hasTable($cacheTable)) {
+            $cacheStore = 'array';
+        }
+
+        $settings = Cache::store($cacheStore)->rememberForever('email_settings', function () {
+            if (! Schema::hasTable((new Settings)->getTable())) {
+                return [];
+            }
+
             return Settings::pluck('value', 'key')->toArray();
         });
 
         return [
-            'footer1'         => $settings['EMAIL_FOOTER_1'] ?? null,
-            'footer2'         => $settings['EMAIL_FOOTER_2'] ?? null,
+            'footer1' => $settings['EMAIL_FOOTER_1'] ?? null,
+            'footer2' => $settings['EMAIL_FOOTER_2'] ?? null,
             'templateInquiryWhatsNext' => $settings['EMAIL_TEMPLATE_INQUIRY_WHATS_NEXT'] ?? null,
             'templateAcknowledgedPaymentSteps' => $settings['EMAIL_TEMPLATE_ACKNOWLEDGED_PAYMENT_STEPS'] ?? null,
             'templateAcknowledgedScreenshot' => $settings['EMAIL_TEMPLATE_ACKNOWLEDGED_SCREENSHOT'] ?? null,

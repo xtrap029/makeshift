@@ -19,6 +19,7 @@ import {
     CalendarSync,
     ConciergeBell,
     CreditCard,
+    Database,
     LayoutGrid,
     Mail,
     Puzzle,
@@ -108,13 +109,24 @@ const mainNavItems: NavItem[] = [
         ],
     },
     {
-        title: 'Website',
+        title: 'People',
         href: '',
         items: [
             {
                 title: 'Users',
                 href: '/users',
                 icon: User,
+            },
+        ],
+    },
+    {
+        title: 'Tools',
+        href: '',
+        items: [
+            {
+                title: 'Database',
+                href: '/database',
+                icon: Database,
             },
         ],
     },

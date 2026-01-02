@@ -49,6 +49,11 @@ const sidebarNavItems: NavItem[] = [
         icon: null,
     },
     {
+        title: 'Database',
+        href: '/settings/website/database',
+        icon: null,
+    },
+    {
         title: '',
         href: '',
         icon: null,
