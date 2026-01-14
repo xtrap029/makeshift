@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use App\Traits\TracksUser;
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Schedule extends Model
 {
-    use SoftDeletes, TracksUser;
+    use SoftDeletes, TracksUser, Auditable;
 
     protected $fillable = [
         'name',

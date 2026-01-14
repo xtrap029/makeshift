@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Services\BookingService;
+use App\Traits\Auditable;
 use App\Traits\TracksUser;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Booking extends Model
 {
-    use HasFactory, SoftDeletes, TracksUser;
+    use HasFactory, SoftDeletes, TracksUser, Auditable;
 
     protected $fillable = [
         'customer_name',

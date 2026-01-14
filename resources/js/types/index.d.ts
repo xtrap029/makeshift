@@ -213,3 +213,16 @@ export interface MailLog {
     created_at?: string;
     updated_at?: string;
 }
+
+export interface Audit {
+    id: number;
+    auditable_type: string;
+    auditable_id: number;
+    user_id: number | null;
+    event: string;
+    old_values: Record<string, unknown> | null;
+    new_values: Record<string, unknown> | null;
+    created_at?: string;
+    updated_at?: string;
+    user?: User;
+}

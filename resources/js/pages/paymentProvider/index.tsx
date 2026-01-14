@@ -45,7 +45,7 @@ export default function Index({
                     <TableHeader>
                         <TableRow>
                             <TableHead>Name</TableHead>
-                            <TableHead className="text-center">Description</TableHead>
+                            <TableHead>Description</TableHead>
                             <TableHead className="text-center">Default</TableHead>
                             <TableHead className="text-center">Type</TableHead>
                             <TableHead className="text-center">Active</TableHead>
@@ -56,9 +56,7 @@ export default function Index({
                         {paymentProviders.data.map((paymentProvider) => (
                             <TableRow key={paymentProvider.id}>
                                 <TableCell>{paymentProvider.name}</TableCell>
-                                <TableCell className="text-center">
-                                    {paymentProvider.description}
-                                </TableCell>
+                                <TableCell>{paymentProvider.description}</TableCell>
                                 <TableCell className="text-center">
                                     {paymentProvider.is_default ? (
                                         <Check className="mx-auto text-green-500" />

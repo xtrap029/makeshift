@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Traits\TracksUser;
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Payment extends Model
 {
-    use HasFactory, SoftDeletes, TracksUser;
+    use HasFactory, SoftDeletes, TracksUser, Auditable;
 
     protected $fillable = [
         'booking_id',

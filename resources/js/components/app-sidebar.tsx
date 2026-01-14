@@ -20,6 +20,7 @@ import {
     ConciergeBell,
     CreditCard,
     Database,
+    History,
     LayoutGrid,
     Mail,
     Puzzle,
@@ -80,11 +81,6 @@ const mainNavItems: NavItem[] = [
                 href: '/bookings',
                 icon: CalendarCheck,
             },
-            // {
-            //     title: 'Booking Logs',
-            //     href: '/booking-logs',
-            //     icon: FileClock,
-            // },
             {
                 title: 'Payments',
                 href: '/payments',
@@ -101,6 +97,11 @@ const mainNavItems: NavItem[] = [
         title: 'Logs',
         href: '',
         items: [
+            {
+                title: 'Audits',
+                href: '/logs/audit',
+                icon: History,
+            },
             {
                 title: 'Mails',
                 href: '/logs/mail',

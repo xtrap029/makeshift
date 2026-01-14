@@ -49,7 +49,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('bookings/{booking}/send-acknowledged-email', [BookingController::class, 'sendAcknowledgedEmail'])
         ->name('bookings.sendAcknowledgedEmail');
     Route::resource('payments', PaymentController::class);
+
     Route::get('logs/mail', [LogController::class, 'mail'])->name('logs.mail');
+    Route::get('logs/audit', [LogController::class, 'audit'])->name('logs.audit');
 
     Route::get('settings/website/appearance', [WebsiteAppearanceController::class, 'index'])->name('settings.website.appearance');
     Route::put('settings/website/appearance', [WebsiteAppearanceController::class, 'update'])->name('settings.website.appearance.update');
