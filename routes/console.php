@@ -17,8 +17,7 @@ $normalizedFrequency = str_replace(' ', '_', $backupFrequency);
 
 match ($normalizedFrequency) {
     'every_12_hours' => $backupCommand->cron('0 */12 * * *'),
-    'daily' => $backupCommand->cron('* * * * *'),
-    // 'daily' => $backupCommand->dailyAt('02:00'),
+    'daily' => $backupCommand->dailyAt('02:00'),
     'every_two_days' => $backupCommand->cron('0 2 */2 * *'),
     'weekly' => $backupCommand->weekly()->sundays()->at('02:00'),
     'biweekly' => $backupCommand->cron('0 2 */14 * *'),
