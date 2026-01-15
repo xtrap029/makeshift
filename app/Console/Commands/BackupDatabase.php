@@ -103,7 +103,16 @@ class BackupDatabase extends Command
 
         $backupPath = "backups/backup_{$timestamp}.sql";
 
-        $command = ['mysqldump'];
+        // Find mysqldump in common locations (XAMPP, system PATH, etc.)
+        $mysqldump = $this->findMysqldump();
+
+        if (! $mysqldump) {
+            $this->error('mysqldump command not found. Please ensure MySQL is installed and mysqldump is in your PATH.');
+
+            return self::FAILURE;
+        }
+
+        $command = [$mysqldump];
 
         // Use unix socket if provided, otherwise use host/port
         if (! empty($config['unix_socket'])) {
@@ -182,5 +191,77 @@ class BackupDatabase extends Command
                 }
             }
         }
+    }
+
+    private function findMysqldump(): ?string
+    {
+        // First, check for explicit path in environment variable (allows server configuration)
+        $envPath = env('MYSQLDUMP_PATH');
+        if ($envPath && file_exists($envPath) && is_executable($envPath)) {
+            return $envPath;
+        }
+
+        // Try to find mysqldump in PATH (works on most systems)
+        $whichCommand = PHP_OS_FAMILY === 'Windows' ? 'where' : 'which';
+        $process = new Process([$whichCommand, 'mysqldump']);
+        $process->run();
+
+        if ($process->isSuccessful()) {
+            $path = trim($process->getOutput());
+            // Handle Windows where command which may return multiple paths
+            if (PHP_OS_FAMILY === 'Windows') {
+                $paths = explode("\n", $path);
+                $path = trim($paths[0] ?? '');
+            }
+
+            if (! empty($path) && file_exists($path)) {
+                return $path;
+            }
+        }
+
+        // Try common system locations (OS-aware)
+        $commonPaths = $this->getCommonMysqldumpPaths();
+
+        foreach ($commonPaths as $path) {
+            if (file_exists($path) && is_executable($path)) {
+                return $path;
+            }
+        }
+
+        return null;
+    }
+
+    private function getCommonMysqldumpPaths(): array
+    {
+        $paths = [
+            // Standard Linux/Unix locations
+            '/usr/local/bin/mysqldump',
+            '/usr/bin/mysqldump',
+            '/bin/mysqldump',
+        ];
+
+        // macOS specific (Homebrew)
+        if (PHP_OS_FAMILY === 'Darwin') {
+            $paths[] = '/opt/homebrew/bin/mysqldump';
+            // XAMPP on macOS (optional - only if exists)
+            $xamppPath = '/Applications/XAMPP/xamppfiles/bin/mysqldump';
+            if (file_exists($xamppPath)) {
+                $paths[] = $xamppPath;
+            }
+        }
+
+        // Windows paths (if needed)
+        if (PHP_OS_FAMILY === 'Windows') {
+            $paths = array_merge($paths, [
+                'C:\\xampp\\mysql\\bin\\mysqldump.exe',
+                'C:\\Program Files\\MySQL\\MySQL Server *\\bin\\mysqldump.exe',
+                'C:\\wamp\\bin\\mysql\\mysql*\bin\\mysqldump.exe',
+            ]);
+        }
+
+        // Linux XAMPP locations
+        $paths[] = '/opt/lampp/bin/mysqldump';
+
+        return $paths;
     }
 }
