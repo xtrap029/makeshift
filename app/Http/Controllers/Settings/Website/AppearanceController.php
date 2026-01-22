@@ -103,12 +103,14 @@ class AppearanceController extends Controller
             Settings::where('key', $key)->update(['value' => $value]);
         }
 
+        // Save logo and favicon to site root (two levels up from public)
+        // since server serves from /site folder/ not /site folder/index/public/
         if (isset($validated['logo'])) {
-            $validated['logo']->move(public_path(), 'logo.png');
+            $validated['logo']->move(dirname(dirname(public_path())), 'logo.png');
         }
 
         if (isset($validated['favicon'])) {
-            $validated['favicon']->move(public_path(), 'favicon.ico');
+            $validated['favicon']->move(dirname(dirname(public_path())), 'favicon.ico');
         }
 
         cache()->forget('website_settings');
