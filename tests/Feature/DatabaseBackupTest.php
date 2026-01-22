@@ -28,9 +28,10 @@ it('lists backups in the index page', function () {
     $response = $this->actingAs($user)->get('/database');
 
     $response->assertOk();
-    $response->assertInertia(fn (Assert $page) => $page
-        ->component('database/index')
-        ->where('backups.0.name', 'sample.sql')
+    $response->assertInertia(
+        fn(Assert $page) => $page
+            ->component('database/index')
+            ->where('backups.0.name', 'sample.sql')
     );
 });
 
@@ -38,7 +39,10 @@ it('downloads a backup file', function () {
     Storage::disk('local')->put('backups/sample.sql', 'backup');
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->get('/database/backups/sample.sql');
+    // Filename is now URL-safe base64 encoded in the URL to avoid ModSecurity issues
+    $encoded = base64_encode('sample.sql');
+    $encodedFilename = str_replace(['+', '/', '='], ['-', '_', ''], $encoded);
+    $response = $this->actingAs($user)->get("/database/backups/{$encodedFilename}");
 
     $response->assertOk();
     $response->assertDownload('sample.sql');
