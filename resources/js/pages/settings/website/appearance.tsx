@@ -46,8 +46,8 @@ export default function Appearance({
     websiteAppearance: WebsiteAppearanceForm;
     rooms: Room[];
 }) {
-    const [logoPreview, setLogoPreview] = useState('/logo.png');
-    const [faviconPreview, setFaviconPreview] = useState('/favicon.ico');
+    const [logoPreview, setLogoPreview] = useState('/index/public/logo.png');
+    const [faviconPreview, setFaviconPreview] = useState('/index/public/favicon.ico');
 
     const { data, setData, processing } = useForm<WebsiteAppearanceForm>({
         logo: null,
