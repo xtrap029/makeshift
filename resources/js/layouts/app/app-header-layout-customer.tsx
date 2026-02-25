@@ -21,10 +21,11 @@ interface FlashProps extends PageProps {
 
 export default function AppHeaderLayoutCustomer({
     page,
+    fullWidth = false,
     rightIcon,
     rightIconHref,
     children,
-}: PropsWithChildren<{ page: string; rightIcon?: string; rightIconHref?: string }>) {
+}: PropsWithChildren<{ page: string; fullWidth?: boolean; rightIcon?: string; rightIconHref?: string }>) {
     const isHome = usePage().url === '/';
     const { websiteSettings } = usePage().props;
     const [scrolled, setScrolled] = useState(false);
@@ -142,7 +143,7 @@ export default function AppHeaderLayoutCustomer({
             <div className={`${scrolledBanner ? 'bg-makeshift-coral' : 'mt-[-40px]'}`}>
                 <div className="bg-makeshift-white -mb-1 h-5 rounded-t-2xl md:rounded-t-none"></div>
             </div>
-            <AppContentCustomer>
+            <AppContentCustomer fullWidth={fullWidth}>
                 {children}
                 <div className="h-[70px]"></div>
             </AppContentCustomer>
