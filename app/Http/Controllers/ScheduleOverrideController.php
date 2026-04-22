@@ -14,10 +14,29 @@ class ScheduleOverrideController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $filters = $request->only(['status', 'date_from', 'date_to', 'note']);
+
+        $query = ScheduleOverride::with('rooms')->orderBy('date', 'desc');
+
+        if (isset($filters['status']) && $filters['status'] !== '') {
+            $query->where('is_open', $filters['status'] === '1');
+        }
+        if (!empty($filters['date_from'])) {
+            $query->where('date', '>=', $filters['date_from']);
+        }
+        if (!empty($filters['date_to'])) {
+            $query->where('date', '<=', $filters['date_to']);
+        }
+        if (!empty($filters['note'])) {
+            $query->where('note', 'like', '%' . $filters['note'] . '%');
+        }
+
         return Inertia::render('scheduleOverride/index', [
-            'scheduleOverrides' => ScheduleOverride::all(),
+            'scheduleOverrides' => $query->paginate(config('global.pagination_limit'))->withQueryString(),
+            'calendarOverrides' => ScheduleOverride::with('rooms')->orderBy('date', 'desc')->get(),
+            'filters' => $filters,
         ]);
     }
 
