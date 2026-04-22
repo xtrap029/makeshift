@@ -26,6 +26,7 @@ class EmailSettings
         });
 
         return [
+            'bcc' => $settings['EMAIL_SETTINGS_BCC'] ?? null,
             'footer1' => $settings['EMAIL_FOOTER_1'] ?? null,
             'footer2' => $settings['EMAIL_FOOTER_2'] ?? null,
             'templateInquiryWhatsNext' => $settings['EMAIL_TEMPLATE_INQUIRY_WHATS_NEXT'] ?? null,

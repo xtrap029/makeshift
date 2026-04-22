@@ -165,6 +165,10 @@ export interface EmailAppearanceForm {
     templateCancelledPaymentSteps?: string;
 }
 
+export interface EmailMailingForm {
+    bcc?: string;
+}
+
 export interface DatabaseSettingsForm {
     backupLimit?: number;
     backupFrequency?: string;

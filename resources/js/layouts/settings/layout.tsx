@@ -68,6 +68,11 @@ const sidebarNavItems: NavItem[] = [
         href: '/settings/email/appearance',
         icon: null,
     },
+    {
+        title: 'Mailing Configuration',
+        href: '/settings/email/mailing',
+        icon: null,
+    },
 ];
 
 export default function SettingsLayout({ children }: PropsWithChildren) {

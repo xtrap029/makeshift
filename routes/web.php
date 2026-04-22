@@ -12,6 +12,7 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ScheduleOverrideController;
 use App\Http\Controllers\Settings\Email\AppearanceController as EmailAppearanceController;
+use App\Http\Controllers\Settings\Email\MailingController as EmailMailingController;
 use App\Http\Controllers\Settings\Website\AppearanceController as WebsiteAppearanceController;
 use App\Http\Controllers\Settings\Website\LegalController;
 use App\Http\Controllers\Unauth\ContactUsController;
@@ -58,6 +59,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('settings/email/appearance', [EmailAppearanceController::class, 'index'])->name('settings.email.appearance');
     Route::put('settings/email/appearance', [EmailAppearanceController::class, 'update'])->name('settings.email.appearance.update');
+
+    Route::get('settings/email/mailing', [EmailMailingController::class, 'index'])->name('settings.email.mailing');
+    Route::put('settings/email/mailing', [EmailMailingController::class, 'update'])->name('settings.email.mailing.update');
 
     Route::get('settings/website/legal', [LegalController::class, 'index'])->name('settings.website.legal');
     Route::put('settings/website/legal', [LegalController::class, 'update'])->name('settings.website.legal.update');

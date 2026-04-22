@@ -2,8 +2,10 @@
 
 namespace App\Mail;
 
+use App\Support\EmailSettings;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -52,6 +54,7 @@ class InquiryAcknowledged extends Mailable
     {
         return new Envelope(
             subject: 'Inquiry Acknowledged',
+            bcc: $this->resolveBcc(),
         );
     }
 
@@ -73,5 +76,15 @@ class InquiryAcknowledged extends Mailable
     public function attachments(): array
     {
         return [];
+    }
+
+    private function resolveBcc(): array
+    {
+        $bcc = EmailSettings::all()['bcc'] ?? null;
+        if (!$bcc) return [];
+        return array_filter(array_map(
+            fn($e) => new Address(trim($e)),
+            explode(',', $bcc)
+        ));
     }
 }
