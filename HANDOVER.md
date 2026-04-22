@@ -1,7 +1,7 @@
 # MakeShift — Developer Handover
 
 > Auto-updated after each commit. Read this first when picking up the project.
-> Last updated: 2026-04-22
+> Last updated: 2026-04-22 (latest: 6c9323c)
 
 ---
 
@@ -25,6 +25,8 @@ MakeShift is a Laravel + Inertia.js (React) space booking platform for a co-work
 
 | Commit | Summary |
 |--------|---------|
+| `07e37b3` | Logo: removed site title/description text, logo now scales by max-height (40px) for wide logos |
+| `6c9323c` | Overrides page: added table/calendar toggle, pagination, and filters (status, date, note) |
 | `a7f5438` | Added BCC mailing config setting; new Settings > Email > Mailing Configuration page; BCC applied to all 5 mail classes |
 | `6128b6c` | Fixed stale cache bug — `rememberForever` replaced with 1hr TTL in `EmailSettings` and `WebsiteSettings` |
 | `2914f7c` | Added GUIDE.md, GUIDE.pdf, HANDOVER.md, CLAUDE.md, and Claude Code settings with auto-update hooks |

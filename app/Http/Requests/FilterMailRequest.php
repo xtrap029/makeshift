@@ -26,6 +26,7 @@ class FilterMailRequest extends FormRequest
             'subject' => 'nullable|string',
             'date_from' => 'nullable|date',
             'date_to' => 'nullable|date',
+            'group_by' => 'nullable|string|in:subject',
         ];
     }
 }

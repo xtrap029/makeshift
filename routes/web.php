@@ -51,6 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('bookings.sendAcknowledgedEmail');
     Route::resource('payments', PaymentController::class);
 
+    Route::get('logs/mail/export', [LogController::class, 'mailExport'])->name('logs.mail.export');
     Route::get('logs/mail', [LogController::class, 'mail'])->name('logs.mail');
     Route::get('logs/audit', [LogController::class, 'audit'])->name('logs.audit');
 

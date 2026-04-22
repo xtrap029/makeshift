@@ -17,7 +17,7 @@ import { MailLog, type BreadcrumbItem } from '@/types';
 import { PaginatedData } from '@/types/pagination';
 import { Head, router } from '@inertiajs/react';
 import dayjs from 'dayjs';
-import { SlidersHorizontal } from 'lucide-react';
+import { Download, Layers, SlidersHorizontal } from 'lucide-react';
 import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -25,33 +25,60 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Mails', href: '/logs/mail' },
 ];
 
+interface GroupedLog {
+    subject: string;
+    count: number;
+    last_sent: string;
+}
+
 export default function Index({
     mailLogs,
+    groupedLogs,
     filters,
+    isGrouped,
 }: {
-    mailLogs: PaginatedData<MailLog>;
+    mailLogs: PaginatedData<MailLog> | null;
+    groupedLogs: GroupedLog[] | null;
     filters: {
-        subject: string | undefined;
-        date_from: string | undefined;
-        date_to: string | undefined;
+        subject?: string;
+        date_from?: string;
+        date_to?: string;
+        group_by?: string;
     };
+    isGrouped: boolean;
 }) {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
-    const [filterData, setFilterData] = useState<{
-        subject: string | undefined;
-        date_from: string | undefined;
-        date_to: string | undefined;
-    }>({
-        subject: filters.subject || undefined,
-        date_from: filters.date_from || undefined,
-        date_to: filters.date_to || undefined,
+    const [filterData, setFilterData] = useState({
+        subject: filters.subject || '',
+        date_from: filters.date_from || '',
+        date_to: filters.date_to || '',
     });
 
     const applyFilters = () => {
-        router.get(route('logs.mail'), filterData, {
-            preserveState: true,
-            replace: true,
-        });
+        router.get(
+            route('logs.mail'),
+            { ...filterData, group_by: filters.group_by },
+            { preserveState: true, replace: true },
+        );
+        setIsFilterOpen(false);
+    };
+
+    const toggleGroupBy = () => {
+        const newGroupBy = isGrouped ? undefined : 'subject';
+        router.get(
+            route('logs.mail'),
+            { ...filterData, group_by: newGroupBy },
+            { preserveState: true, replace: true },
+        );
+    };
+
+    const buildExportUrl = () => {
+        const params = new URLSearchParams();
+        if (filterData.subject) params.set('subject', filterData.subject);
+        if (filterData.date_from) params.set('date_from', filterData.date_from);
+        if (filterData.date_to) params.set('date_to', filterData.date_to);
+        const qs = params.toString();
+        return `/logs/mail/export${qs ? '?' + qs : ''}`;
     };
 
     return (
@@ -60,6 +87,20 @@ export default function Index({
             <div className="p-4">
                 <Header title="Mails">
                     <div className="flex gap-2">
+                        <a href={buildExportUrl()} download>
+                            <Button variant="outline" className="cursor-pointer">
+                                <Download className="mr-1 size-4" />
+                                Export Emails
+                            </Button>
+                        </a>
+                        <Button
+                            variant={isGrouped ? 'default' : 'outline'}
+                            className="cursor-pointer"
+                            onClick={toggleGroupBy}
+                            title="Group by Subject"
+                        >
+                            <Layers className="size-4" />
+                        </Button>
                         <Button
                             variant="outline"
                             className="cursor-pointer"
@@ -69,27 +110,53 @@ export default function Index({
                         </Button>
                     </div>
                 </Header>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>To</TableHead>
-                            <TableHead>Subject</TableHead>
-                            <TableHead>Date</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {mailLogs.data.map((mailLog) => (
-                            <TableRow key={mailLog.id}>
-                                <TableCell className="pl-3">{mailLog.to}</TableCell>
-                                <TableCell>{mailLog.subject}</TableCell>
-                                <TableCell>
-                                    {dayjs(mailLog.created_at).format('YYYY-MM-DD HH:mm')}
-                                </TableCell>
+
+                {isGrouped ? (
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Subject</TableHead>
+                                <TableHead>Count</TableHead>
+                                <TableHead>Last Sent</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                <Pagination links={mailLogs.links} />
+                        </TableHeader>
+                        <TableBody>
+                            {groupedLogs?.map((log, i) => (
+                                <TableRow key={i}>
+                                    <TableCell className="pl-3">{log.subject}</TableCell>
+                                    <TableCell>{log.count}</TableCell>
+                                    <TableCell>
+                                        {dayjs(log.last_sent).format('YYYY-MM-DD HH:mm')}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                ) : (
+                    <>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>To</TableHead>
+                                    <TableHead>Subject</TableHead>
+                                    <TableHead>Date</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {mailLogs?.data.map((mailLog) => (
+                                    <TableRow key={mailLog.id}>
+                                        <TableCell className="pl-3">{mailLog.to}</TableCell>
+                                        <TableCell>{mailLog.subject}</TableCell>
+                                        <TableCell>
+                                            {dayjs(mailLog.created_at).format('YYYY-MM-DD HH:mm')}
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                        {mailLogs && <Pagination links={mailLogs.links} />}
+                    </>
+                )}
             </div>
             <FilterDialog
                 title="Filter Mails"
@@ -97,11 +164,7 @@ export default function Index({
                 onOpenChange={setIsFilterOpen}
                 onApply={applyFilters}
                 onClear={() => {
-                    setFilterData({
-                        subject: undefined,
-                        date_from: undefined,
-                        date_to: undefined,
-                    });
+                    setFilterData({ subject: '', date_from: '', date_to: '' });
                 }}
             >
                 <div className="flex flex-wrap gap-2">
@@ -109,7 +172,7 @@ export default function Index({
                     <Input
                         id="subject"
                         type="text"
-                        value={filterData.subject || ''}
+                        value={filterData.subject}
                         onChange={(e) => setFilterData({ ...filterData, subject: e.target.value })}
                     />
                 </div>
@@ -119,7 +182,7 @@ export default function Index({
                         <Input
                             id="date_from"
                             type="date"
-                            value={filterData.date_from || ''}
+                            value={filterData.date_from}
                             onChange={(e) =>
                                 setFilterData({ ...filterData, date_from: e.target.value })
                             }
@@ -130,7 +193,7 @@ export default function Index({
                         <Input
                             id="date_to"
                             type="date"
-                            value={filterData.date_to || ''}
+                            value={filterData.date_to}
                             onChange={(e) =>
                                 setFilterData({ ...filterData, date_to: e.target.value })
                             }

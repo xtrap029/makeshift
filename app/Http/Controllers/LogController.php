@@ -9,36 +9,81 @@ use App\Models\User;
 use App\Http\Requests\FilterAuditRequest;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LogController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    private function applyMailFilters($query, array $filters)
+    {
+        if (!empty($filters['subject'])) {
+            $query->where('subject', 'like', '%' . $filters['subject'] . '%');
+        }
+        if (!empty($filters['date_from'])) {
+            $query->where('created_at', '>=', $filters['date_from']);
+        }
+        if (!empty($filters['date_to'])) {
+            $dateTo = Carbon::parse($filters['date_to'])->endOfDay()->format('Y-m-d H:i:s');
+            $query->where('created_at', '<=', $dateTo);
+        }
+        return $query;
+    }
+
     public function mail(FilterMailRequest $request)
     {
         $filters = $request->validated();
 
-        $mailLogs = MailLog::orderBy('created_at', 'desc');
+        $query = $this->applyMailFilters(MailLog::query(), $filters);
 
-        if (isset($filters['subject'])) {
-            $mailLogs->where('subject', 'like', '%' . $filters['subject'] . '%');
+        if (!empty($filters['group_by']) && $filters['group_by'] === 'subject') {
+            $groupedLogs = $query->selectRaw('subject, COUNT(*) as count, MAX(created_at) as last_sent')
+                ->groupBy('subject')
+                ->orderByDesc('last_sent')
+                ->get();
+
+            return Inertia::render('log/mail/index', [
+                'mailLogs' => null,
+                'groupedLogs' => $groupedLogs,
+                'filters' => $filters,
+                'isGrouped' => true,
+            ]);
         }
 
-        if (isset($filters['date_from'])) {
-            $mailLogs->where('created_at', '>=', $filters['date_from']);
-        }
-
-        if (isset($filters['date_to'])) {
-            $dateTo = Carbon::parse($filters['date_to'])->endOfDay()->format('Y-m-d H:i:s');
-            $mailLogs->where('created_at', '<=', $dateTo);
-        }
-
-        $mailLogs = $mailLogs->paginate(config('global.pagination_limit'))->withQueryString();
+        $mailLogs = $query->orderBy('created_at', 'desc')
+            ->paginate(config('global.pagination_limit'))
+            ->withQueryString();
 
         return Inertia::render('log/mail/index', [
             'mailLogs' => $mailLogs,
+            'groupedLogs' => null,
             'filters' => $filters,
+            'isGrouped' => false,
+        ]);
+    }
+
+    public function mailExport(FilterMailRequest $request): StreamedResponse
+    {
+        $filters = $request->validated();
+
+        $emails = $this->applyMailFilters(MailLog::query(), $filters)
+            ->distinct()
+            ->orderBy('to')
+            ->pluck('to');
+
+        $filename = 'mail-emails-' . now()->format('Y-m-d') . '.csv';
+
+        return response()->stream(function () use ($emails) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['Email']);
+            foreach ($emails as $email) {
+                fputcsv($handle, [$email]);
+            }
+            fclose($handle);
+        }, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ]);
     }
 
