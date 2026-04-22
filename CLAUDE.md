@@ -1,5 +1,17 @@
 # MakeShift — Claude Instructions
 
+## Available Skills (Slash Commands)
+
+| Command | What it does |
+|---|---|
+| `/sync-docs` | Manually sync GUIDE.md, GUIDE.pdf, and HANDOVER.md to reflect current codebase |
+| `/new-page` | Scaffold a new admin Inertia page (controller + route + React page + types) |
+| `/new-setting` | Add a new setting end-to-end (migration + support class + controller + frontend) |
+| `/new-mail` | Scaffold a new Mailable with BCC already wired in + Blade template |
+| `/tech-stack` | Display the full technology stack reference |
+
+---
+
 ## On Session Start
 
 **Always read `HANDOVER.md` first.** It contains the current project state, recent commits, known issues, and what's likely next. This prevents re-deriving context that's already been captured.

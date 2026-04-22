@@ -364,6 +364,13 @@ You can also update:
 - **Support link** (shown as a button in all emails)
 - **Footer text** (two lines shown at the bottom of all emails)
 
+### Mailing Configuration
+Configure system-level email delivery settings.
+
+- **BCC** — Enter one or more email addresses (comma-separated) to be silently copied on every outgoing email sent by MakeShift. Useful for keeping an internal record of all customer communications.
+  - Example: `admin@yourbusiness.com, records@yourbusiness.com`
+  - Leave blank to disable BCC.
+
 ### Database Settings
 Configure how often automatic backups run and how many backups to keep on file.
 

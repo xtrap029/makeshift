@@ -1,7 +1,7 @@
 # MakeShift — Developer Handover
 
 > Auto-updated after each commit. Read this first when picking up the project.
-> Last updated: 2026-04-20
+> Last updated: 2026-04-22
 
 ---
 
@@ -25,6 +25,9 @@ MakeShift is a Laravel + Inertia.js (React) space booking platform for a co-work
 
 | Commit | Summary |
 |--------|---------|
+| `a7f5438` | Added BCC mailing config setting; new Settings > Email > Mailing Configuration page; BCC applied to all 5 mail classes |
+| `6128b6c` | Fixed stale cache bug — `rememberForever` replaced with 1hr TTL in `EmailSettings` and `WebsiteSettings` |
+| `2914f7c` | Added GUIDE.md, GUIDE.pdf, HANDOVER.md, CLAUDE.md, and Claude Code settings with auto-update hooks |
 | `3ce76eb` | Added striped rows in home page desktop view |
 | `851e6a7` / `d2e65b8` | Fixed logo/favicon not uploading (two attempts) |
 | `31ff47e` | Untracked logo and favicon from git |
@@ -129,14 +132,15 @@ INQUIRY (1) → PENDING (2) → CONFIRMED (3)
 - Logo/favicon upload was recently fixed (commits `851e6a7`, `d2e65b8`) — keep an eye on edge cases with file type validation.
 - CRON setup was tested with per-minute runs; now set to daily. The external trigger endpoint (`/cron/run/{token}`) is live.
 - DB backup SQL generation was patched (`c8823b5`) — verify backup files are valid on next restore test.
+- ~~Settings cache stale bug~~ — **resolved** (`6128b6c`). `EmailSettings` and `WebsiteSettings` now use 1hr TTL instead of `rememberForever`. Run `php artisan cache:clear` on server if email template values are still blank.
 
 ---
 
 ## What's Likely Next
 
 - Demo preparation — `GUIDE.md` has a full demo script (Part 13) ready.
+- Run `php artisan migrate` on server to apply the `EMAIL_SETTINGS_BCC` settings row migration.
 - No open branches or PRs at this time.
-- No pending migrations or schema changes known.
 
 ---
 

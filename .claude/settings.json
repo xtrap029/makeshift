@@ -1,4 +1,15 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(grep -v \"^--$\")"
+    ],
+    "additionalDirectories": [
+      "/Applications/XAMPP/xamppfiles/htdocs/MakeShift/.claude"
+    ]
+  },
   "hooks": {
     "PostToolUse": [
       {
@@ -6,17 +17,17 @@
         "hooks": [
           {
             "type": "agent",
-            "if": "Bash(git commit *)",
             "prompt": "A git commit was just made in the MakeShift project at /Applications/XAMPP/xamppfiles/htdocs/MakeShift. Do the following two things:\n\n1. HANDOVER.md update: Read `git show --stat HEAD` and `git show HEAD` to understand what changed. Then read HANDOVER.md and update it: refresh the 'Last updated' date to today, update the 'Recent Work' table with the new commit, update 'Known Issues' if bugs were fixed or introduced, and update 'What\\'s Likely Next' if the direction changed. Update 'Untracked / Uncommitted Files' if relevant.\n\n2. GUIDE.md update: Read GUIDE.md and check if the commit affects any user-visible features, admin pages, booking flow, settings, or public website behavior described in the guide. If yes, update only the affected sections using plain language suitable for non-technical staff. If no user-facing behavior changed, skip this step.\n\nOnly edit what actually changed. Do not rewrite unaffected sections of either file.",
-            "statusMessage": "Updating HANDOVER.md and GUIDE.md...",
-            "timeout": 120
+            "if": "Bash(git commit *)",
+            "timeout": 120,
+            "statusMessage": "Updating HANDOVER.md and GUIDE.md..."
           },
           {
             "type": "command",
-            "if": "Bash(git commit *)",
             "command": "cd /Applications/XAMPP/xamppfiles/htdocs/MakeShift && npx md-to-pdf GUIDE.md --highlight-style github 2>/dev/null || true",
-            "statusMessage": "Regenerating GUIDE.pdf...",
+            "if": "Bash(git commit *)",
             "timeout": 60,
+            "statusMessage": "Regenerating GUIDE.pdf...",
             "async": true
           }
         ]
