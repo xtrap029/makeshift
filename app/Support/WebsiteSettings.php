@@ -17,7 +17,7 @@ class WebsiteSettings
             $cacheStore = 'array';
         }
 
-        $settings = Cache::store($cacheStore)->rememberForever('website_settings', function () {
+        $settings = Cache::store($cacheStore)->remember('website_settings', now()->addHour(), function () {
             if (! Schema::hasTable((new Settings)->getTable())) {
                 return [];
             }

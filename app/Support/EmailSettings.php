@@ -17,7 +17,7 @@ class EmailSettings
             $cacheStore = 'array';
         }
 
-        $settings = Cache::store($cacheStore)->rememberForever('email_settings', function () {
+        $settings = Cache::store($cacheStore)->remember('email_settings', now()->addHour(), function () {
             if (! Schema::hasTable((new Settings)->getTable())) {
                 return [];
             }
