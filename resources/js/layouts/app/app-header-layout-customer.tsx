@@ -27,7 +27,6 @@ export default function AppHeaderLayoutCustomer({
     children,
 }: PropsWithChildren<{ page: string; fullWidth?: boolean; rightIcon?: string; rightIconHref?: string }>) {
     const isHome = usePage().url === '/';
-    const { websiteSettings } = usePage().props;
     const [scrolled, setScrolled] = useState(false);
     const [scrolledBanner, setScrolledBanner] = useState(!isHome);
     const { flash } = usePage<FlashProps>().props;
@@ -57,36 +56,8 @@ export default function AppHeaderLayoutCustomer({
     const header = () => {
         return (
             <>
-                <div
-                    className={`text-makeshift-primary flex aspect-square items-center justify-center rounded-md transition-all duration-300 ${
-                        scrolledBanner ? 'size-8 bg-white' : 'size-12'
-                    }`}
-                >
+                <div className="flex items-center justify-center">
                     <AppLogoIcon />
-                </div>
-                <div
-                    className={`ml-2 grid flex-1 text-left text-sm ${
-                        scrolledBanner ? '' : 'rounded-md p-2 text-white'
-                    }`}
-                >
-                    <span
-                        className={`truncate leading-none font-semibold transition-all duration-300 ${
-                            scrolledBanner
-                                ? 'mb-0.5'
-                                : 'text-lg [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]'
-                        }`}
-                    >
-                        MakeShift
-                    </span>
-                    <span
-                        className={`transition-all duration-300 ${
-                            scrolledBanner
-                                ? 'text-xs'
-                                : 'text-md [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]'
-                        }`}
-                    >
-                        {websiteSettings.siteDescription}
-                    </span>
                 </div>
             </>
         );

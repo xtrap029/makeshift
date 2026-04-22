@@ -13,5 +13,5 @@
 // }
 
 export default function AppLogoIcon() {
-    return <img src="/index/public/logo.png" alt="MakeShift" width={50} height={50} />;
+    return <img src="/index/public/logo.png" alt="MakeShift" style={{ maxHeight: '40px', width: 'auto' }} />;
 }
