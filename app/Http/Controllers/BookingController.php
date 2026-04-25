@@ -86,12 +86,31 @@ class BookingController extends Controller
 
         $bookings = Booking::with('room', 'layout')
             ->where('start_date', '>=', $startDate)
-            ->where('start_date', '<=', $endDate)
-            ->orderBy('start_date')
-            ->orderBy('start_time')
-            ->get();
+            ->where('start_date', '<=', $endDate);
 
-        return response()->json($bookings);
+        if ($request->filled('date_from')) {
+            $bookings->where('start_date', '>=', $request->get('date_from'));
+        }
+
+        if ($request->filled('date_to')) {
+            $bookings->where('start_date', '<=', $request->get('date_to'));
+        }
+
+        if ($request->filled('rooms')) {
+            $bookings->whereIn('room_id', (array) $request->get('rooms'));
+        }
+
+        if ($request->filled('layouts')) {
+            $bookings->whereIn('layout_id', (array) $request->get('layouts'));
+        }
+
+        if ($request->filled('status')) {
+            $bookings->where('status', $request->get('status'));
+        }
+
+        return response()->json(
+            $bookings->orderBy('start_date')->orderBy('start_time')->get()
+        );
     }
 
     /**

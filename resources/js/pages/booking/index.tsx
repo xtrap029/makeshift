@@ -98,19 +98,25 @@ export default function Index({
     });
 
     const applyFilters = () => {
-        router.get(route('bookings.index'), filterData, {
-            preserveState: true,
-            replace: true,
-        });
+        if (isCalendarView) {
+            setIsFilterOpen(false);
+            fetchCalendarData(currentDate, filterData);
+        } else {
+            router.get(route('bookings.index'), filterData, {
+                preserveState: true,
+                replace: true,
+            });
+        }
     };
 
-    const fetchCalendarData = useCallback(async (date: Date) => {
+    const fetchCalendarData = useCallback(async (date: Date, filters?: typeof filterData) => {
         setLoading(true);
         try {
             const response = await axios.get(route('bookings.calendar'), {
                 params: {
                     month: date.getMonth() + 1,
                     year: date.getFullYear(),
+                    ...(filters ?? filterData),
                 },
             });
 
@@ -120,12 +126,14 @@ export default function Index({
         } finally {
             setLoading(false);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (isCalendarView && calendarBookings.length === 0) {
-            fetchCalendarData(currentDate);
+            fetchCalendarData(currentDate, filterData);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isCalendarView, calendarBookings.length, fetchCalendarData, currentDate]);
 
     const handleSelectEvent = (event: CustomEvent) => {
@@ -135,7 +143,7 @@ export default function Index({
     const handleNavigate = (newDate: Date) => {
         setCurrentDate(newDate);
         setCalendarBookings([]);
-        fetchCalendarData(newDate);
+        fetchCalendarData(newDate, filterData);
     };
 
     return (
@@ -153,7 +161,25 @@ export default function Index({
                         </Button>
                         <Button
                             variant="outline"
-                            onClick={() => setIsCalendarView(!isCalendarView)}
+                            onClick={() => {
+                                const cleared = {
+                                    date_from: undefined,
+                                    date_to: undefined,
+                                    rooms: [],
+                                    layouts: [],
+                                    status: undefined,
+                                };
+                                setFilterData(cleared);
+                                setResetToken((n) => n + 1);
+                                if (isCalendarView) {
+                                    // switching to table: reload without filters
+                                    router.get(route('bookings.index'), {}, { preserveState: false, replace: true });
+                                } else {
+                                    // switching to calendar: clear and re-fetch
+                                    setCalendarBookings([]);
+                                }
+                                setIsCalendarView(!isCalendarView);
+                            }}
                             className="cursor-pointer"
                         >
                             View in {isCalendarView ? 'Table' : 'Calendar'} format
@@ -271,14 +297,18 @@ export default function Index({
                 onOpenChange={setIsFilterOpen}
                 onApply={applyFilters}
                 onClear={() => {
-                    setFilterData({
+                    const cleared = {
                         date_from: undefined,
                         date_to: undefined,
                         rooms: [],
                         layouts: [],
                         status: undefined,
-                    });
+                    };
+                    setFilterData(cleared);
                     setResetToken((n) => n + 1);
+                    if (isCalendarView) {
+                        fetchCalendarData(currentDate, cleared);
+                    }
                 }}
             >
                 <div className="flex flex-wrap gap-2">

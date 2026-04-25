@@ -1,7 +1,7 @@
 # MakeShift — Developer Handover
 
 > Auto-updated after each commit. Read this first when picking up the project.
-> Last updated: 2026-04-22 (latest: 6c9323c)
+> Last updated: 2026-04-25 (latest: pending commit)
 
 ---
 
@@ -25,6 +25,8 @@ MakeShift is a Laravel + Inertia.js (React) space booking platform for a co-work
 
 | Commit | Summary |
 |--------|---------|
+| *(pending)* | Bookings: filters now work in calendar view; filters reset when switching between calendar and table views |
+| `c6d6ccd` | Mail logs: added Export Emails (CSV, unique emails only) and group-by subject toggle |
 | `07e37b3` | Logo: removed site title/description text, logo now scales by max-height (40px) for wide logos |
 | `6c9323c` | Overrides page: added table/calendar toggle, pagination, and filters (status, date, note) |
 | `a7f5438` | Added BCC mailing config setting; new Settings > Email > Mailing Configuration page; BCC applied to all 5 mail classes |
