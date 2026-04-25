@@ -188,6 +188,13 @@ Bookings can be created in two ways:
 1. A **customer submits an inquiry** through the public website.
 2. An **admin manually creates a booking** from the admin panel.
 
+The bookings list supports two views — toggle between them using the **"View in Calendar / Table format"** button:
+
+- **Table view** — paginated list with full detail columns.
+- **Calendar view** — month calendar showing all bookings colour-coded by status. Click any event to open the booking.
+
+Both views share the same **filter panel** (the sliders icon). You can filter by status, date range, room, and layout. Filters are cleared automatically when you switch between views.
+
 **When viewing or creating a booking, key fields include:**
 
 | Field | What it means |
