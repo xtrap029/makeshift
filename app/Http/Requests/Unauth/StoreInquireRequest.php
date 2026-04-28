@@ -34,6 +34,7 @@ class StoreInquireRequest extends FormRequest
             $rules['email'] = 'required|email|max:' . config('form.validation.email.max');
             $rules['phone'] = 'required|string|min:' . config('form.validation.phone.min');
             $rules['note'] = 'nullable|string|max:' . config('form.validation.note.max');
+            $rules['is_subscribed'] = 'nullable|boolean';
         }
 
         return $rules;

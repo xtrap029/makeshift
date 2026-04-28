@@ -69,6 +69,7 @@ export default function Inquire({
         end_time: inquiry.end_time,
         layout: inquiry.layout,
         note: '',
+        is_subscribed: false,
     });
 
     const [zodErrors, setZodErrors] = useState<Record<string, string>>({});
@@ -315,6 +316,19 @@ export default function Inquire({
                                 disabled={processing}
                             />
                             <InputError message={zodErrors.note || errors.note} className="ml-3" />
+                        </div>
+                        <div className="col-span-2 flex items-center gap-2">
+                            <input
+                                id="is_subscribed"
+                                type="checkbox"
+                                checked={!!data.is_subscribed}
+                                onChange={(e) => setData('is_subscribed', e.target.checked)}
+                                disabled={processing}
+                                className="size-4 cursor-pointer"
+                            />
+                            <label htmlFor="is_subscribed" className="text-muted-foreground cursor-pointer text-sm">
+                                Subscribe to our newsletter
+                            </label>
                         </div>
                         <div className="col-span-2 flex flex-col gap-2 md:flex-row md:justify-end">
                             <p className="text-muted-foreground py-3 text-center md:py-0 md:text-left">

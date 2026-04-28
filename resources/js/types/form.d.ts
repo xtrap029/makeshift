@@ -117,6 +117,7 @@ export interface InquiryForm {
     end_time: string;
     layout: string;
     note: string;
+    is_subscribed: boolean;
 }
 
 export interface WebsiteAppearanceForm {

@@ -26,9 +26,10 @@ class LogSentMessage
             : null;
 
         MailLog::create([
-            'to'      => $to,
-            'subject' => $event->message->getSubject(),
-            'status'  => true,
+            'to'            => $to,
+            'subject'       => $event->message->getSubject(),
+            'status'        => true,
+            'is_subscribed' => (bool) ($event->data['is_subscribed'] ?? false),
         ]);
     }
 }

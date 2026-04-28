@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class MailLog extends Model
 {
-    protected $fillable = ['to', 'subject', 'status', 'error_message'];
+    protected $fillable = ['to', 'subject', 'status', 'is_subscribed', 'error_message'];
 }

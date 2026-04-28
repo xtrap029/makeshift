@@ -68,6 +68,7 @@ class LogController extends Controller
         $filters = $request->validated();
 
         $emails = $this->applyMailFilters(MailLog::query(), $filters)
+            ->where('is_subscribed', true)
             ->distinct()
             ->orderBy('to')
             ->pluck('to');

@@ -117,6 +117,7 @@ class ReservationController extends Controller
                 'booking_room_price' => 'PHP ' . number_format($room->price, 2, '.', ','),
                 'booking_total_hours' => $booking->total_hours(),
                 'booking_total_price' => 'PHP ' . number_format($booking->total_price(), 2, '.', ','),
+                'is_subscribed' => (bool) ($validated['is_subscribed'] ?? false),
             ]));
 
             return to_route('reservation.inquire.success');

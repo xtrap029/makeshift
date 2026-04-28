@@ -40,6 +40,7 @@ class InquirySubmitted extends Mailable
                 'booking_room_price' => $this->data['booking_room_price'],
                 'booking_total_hours' => $this->data['booking_total_hours'],
                 'booking_total_price' => $this->data['booking_total_price'],
+                'is_subscribed' => $this->data['is_subscribed'] ?? false,
             ]);
     }
 
