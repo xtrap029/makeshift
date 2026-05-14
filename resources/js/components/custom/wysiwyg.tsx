@@ -2,11 +2,16 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { Extension } from '@tiptap/core';
 import Placeholder from '@tiptap/extension-placeholder';
+import TextAlign from '@tiptap/extension-text-align';
 import UnderlineExtension from '@tiptap/extension-underline';
 import { EditorContent, EditorContext, useEditor } from '@tiptap/react';
 import { BubbleMenu, FloatingMenu } from '@tiptap/react/menus';
 import StarterKit from '@tiptap/starter-kit';
 import {
+    AlignCenter,
+    AlignJustify,
+    AlignLeft,
+    AlignRight,
     Bold,
     Code,
     Heading1,
@@ -61,6 +66,9 @@ const Wysiwyg = React.forwardRef<HTMLDivElement, WysiwygProps>(
             extensions: [
                 StarterKit,
                 UnderlineExtension,
+                TextAlign.configure({
+                    types: ['heading', 'paragraph'],
+                }),
                 Placeholder.configure({
                     placeholder: 'Start typing...',
                 }),
@@ -132,6 +140,22 @@ const Wysiwyg = React.forwardRef<HTMLDivElement, WysiwygProps>(
 
         const redo = useCallback(() => {
             editor?.chain().focus().redo().run();
+        }, [editor]);
+
+        const setAlignLeft = useCallback(() => {
+            editor?.chain().focus().setTextAlign('left').run();
+        }, [editor]);
+
+        const setAlignCenter = useCallback(() => {
+            editor?.chain().focus().setTextAlign('center').run();
+        }, [editor]);
+
+        const setAlignRight = useCallback(() => {
+            editor?.chain().focus().setTextAlign('right').run();
+        }, [editor]);
+
+        const setAlignJustify = useCallback(() => {
+            editor?.chain().focus().setTextAlign('justify').run();
         }, [editor]);
 
         if (!editor) {
@@ -301,6 +325,52 @@ const Wysiwyg = React.forwardRef<HTMLDivElement, WysiwygProps>(
                                 disabled={!editor.can().redo() || disabled}
                             >
                                 <Redo className="h-4 w-4" />
+                            </Button>
+                        </div>
+
+                        <div className="bg-border mx-1 h-6 w-px" />
+
+                        {/* Alignment */}
+                        <div className="flex items-center gap-1">
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={setAlignLeft}
+                                className={cn(editor.isActive({ textAlign: 'left' }) && 'bg-accent')}
+                                disabled={disabled}
+                            >
+                                <AlignLeft className="h-4 w-4" />
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={setAlignCenter}
+                                className={cn(editor.isActive({ textAlign: 'center' }) && 'bg-accent')}
+                                disabled={disabled}
+                            >
+                                <AlignCenter className="h-4 w-4" />
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={setAlignRight}
+                                className={cn(editor.isActive({ textAlign: 'right' }) && 'bg-accent')}
+                                disabled={disabled}
+                            >
+                                <AlignRight className="h-4 w-4" />
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={setAlignJustify}
+                                className={cn(editor.isActive({ textAlign: 'justify' }) && 'bg-accent')}
+                                disabled={disabled}
+                            >
+                                <AlignJustify className="h-4 w-4" />
                             </Button>
                         </div>
                     </div>
