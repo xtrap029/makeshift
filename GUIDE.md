@@ -412,6 +412,7 @@ The public website is what your customers see. No login required.
 - Customer selects their preferred date, start time, end time, and layout.
 - Customer enters their name, email, and any special notes.
 - Customer reviews and agrees to the legal documents (Terms of Service, House Rules, Privacy Policy).
+- Customer can optionally tick **"Subscribe to our newsletter"** to opt in to marketing emails.
 - On submission, MakeShift creates an Inquiry booking and sends a confirmation email to the customer.
 
 ### Contact Us Page (`/contact-us`)

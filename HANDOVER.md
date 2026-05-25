@@ -1,7 +1,7 @@
 # MakeShift — Developer Handover
 
 > Auto-updated after each commit. Read this first when picking up the project.
-> Last updated: 2026-04-25 (latest: 04e6f51 — pushed)
+> Last updated: 2026-05-25 (latest: 1b5a83a — ahead of origin by 2)
 
 ---
 
@@ -17,7 +17,7 @@ MakeShift is a Laravel + Inertia.js (React) space booking platform for a co-work
 
 ## Current Branch
 
-**Branch:** `master` — up to date with `origin/master`
+**Branch:** `master` — 2 commits ahead of `origin/master` (not yet pushed)
 
 ---
 
@@ -25,6 +25,10 @@ MakeShift is a Laravel + Inertia.js (React) space booking platform for a co-work
 
 | Commit | Summary |
 |--------|---------|
+| `1b5a83a` | Mobile fixes for space inquiry dialog: single-column layout on mobile, focus trap to prevent iOS Chrome auto-opening date picker, guard against empty date navigation, removed invalid-date redirect in `SpaceController::show()` (shows empty slots instead), exposed Vite dev server on `0.0.0.0` for local network testing |
+| `490009e` | Wysiwyg editor: added text alignment toolbar buttons (left, center, right, justify) using `@tiptap/extension-text-align` |
+| `6f74bed` | Inquiry form: added optional "Subscribe to our newsletter" checkbox |
+| `b62ebc4` | Fix: password validation rule casting error in `StoreUserRequest` |
 | `04e6f51` | Bookings: filters now work in calendar view; filters reset when switching between calendar and table views |
 | `c6d6ccd` | Mail logs: added Export Emails (CSV, unique emails only) and group-by subject toggle |
 | `07e37b3` | Logo: removed site title/description text, logo now scales by max-height (40px) for wide logos |

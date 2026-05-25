@@ -58,7 +58,7 @@ export default function Index({
         router.get(
             route('logs.mail'),
             { ...filterData, group_by: filters.group_by },
-            { preserveState: true, replace: true },
+            { preserveState: true, replace: true }
         );
         setIsFilterOpen(false);
     };
@@ -68,7 +68,7 @@ export default function Index({
         router.get(
             route('logs.mail'),
             { ...filterData, group_by: newGroupBy },
-            { preserveState: true, replace: true },
+            { preserveState: true, replace: true }
         );
     };
 
@@ -90,7 +90,7 @@ export default function Index({
                         <a href={buildExportUrl()} download>
                             <Button variant="outline" className="cursor-pointer">
                                 <Download className="mr-1 size-4" />
-                                Export Emails
+                                Export Subscribed Emails
                             </Button>
                         </a>
                         <Button
