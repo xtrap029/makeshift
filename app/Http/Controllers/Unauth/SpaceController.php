@@ -73,13 +73,6 @@ class SpaceController extends Controller
      */
     public function show(string $name, Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'date' => 'nullable|date|after:' . now()->format('Y-m-d'),
-        ]);
-
-        if ($validator->fails()) {
-            return to_route('spaces')->withError('Invalid date');
-        }
 
         $room = Room::select(
             'id',

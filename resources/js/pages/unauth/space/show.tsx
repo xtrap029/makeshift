@@ -20,7 +20,7 @@ import { InquiryForm } from '@/types/form';
 import { priceDisplay } from '@/utils/formatters';
 import { Head, router } from '@inertiajs/react';
 import { Check, ChevronsRight, LayoutGrid, SquareDashed, Users } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 
 const validationSchema = z.object({
@@ -39,6 +39,7 @@ export default function Show({
     availableTimes: string[];
     selectedDate: string;
 }) {
+    const dialogFocusRef = useRef<HTMLButtonElement>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [totalPrice, setTotalPrice] = useState(0);
     const [inquiryForm, setInquiryForm] = useState<Partial<InquiryForm>>({
@@ -91,6 +92,8 @@ export default function Show({
     };
 
     const handleDateChange = (date: string) => {
+        if (!date) return;
+
         setInquiryForm({
             ...inquiryForm,
             date,
@@ -236,7 +239,10 @@ export default function Show({
                             })}
                         </div>
                     </div>
-                    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                    <Dialog
+                        open={dialogOpen}
+                        onOpenChange={setDialogOpen}
+                    >
                         <DialogTrigger asChild>
                             <Button
                                 variant="makeshiftDefault"
@@ -246,15 +252,16 @@ export default function Show({
                                 Inquire Now
                             </Button>
                         </DialogTrigger>
-                        <DialogContent>
+                        <DialogContent onOpenAutoFocus={(e) => { e.preventDefault(); dialogFocusRef.current?.focus(); }}>
+                            <button ref={dialogFocusRef} className="sr-only" tabIndex={-1} aria-label="dialog focus trap" />
                             <DialogHeader>
                                 <DialogTitle>Inquire Now</DialogTitle>
                                 <DialogDescription
-                                    className="mt-4 grid grid-cols-2 items-center justify-center gap-4 text-left"
+                                    className="mt-4 grid grid-cols-1 items-center justify-center gap-4 text-left sm:grid-cols-2"
                                     asChild
                                 >
                                     <div>
-                                        <div className="col-span-2">
+                                        <div className="sm:col-span-2">
                                             <div className="text-muted-foreground mb-1 ml-3">
                                                 Date
                                             </div>
@@ -350,7 +357,7 @@ export default function Show({
                                                 className="ml-3"
                                             />
                                         </div>
-                                        <div className="col-span-2">
+                                        <div className="sm:col-span-2">
                                             <div className="text-muted-foreground mb-1 ml-3">
                                                 Layout
                                             </div>
@@ -382,7 +389,7 @@ export default function Show({
                                                 className="ml-3"
                                             />
                                         </div>
-                                        <div className="col-span-2 py-4 text-center">
+                                        <div className="py-4 text-center sm:col-span-2">
                                             <div className="text-makeshift-primary text-2xl font-bold">
                                                 {priceDisplay(totalPrice)}
                                             </div>
@@ -394,7 +401,7 @@ export default function Show({
                                             variant="makeshiftDefault"
                                             size="makeshiftXl"
                                             onClick={handleNext}
-                                            className="col-span-2"
+                                            className="sm:col-span-2"
                                         >
                                             Next
                                         </Button>
@@ -402,7 +409,7 @@ export default function Show({
                                             variant="makeshiftOutline"
                                             size="makeshiftXl"
                                             onClick={() => setDialogOpen(false)}
-                                            className="col-span-2"
+                                            className="sm:col-span-2"
                                         >
                                             Close
                                         </Button>
