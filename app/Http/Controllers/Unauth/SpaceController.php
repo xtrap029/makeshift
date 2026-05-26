@@ -101,7 +101,7 @@ class SpaceController extends Controller
             ->firstOrFail();
 
         $availableTimes = [];
-        if ($room && $request->date) {
+        if ($room && $request->date && $request->date > now()->format('Y-m-d')) {
             // check if has schedule
             $dateDay = strtolower(date('D', strtotime($request->date)));
             $roomSchedule = Schedule::select($dateDay . '_start as start', $dateDay . '_end as end')
