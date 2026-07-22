@@ -1,7 +1,7 @@
 # MakeShift — User Guide & Demo Script
 
 > **Audience:** Non-technical staff, admins, and demo presenters
-> **Last updated:** April 2026
+> **Last updated:** July 2026
 
 ---
 
@@ -23,6 +23,7 @@
    - [Booking Status Flow](#booking-status-flow)
    - [Payments](#payments)
    - [Payment Providers](#payment-providers)
+   - [Sources](#sources)
 8. [Logs Module](#8-logs-module)
    - [Audit Logs](#audit-logs)
    - [Mail Logs](#mail-logs)
@@ -204,6 +205,8 @@ Both views share the same **filter panel** (the sliders icon). You can filter by
 | **Time Start / End** | The time range for the booking |
 | **Layout** | The selected room setup (if applicable) |
 | **Notes** | Any special requests from the customer |
+| **Referred By** | Free-text field — who referred the customer (e.g. a person or company's name), if any |
+| **Source** | How the customer heard about the business, chosen from the Sources list (see below) |
 | **Status** | Current state of the booking (see flow below) |
 | **Expires At** | Deadline for the customer to complete payment before the booking is auto-cancelled |
 | **Voucher Code** | Auto-generated when a booking is Confirmed; used for check-in |
@@ -277,6 +280,17 @@ Payment Providers are the payment methods your business accepts (e.g., "GCash," 
 - Go to **Transactions → Payment Providers** to add or manage them.
 - Each provider can be set as **Active** (available for use) or **Default** (pre-selected when recording a payment).
 - All payment methods in MakeShift are **manual** — staff record them after the customer transfers money offline. There is no automated online payment gateway.
+
+---
+
+### Sources
+
+Sources are the list of options shown to customers when asked **"How did you hear about us?"** on the public inquiry form (e.g., "Google Search," "Social Media," "Referral," "Walk-in").
+
+- Go to **Transactions → Sources** to add, edit, or remove options.
+- Each source only needs a **name** (an optional description can also be added).
+- Once created, a source appears as a dropdown option on the public inquiry form and in the admin booking create/edit screens.
+- Deleting a source does not delete past bookings — bookings that used a since-deleted source will simply show no source.
 
 ---
 
@@ -411,6 +425,7 @@ The public website is what your customers see. No login required.
 ### Reservation / Inquiry Form
 - Customer selects their preferred date, start time, end time, and layout.
 - Customer enters their name, email, and any special notes.
+- Customer can optionally enter **"Referred By"** (who referred them) and select **"How did you hear about us?"** from the Sources list managed in the admin panel.
 - Customer reviews and agrees to the legal documents (Terms of Service, House Rules, Privacy Policy).
 - Customer can optionally tick **"Subscribe to our newsletter"** to opt in to marketing emails.
 - On submission, MakeShift creates an Inquiry booking and sends a confirmation email to the customer.
@@ -451,6 +466,7 @@ Use this sequence to walk a customer through MakeShift from end to end. Each sec
 **Step 4: Submit an Inquiry**
 - Click the booking/inquiry button.
 - Fill in sample customer details (name, email, note).
+- Optionally fill in **Referred By** and pick a **"How did you hear about us?"** option — mention this data helps track which marketing channels are working.
 - Show the legal document agreement step (Terms, Privacy Policy, House Rules — all editable by the admin).
 - Submit the form.
 - Show the success page the customer sees.
@@ -471,7 +487,7 @@ Use this sequence to walk a customer through MakeShift from end to end. Each sec
 - Navigate to **Transactions → Bookings**.
 - Find the inquiry submitted in Step 4 (status: Inquiry).
 - Open the booking detail page.
-- Show all the booking info: room, date, time, layout, customer name and email, notes, total price.
+- Show all the booking info: room, date, time, layout, customer name and email, notes, referred by / source, total price.
 
 **Step 7: Moving to Pending (Reserving the Slot)**
 - From the booking detail, change the status to **Pending**.
@@ -506,6 +522,7 @@ Use this sequence to walk a customer through MakeShift from end to end. Each sec
 **Step 11: Create an Amenity and Layout (if not already set up)**
 - Go to **Spaces → Amenities** → create a sample amenity (e.g., "Projector").
 - Go to **Spaces → Layouts** → create a sample layout (e.g., "Boardroom").
+- Go to **Transactions → Sources** → create a sample source (e.g., "Instagram") so it's ready for the inquiry form demo in Step 4.
 
 **Step 12: Create a Schedule**
 - Go to **Availability → Schedules** → create a new schedule.

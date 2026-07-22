@@ -1,7 +1,7 @@
 # MakeShift — Developer Handover
 
 > Auto-updated after each commit. Read this first when picking up the project.
-> Last updated: 2026-05-25 (latest: 1b5a83a — ahead of origin by 2)
+> Last updated: 2026-07-22 (latest: 78da179 — ahead of origin by 1)
 
 ---
 
@@ -17,7 +17,7 @@ MakeShift is a Laravel + Inertia.js (React) space booking platform for a co-work
 
 ## Current Branch
 
-**Branch:** `master` — 2 commits ahead of `origin/master` (not yet pushed)
+**Branch:** `master` — 1 commit ahead of `origin/master` (not yet pushed)
 
 ---
 
@@ -25,6 +25,9 @@ MakeShift is a Laravel + Inertia.js (React) space booking platform for a co-work
 
 | Commit | Summary |
 |--------|---------|
+| `78da179` | Added "Referred By" (free text) and "How did you hear about us?" (dropdown) to the public inquiry form and admin bookings. New admin-managed **Sources** list (`/sources`, mirrors the Layouts CRUD pattern) backs the dropdown. New `sources` table; new `bookings.referred_by` and `bookings.source_id` columns. Both fields show in booking create/edit/show pages, under the Customer section on the show page. |
+| `8e617a1` | Restored date validation in `SpaceController::show()` — only fetch time slots for future dates |
+| `c545ec2` | Updated guide and mail message copy |
 | `1b5a83a` | Mobile fixes for space inquiry dialog: single-column layout on mobile, focus trap to prevent iOS Chrome auto-opening date picker, guard against empty date navigation, removed invalid-date redirect in `SpaceController::show()` (shows empty slots instead), exposed Vite dev server on `0.0.0.0` for local network testing |
 | `490009e` | Wysiwyg editor: added text alignment toolbar buttons (left, center, right, justify) using `@tiptap/extension-text-align` |
 | `6f74bed` | Inquiry form: added optional "Subscribe to our newsletter" checkbox |
@@ -63,7 +66,9 @@ These files exist locally but are not yet committed:
 | `CLAUDE.md` | Claude instructions for this project |
 | `GUIDE.md` | Non-developer user guide and demo script |
 | `GUIDE.pdf` | PDF export of GUIDE.md |
-| `public/build.zip` | Frontend build archive |
+| `.claude/settings.local.json` | Local Claude Code permission overrides (not for git) |
+
+Note: `public/build.zip` was deleted locally (was previously untracked/uncommitted) and `public/build` currently holds a stale compiled bundle from before this session's frontend changes — run `npm run dev` or `npm run build` before relying on the UI in a browser.
 
 ---
 
@@ -80,6 +85,7 @@ app/
     ScheduleOverrideController.php
     AmenityController.php
     LayoutController.php
+    SourceController.php    — Admin-managed inquiry sources ("How did you hear about us?")
     PaymentProviderController.php
     UserController.php
     LogController.php
@@ -141,14 +147,16 @@ INQUIRY (1) → PENDING (2) → CONFIRMED (3)
 - CRON setup was tested with per-minute runs; now set to daily. The external trigger endpoint (`/cron/run/{token}`) is live.
 - DB backup SQL generation was patched (`c8823b5`) — verify backup files are valid on next restore test.
 - ~~Settings cache stale bug~~ — **resolved** (`6128b6c`). `EmailSettings` and `WebsiteSettings` now use 1hr TTL instead of `rememberForever`. Run `php artisan cache:clear` on server if email template values are still blank.
+- **Migrations table drift** (pre-existing, unrelated to `78da179`): `php artisan migrate:status` shows `2025_11_16_145305_add_login_at_in_users_table` and `2025_12_22_180756_add_backup_settings_to_settings_table` as "Pending" even though their columns already exist in the local DB. Not caused by recent work — needs reconciling (likely `php artisan migrate:status` was run against a DB that had these columns added manually, or the `migrations` table was reset) before running `php artisan migrate` blindly on any environment sharing that DB.
 
 ---
 
 ## What's Likely Next
 
 - Demo preparation — `GUIDE.md` has a full demo script (Part 13) ready.
-- Run `php artisan migrate` on server to apply the `EMAIL_SETTINGS_BCC` settings row migration.
-- No open branches or PRs at this time.
+- Run `php artisan migrate` on server to apply the `sources` table and `bookings.referred_by` / `bookings.source_id` columns, plus the `EMAIL_SETTINGS_BCC` settings row migration.
+- Populate real "Sources" entries via `/sources` (only 4 sample entries seeded locally: Google Search, Social Media, Referral, Walk-in) before demoing the inquiry form.
+- No open branches or PRs at this time — 1 local commit (`78da179`) not yet pushed.
 - Booking calendar/filter improvements are live — monitor for any edge cases with filter params in the calendar API.
 
 ---
