@@ -1,7 +1,7 @@
 # MakeShift — Developer Handover
 
 > Auto-updated after each commit. Read this first when picking up the project.
-> Last updated: 2026-07-22 (latest: 78da179 — ahead of origin by 1)
+> Last updated: 2026-07-22 (latest: 389410d — ahead of origin by 2)
 
 ---
 
@@ -17,7 +17,7 @@ MakeShift is a Laravel + Inertia.js (React) space booking platform for a co-work
 
 ## Current Branch
 
-**Branch:** `master` — 1 commit ahead of `origin/master` (not yet pushed)
+**Branch:** `master` — 2 commits ahead of `origin/master` (not yet pushed)
 
 ---
 
@@ -25,6 +25,7 @@ MakeShift is a Laravel + Inertia.js (React) space booking platform for a co-work
 
 | Commit | Summary |
 |--------|---------|
+| `389410d` | Added an admin-manageable **Announcements** banner to the home page, shown full-width above the Featured Space section. New `announcements` table/model; images uploaded via `POST /api/announcements/images` (mirrors the Room images upload/reorder/diff-delete pattern). Managed from Settings > Website > Appearance (new "Announcements" section, `resources/js/pages/settings/website/announcements-uploader.tsx`). Static image if 1 uploaded, auto-rotating carousel if 2+, each image optionally links out on click with a "More Info" badge. Also rebalanced the home page's black/white section striping (mobile and desktop) to account for the new top banner. |
 | `78da179` | Added "Referred By" (free text) and "How did you hear about us?" (dropdown) to the public inquiry form and admin bookings. New admin-managed **Sources** list (`/sources`, mirrors the Layouts CRUD pattern) backs the dropdown. New `sources` table; new `bookings.referred_by` and `bookings.source_id` columns. Both fields show in booking create/edit/show pages, under the Customer section on the show page. |
 | `8e617a1` | Restored date validation in `SpaceController::show()` — only fetch time slots for future dates |
 | `c545ec2` | Updated guide and mail message copy |
@@ -78,6 +79,9 @@ Note: `public/build.zip` was deleted locally (was previously untracked/uncommitt
 app/
   Http/Controllers/
     Unauth/          — Public website controllers (Home, Space, Reservation, ContactUs)
+    Api/
+      RoomController.php          — Multi-image upload/reorder for rooms
+      AnnouncementController.php  — Multi-image upload/reorder for the home page Announcements banner
     BookingController.php
     PaymentController.php
     RoomController.php
@@ -108,7 +112,7 @@ resources/
 
 routes/
   web.php                       — All routes (public + admin)
-  api.php                       — /api/bookings/verify, /cron/run/{token}
+  api.php                       — /api/bookings/verify, /api/rooms/{roomId}/images, /api/announcements/images, /cron/run/{token}
 
 config/
   global.php                    — App constants (statuses, pagination, file limits)
@@ -147,6 +151,7 @@ INQUIRY (1) → PENDING (2) → CONFIRMED (3)
 - CRON setup was tested with per-minute runs; now set to daily. The external trigger endpoint (`/cron/run/{token}`) is live.
 - DB backup SQL generation was patched (`c8823b5`) — verify backup files are valid on next restore test.
 - ~~Settings cache stale bug~~ — **resolved** (`6128b6c`). `EmailSettings` and `WebsiteSettings` now use 1hr TTL instead of `rememberForever`. Run `php artisan cache:clear` on server if email template values are still blank.
+- **Announcements uploader can't remove all images**: like the existing Room images uploader it's based on, `/api/announcements/images` requires at least 1 image per submission (`images` validated `required|min:1`), so the "Save" button only appears once ≥1 image is present — there's no way to clear the banner back to zero images from the UI without a DB delete. Same limitation exists for Room images; low priority unless it comes up.
 - **Migrations table drift** (pre-existing, unrelated to `78da179`): `php artisan migrate:status` shows `2025_11_16_145305_add_login_at_in_users_table` and `2025_12_22_180756_add_backup_settings_to_settings_table` as "Pending" even though their columns already exist in the local DB. Not caused by recent work — needs reconciling (likely `php artisan migrate:status` was run against a DB that had these columns added manually, or the `migrations` table was reset) before running `php artisan migrate` blindly on any environment sharing that DB.
 
 ---
@@ -154,9 +159,10 @@ INQUIRY (1) → PENDING (2) → CONFIRMED (3)
 ## What's Likely Next
 
 - Demo preparation — `GUIDE.md` has a full demo script (Part 13) ready.
-- Run `php artisan migrate` on server to apply the `sources` table and `bookings.referred_by` / `bookings.source_id` columns, plus the `EMAIL_SETTINGS_BCC` settings row migration.
+- Run `php artisan migrate` on server to apply the `sources` table, `bookings.referred_by` / `bookings.source_id` columns, the `announcements` table, plus the `EMAIL_SETTINGS_BCC` settings row migration.
 - Populate real "Sources" entries via `/sources` (only 4 sample entries seeded locally: Google Search, Social Media, Referral, Walk-in) before demoing the inquiry form.
-- No open branches or PRs at this time — 1 local commit (`78da179`) not yet pushed.
+- Upload real Announcement banner image(s) via Settings > Website > Appearance before demoing the home page — none are seeded locally, so the banner currently renders nothing.
+- No open branches or PRs at this time — 2 local commits (`78da179`, `389410d`) not yet pushed.
 - Booking calendar/filter improvements are live — monitor for any edge cases with filter params in the calendar API.
 
 ---

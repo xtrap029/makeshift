@@ -359,6 +359,16 @@ Configure your public-facing website:
 - Contact details: email, phone number, office address
 - Google Maps embed link for the map shown on the Contact Us and Home pages
 
+### Announcements
+Manage the promotional banner shown at the very top of the home page, above the Featured Space section.
+
+- Go to **Settings → Portal Appearance**, under the **Announcements** section.
+- Upload one or more images (drag-and-drop or click to browse, up to 10 images, 2MB each).
+- With **one image**, it displays as a static banner. With **two or more**, it automatically becomes an auto-rotating slider.
+- Each image can optionally have a **link** — when set, clicking the image opens that link in a new tab and a "More Info" badge appears on the image.
+- Reorder images with the arrow buttons on each image card, or remove one with the X button.
+- Click **Save Announcements** to publish changes immediately.
+
 ### Website Content (Homepage)
 Edit what appears on the public homepage:
 - **Featured Space** — select which room to highlight prominently
@@ -403,6 +413,7 @@ The public website is what your customers see. No login required.
 
 ### Home Page (`/`)
 - **Hero/Banner** — main header image
+- **Announcements** — full-width promotional banner at the top of the page content, above Featured Space. Shows nothing if no images are set, a static image if one is uploaded, or an auto-rotating slider if multiple are uploaded. Managed in Settings → Portal Appearance → Announcements.
 - **Featured Space** — highlighted room with photo, description, and a link to view it
 - **Who We Are** — your business introduction
 - **Video Tour** — embedded YouTube video (if configured)
@@ -449,6 +460,7 @@ Use this sequence to walk a customer through MakeShift from end to end. Each sec
 
 **Step 1: Home Page**
 - Open the public website home page.
+- Point out the Announcements banner at the top (if configured) — mention it can slide through multiple promotional images, each optionally clickable.
 - Point out the featured space, who we are section, and the spaces slider.
 - Highlight that the site is branded with the business logo, colors, and contact info — all configurable.
 
@@ -553,7 +565,7 @@ Use this sequence to walk a customer through MakeShift from end to end. Each sec
 > *Show the customization options.*
 
 **Step 15: Website Settings**
-- Go to **Settings → Portal Appearance** — show where to upload a logo and favicon, set contact info.
+- Go to **Settings → Portal Appearance** — show where to upload a logo and favicon, set contact info, and manage the Announcements banner.
 - Go to **Settings → Website Content** — show the homepage configuration options.
 - Go to **Settings → Legal Documents** — show where Terms, Privacy Policy, and House Rules are edited.
 
