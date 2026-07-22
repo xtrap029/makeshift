@@ -106,6 +106,13 @@ export interface Source {
     updated_id?: number;
 }
 
+export interface Announcement {
+    id: number;
+    image: string;
+    link_url: string | null;
+    order?: number;
+}
+
 export interface Schedule {
     id: number;
     name: string;

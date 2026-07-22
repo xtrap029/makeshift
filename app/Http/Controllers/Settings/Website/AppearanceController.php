@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Settings\Website;
 
 use App\Http\Controllers\Controller;
+use App\Models\Announcement;
 use App\Models\Room;
 use App\Models\Settings;
 use Illuminate\Http\Request;
@@ -55,6 +56,7 @@ class AppearanceController extends Controller
                 'homeRoomSlider' => $data['HOME_ROOM_SLIDER'] ?? null,
             ],
             'rooms' => $rooms,
+            'announcements' => Announcement::orderBy('order')->get(),
         ]);
     }
 

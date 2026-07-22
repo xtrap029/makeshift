@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Unauth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Announcement;
 use App\Models\Room;
 use App\Models\Settings;
 use Illuminate\Http\Request;
@@ -33,6 +34,7 @@ class HomeController extends Controller
                 'homeFeaturedDescription' => $data['HOME_FEATURED_DESCRIPTION'] ?? null,
             ],
             'roomSlider' => $roomSlider,
+            'announcements' => Announcement::orderBy('order')->get(['id', 'image', 'link_url']),
         ]);
     }
 

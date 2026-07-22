@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\RoomController;
 use Illuminate\Support\Facades\Artisan;
@@ -8,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth')->group(function () {
     Route::post('/api/bookings/verify', [BookingController::class, 'verify']);
     Route::post('/api/rooms/{roomId}/images', [RoomController::class, 'images']);
+    Route::post('/api/announcements/images', [AnnouncementController::class, 'images']);
 });
 
 Route::get('/cron/run/{token}', function ($token) {

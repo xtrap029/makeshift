@@ -16,9 +16,10 @@ import {
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import { Room } from '@/types';
+import { Announcement, Room } from '@/types';
 import { WebsiteAppearanceForm } from '@/types/form';
 import { FormEventHandler, useState } from 'react';
+import AnnouncementsUploader from './announcements-uploader';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -42,9 +43,11 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Appearance({
     websiteAppearance,
     rooms,
+    announcements,
 }: {
     websiteAppearance: WebsiteAppearanceForm;
     rooms: Room[];
+    announcements: Announcement[];
 }) {
     const [logoPreview, setLogoPreview] = useState('/index/public/logo.png');
     const [faviconPreview, setFaviconPreview] = useState('/index/public/favicon.ico');
@@ -153,6 +156,17 @@ export default function Appearance({
                             maxLength={30}
                         />
                     </div>
+                    <br />
+                    <HeadingSmall
+                        title="Announcements"
+                        description="Manage the promotional banner shown at the top of the home page. Add multiple images to make it a slider; each image can optionally link somewhere when clicked."
+                    />
+                    <AnnouncementsUploader
+                        initialImages={announcements.map((announcement) => ({
+                            url: announcement.image,
+                            link: announcement.link_url,
+                        }))}
+                    />
                     <br />
                     <HeadingSmall title="Home Page" description="Update Home page appearance" />
                     <div className="grid gap-2">
