@@ -8,6 +8,7 @@ use App\Services\RoomAvailabilityService;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Layout;
+use App\Models\Source;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use App\Mail\InquirySubmitted;
@@ -57,6 +58,7 @@ class ReservationController extends Controller
         return Inertia::render('unauth/reservation/inquire', [
             'inquiry' => $validated,
             'room' => $room,
+            'sources' => Source::orderBy('name')->get(['id', 'name']),
             'legal' => [
                 'terms' => $legal['LEGAL_TERMS'] ?? null,
                 'privacy' => $legal['LEGAL_PRIVACY'] ?? null,
@@ -98,6 +100,8 @@ class ReservationController extends Controller
                 'room_id' => $room->id,
                 'layout_id' => Layout::where('name', $validated['layout'])->first()->id,
                 'note' => $validated['note'],
+                'referred_by' => $validated['referred_by'] ?? null,
+                'source_id' => $validated['source_id'] ?? null,
                 'qty' => 1,
                 'start_date' => $validated['date'],
                 'start_time' => $validated['start_time'],

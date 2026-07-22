@@ -9,10 +9,17 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { formValidation } from '@/constants/form';
 import AppLayoutHeaderCustomer from '@/layouts/app/app-header-layout-customer';
-import { Room } from '@/types';
+import { Room, Source } from '@/types';
 import { InquiryForm, LegalAppearanceForm } from '@/types/form';
 import { priceDisplay } from '@/utils/formatters';
 import { Head, router, useForm } from '@inertiajs/react';
@@ -54,10 +61,12 @@ const validationSchema = z.object({
 export default function Inquire({
     inquiry,
     room,
+    sources,
     legal,
 }: {
     inquiry: InquiryForm;
     room: Room;
+    sources: Source[];
     legal: LegalAppearanceForm;
 }) {
     const { data, setData, processing, errors, post } = useForm<Partial<InquiryForm>>({
@@ -69,6 +78,8 @@ export default function Inquire({
         end_time: inquiry.end_time,
         layout: inquiry.layout,
         note: '',
+        referred_by: '',
+        source_id: undefined,
         is_subscribed: false,
     });
 
@@ -316,6 +327,42 @@ export default function Inquire({
                                 disabled={processing}
                             />
                             <InputError message={zodErrors.note || errors.note} className="ml-3" />
+                        </div>
+                        <div className="col-span-2 md:col-span-1">
+                            <div className="text-muted-foreground mb-2 ml-3">
+                                Referred By
+                            </div>
+                            <Input
+                                id="referred_by"
+                                type="text"
+                                value={data.referred_by}
+                                onChange={(e) => setData('referred_by', e.target.value)}
+                                placeholder="Who referred you?"
+                                disabled={processing}
+                            />
+                            <InputError message={errors.referred_by} className="ml-3" />
+                        </div>
+                        <div className="col-span-2 md:col-span-1">
+                            <div className="text-muted-foreground mb-2 ml-3">
+                                How did you hear about us?
+                            </div>
+                            <Select
+                                value={data.source_id?.toString()}
+                                onValueChange={(value) => setData('source_id', parseInt(value))}
+                                disabled={processing}
+                            >
+                                <SelectTrigger className="h-12 w-full rounded-full bg-white">
+                                    <SelectValue placeholder="Select an option" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {sources.map((source) => (
+                                        <SelectItem key={source.id} value={source.id.toString()}>
+                                            {source.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <InputError message={errors.source_id} className="ml-3" />
                         </div>
                         <div className="col-span-2 flex items-center gap-2">
                             <input

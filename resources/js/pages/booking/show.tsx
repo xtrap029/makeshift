@@ -303,6 +303,14 @@ export default function Show({ booking }: { booking: Booking }) {
                                     <TableRow>
                                         <TableHead colSpan={2}></TableHead>
                                     </TableRow>
+                                    <TableRow>
+                                        <TableHead className={labelWidth}>Referred By</TableHead>
+                                        <TableCell>{booking.referred_by || '—'}</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableHead className={labelWidth}>Source</TableHead>
+                                        <TableCell>{booking.source?.name || '—'}</TableCell>
+                                    </TableRow>
                                     <TableRow className="border-b-0">
                                         <TableHead colSpan={2}>Notes</TableHead>
                                     </TableRow>

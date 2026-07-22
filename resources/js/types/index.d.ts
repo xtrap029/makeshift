@@ -96,6 +96,16 @@ export interface Layout {
     updated_id?: number;
 }
 
+export interface Source {
+    id: number;
+    name: string;
+    description: string | null;
+    created_at?: string;
+    updated_at?: string;
+    owner_id?: number;
+    updated_id?: number;
+}
+
 export interface Schedule {
     id: number;
     name: string;
@@ -163,6 +173,8 @@ export interface Booking {
     total_hours: number;
     total_price: number;
     note: string;
+    referred_by: string | null;
+    source: Source | null;
     qty: number;
     start_date: string;
     start_time: string;

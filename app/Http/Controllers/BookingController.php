@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateBookingStatusRequest;
 use App\Models\Booking;
 use App\Models\Layout;
 use App\Models\Room;
+use App\Models\Source;
 use App\Services\RoomAvailabilityService;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\InquiryAcknowledged;
@@ -36,7 +37,7 @@ class BookingController extends Controller
     {
         $filters = $request->validated();
 
-        $bookings = Booking::with('room', 'layout')->orderBy('created_at', 'desc');
+        $bookings = Booking::with('room', 'layout', 'source')->orderBy('created_at', 'desc');
 
         if (isset($filters['date_from'])) {
             $bookings->where('start_date', '>=', $filters['date_from']);
@@ -84,7 +85,7 @@ class BookingController extends Controller
         $startDate = Carbon::create($year, $month, 1)->startOfMonth();
         $endDate = Carbon::create($year, $month, 1)->endOfMonth();
 
-        $bookings = Booking::with('room', 'layout')
+        $bookings = Booking::with('room', 'layout', 'source')
             ->where('start_date', '>=', $startDate)
             ->where('start_date', '<=', $endDate);
 
@@ -121,6 +122,7 @@ class BookingController extends Controller
         return Inertia::render('booking/create', [
             'rooms' => Room::where('is_active', true)->orderBy('name')->get(),
             'layouts' => Layout::orderBy('name')->get(),
+            'sources' => Source::orderBy('name')->get(),
         ]);
     }
 
@@ -143,7 +145,7 @@ class BookingController extends Controller
      */
     public function show(Booking $booking)
     {
-        $booking->load('room', 'layout', 'owner', 'updater', 'payments.payment_provider');
+        $booking->load('room', 'layout', 'source', 'owner', 'updater', 'payments.payment_provider');
         $booking->total_paid = $booking->total_paid();
         $booking->total_hours = $booking->total_hours();
         $booking->total_price = $booking->total_price();
@@ -158,12 +160,13 @@ class BookingController extends Controller
      */
     public function edit(Booking $booking)
     {
-        $booking->load('room', 'layout');
+        $booking->load('room', 'layout', 'source');
 
         return Inertia::render('booking/edit', [
             'booking' => $booking,
             'rooms' => Room::where('is_active', true)->orderBy('name')->get(),
             'layouts' => Layout::orderBy('name')->get(),
+            'sources' => Source::orderBy('name')->get(),
         ]);
     }
 

@@ -2,7 +2,7 @@ import { Head, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
 import AppLayout from '@/layouts/app-layout';
-import { Booking, BreadcrumbItem, Layout, Room } from '@/types';
+import { Booking, BreadcrumbItem, Layout, Room, Source } from '@/types';
 import { BookingForm } from '@/types/form';
 import Form from './form';
 
@@ -16,10 +16,12 @@ export default function Create({
     booking,
     rooms,
     layouts,
+    sources,
 }: {
     booking: Booking;
     rooms: Room[];
     layouts: Layout[];
+    sources: Source[];
 }) {
     const { data, setData, put, processing, errors } = useForm<Partial<BookingForm>>({
         id: booking.id,
@@ -29,6 +31,8 @@ export default function Create({
         room_id: booking.room?.id,
         layout_id: booking.layout?.id,
         note: booking.note,
+        referred_by: booking.referred_by || '',
+        source_id: booking.source?.id,
         qty: booking.qty,
         start_date: booking.start_date,
         start_time: booking.start_time,
@@ -54,6 +58,7 @@ export default function Create({
                     submit={submit}
                     rooms={rooms}
                     layouts={layouts}
+                    sources={sources}
                 />
             </div>
         </AppLayout>

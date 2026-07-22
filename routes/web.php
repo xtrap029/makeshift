@@ -5,6 +5,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\LayoutController;
+use App\Http\Controllers\SourceController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentProviderController;
@@ -40,6 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('rooms', RoomController::class);
     Route::resource('amenities', AmenityController::class);
     Route::resource('layouts', LayoutController::class);
+    Route::resource('sources', SourceController::class);
     Route::resource('schedules', ScheduleController::class);
     Route::resource('overrides', ScheduleOverrideController::class);
     Route::resource('payment-providers', PaymentProviderController::class)->names('paymentProviders');

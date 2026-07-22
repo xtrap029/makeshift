@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { bookingStatus } from '@/constants';
-import { Layout, Room } from '@/types';
+import { Layout, Room, Source } from '@/types';
 import { BookingForm } from '@/types/form';
 import { Link } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
@@ -26,6 +26,7 @@ export default function Form({
     submit,
     rooms,
     layouts,
+    sources,
 }: {
     data: Partial<BookingForm>;
     setData: (key: keyof BookingForm, value: BookingForm[keyof BookingForm]) => void;
@@ -34,6 +35,7 @@ export default function Form({
     submit: FormEventHandler;
     rooms: Room[];
     layouts: Layout[];
+    sources: Source[];
 }) {
     const isPending =
         bookingStatus.find((status) => status.id === data.status)?.label === 'Pending';
@@ -44,6 +46,10 @@ export default function Form({
 
     const [selectedLayout, setSelectedLayout] = useState<string | undefined>(
         data.layout_id?.toString() || undefined
+    );
+
+    const [selectedSource, setSelectedSource] = useState<string | undefined>(
+        data.source_id?.toString() || undefined
     );
 
     const [selectedQty, setSelectedQty] = useState<string | undefined>(
@@ -192,6 +198,41 @@ export default function Form({
                         disabled={processing}
                         placeholder="Notes"
                     />
+                </div>
+                <div className="col-span-6 grid gap-2">
+                    <Label htmlFor="referred_by">Referred By</Label>
+                    <Input
+                        id="referred_by"
+                        type="text"
+                        value={data.referred_by || ''}
+                        onChange={(e) => setData('referred_by', e.target.value)}
+                        disabled={processing}
+                        placeholder="Referred By"
+                    />
+                    <InputError message={errors.referred_by} className="mt-2" />
+                </div>
+                <div className="col-span-6 grid gap-2">
+                    <Label htmlFor="source_id">How did you hear about us?</Label>
+                    <Select
+                        value={selectedSource}
+                        onValueChange={(value) => {
+                            setSelectedSource(value);
+                            setData('source_id', parseInt(value));
+                        }}
+                        disabled={processing}
+                    >
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a source" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {sources.map((source) => (
+                                <SelectItem key={source.id} value={source.id.toString()}>
+                                    {source.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <InputError message={errors.source_id} className="mt-2" />
                 </div>
                 <div className="col-span-4 grid gap-2">
                     <Label htmlFor="start_date">Start Date</Label>

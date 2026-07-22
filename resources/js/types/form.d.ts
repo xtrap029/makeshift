@@ -35,6 +35,12 @@ export interface LayoutForm {
     description: string;
 }
 
+export interface SourceForm {
+    id: number;
+    name: string;
+    description?: string;
+}
+
 export interface ScheduleForm {
     id: number;
     name: string;
@@ -84,6 +90,8 @@ export interface BookingForm {
     room_id: number;
     layout_id: number;
     note: string;
+    referred_by: string;
+    source_id: number;
     qty: number;
     start_date: string;
     start_time: string;
@@ -117,6 +125,8 @@ export interface InquiryForm {
     end_time: string;
     layout: string;
     note: string;
+    referred_by: string;
+    source_id: number;
     is_subscribed: boolean;
 }
 

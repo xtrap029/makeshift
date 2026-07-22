@@ -42,6 +42,8 @@ class UpdateBookingRequest extends FormRequest
                     Rule::in($layout),
                 ],
                 'note' => 'nullable|string|max:255',
+                'referred_by' => 'nullable|string|max:255',
+                'source_id' => 'nullable|integer|exists:sources,id',
                 'expires_at' => 'nullable|date',
             ];
         }
@@ -57,6 +59,8 @@ class UpdateBookingRequest extends FormRequest
                 Rule::in($layout),
             ],
             'note' => 'nullable|string|max:255',
+            'referred_by' => 'nullable|string|max:255',
+            'source_id' => 'nullable|integer|exists:sources,id',
             'qty' => 'required|integer',
             'start_date' => 'required|date',
             'start_time' => 'required|date_format:H:i:s|before:end_time',

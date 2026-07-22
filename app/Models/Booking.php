@@ -21,6 +21,8 @@ class Booking extends Model
         'room_id',
         'layout_id',
         'note',
+        'referred_by',
+        'source_id',
         'qty',
         'start_date',
         'start_time',
@@ -42,6 +44,11 @@ class Booking extends Model
     public function layout()
     {
         return $this->belongsTo(Layout::class);
+    }
+
+    public function source()
+    {
+        return $this->belongsTo(Source::class);
     }
 
     public function payments()
