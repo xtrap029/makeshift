@@ -18,8 +18,9 @@ import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { Announcement, Room } from '@/types';
 import { WebsiteAppearanceForm } from '@/types/form';
-import { FormEventHandler, useState } from 'react';
-import AnnouncementsUploader from './announcements-uploader';
+import { FormEventHandler, useRef, useState } from 'react';
+import AnnouncementsUploader, { AnnouncementsUploaderHandle } from './announcements-uploader';
+import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -71,8 +72,18 @@ export default function Appearance({
         homeRoomSlider: websiteAppearance.homeRoomSlider,
     });
 
-    const submit: FormEventHandler = (e) => {
+    const announcementsRef = useRef<AnnouncementsUploaderHandle>(null);
+
+    const submit: FormEventHandler = async (e) => {
         e.preventDefault();
+
+        try {
+            await announcementsRef.current?.save();
+        } catch (err) {
+            toast.error('Failed to save announcement images');
+            console.error('Announcements upload failed', err);
+            return;
+        }
 
         router.post(route('settings.website.appearance.update'), {
             _method: 'put',
@@ -162,6 +173,7 @@ export default function Appearance({
                         description="Manage the promotional banner shown at the top of the home page. Add multiple images to make it a slider; each image can optionally link somewhere when clicked."
                     />
                     <AnnouncementsUploader
+                        ref={announcementsRef}
                         initialImages={announcements.map((announcement) => ({
                             url: announcement.image,
                             link: announcement.link_url,
