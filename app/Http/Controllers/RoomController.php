@@ -119,6 +119,27 @@ class RoomController extends Controller
             $room->schedule->max_date = Carbon::parse($room->schedule->max_date)->diffForHumans();
         }
 
+        // Active, ongoing (reserve_to hasn't passed), and upcoming discounts only —
+        // inactive and expired ones would never actually apply, so they'd be noise here.
+        $room->load(['discounts' => function ($query) {
+            $query->where('is_active', true)
+                ->where('reserve_to', '>=', now()->format('Y-m-d'))
+                ->orderBy('reserve_from');
+        }]);
+
+        // "Ongoing" means a customer inquiring right now would qualify: today must fall
+        // inside the BOOKING period. The reservation window governs which stay date they
+        // pick, not today's date — someone booking today for a stay date later in the
+        // reservation window still gets the discount, so that window need not contain
+        // today itself. Anything still shown here (reserve_to hasn't passed) whose
+        // booking period hasn't opened yet is "upcoming".
+        $today = now()->format('Y-m-d');
+        $room->discounts->each(function ($discount) use ($today) {
+            $discount->is_ongoing =
+                $discount->book_from->format('Y-m-d') <= $today
+                && $discount->book_to->format('Y-m-d') >= $today;
+        });
+
         $booking_date = $request->filled('booking') ? $request->booking : now()->format('Y-m-d');
 
         $room->load(['bookings' => function ($query) use ($booking_date) {

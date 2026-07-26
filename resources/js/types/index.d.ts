@@ -68,11 +68,67 @@ export interface Room {
     image: RoomImage | null;
     images: RoomImage[];
     bookings: Booking[];
+    /** Resolved discount preview for public pages; null when none applies. */
+    discount?: DiscountPreview | null;
+    /** Ongoing and upcoming discount records (admin room show page). */
+    discounts?: Discount[];
     created_at?: string;
     updated_at?: string;
     deleted_at?: string | null;
     owner_id?: number;
     updated_id?: number;
+}
+
+export interface Discount {
+    id: number;
+    name: string;
+    description: string | null;
+    /** 1 = Fixed Amount, 2 = Percentage */
+    type: number;
+    value: number;
+    book_from: string;
+    book_to: string;
+    reserve_from: string;
+    reserve_to: string;
+    priority: number;
+    is_active: boolean;
+    code: string | null;
+    rooms?: Room[];
+    /** Names of other active discounts covering the same rooms/dates — advisory only. */
+    overlaps?: string[];
+    /** True when today falls inside the booking period (so an inquiry today would qualify) — set only on room show. */
+    is_ongoing?: boolean;
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string | null;
+}
+
+/** Lightweight resolved discount attached to a Room on public pages. */
+export interface DiscountPreview {
+    id: number;
+    name: string;
+    type: number;
+    value: number;
+    label: string;
+    per_hour_amount: number;
+    discounted_price: number;
+    /** True when the promo hasn't started yet — advertise it, but don't discount the shown price. */
+    upcoming: boolean;
+    /** Date the promo's reservation window opens; only set when `upcoming`. */
+    starts_on: string | null;
+}
+
+/** Frozen snapshot of a discount as applied to a booking. */
+export interface BookingDiscount {
+    id: number;
+    booking_id: number;
+    discount_id: number | null;
+    name: string;
+    type: number;
+    value: number;
+    amount: number;
+    /** 1 = automatic, 2 = coupon code */
+    source: number;
 }
 
 export interface Amenity {
@@ -176,8 +232,11 @@ export interface Booking {
     room: Room;
     layout: Layout;
     payments: Payment[];
+    discounts: BookingDiscount[];
     total_paid: number;
     total_hours: number;
+    subtotal: number;
+    discount_amount: number;
     total_price: number;
     note: string;
     referred_by: string | null;

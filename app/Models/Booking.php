@@ -56,6 +56,11 @@ class Booking extends Model
         return $this->hasMany(Payment::class);
     }
 
+    public function discounts()
+    {
+        return $this->hasMany(BookingDiscount::class);
+    }
+
     public function total_paid()
     {
         return $this->payments->where('status', config('global.payment_status.paid')[0])->sum('amount_paid');
@@ -68,9 +73,19 @@ class Booking extends Model
         return $start->diffInMinutes($end) / 60;
     }
 
-    public function total_price()
+    public function subtotal()
     {
         return $this->room->price * $this->total_hours() * $this->qty;
+    }
+
+    public function discount_amount()
+    {
+        return round((float) $this->discounts->sum('amount'), 2);
+    }
+
+    public function total_price()
+    {
+        return max(0, round($this->subtotal() - $this->discount_amount(), 2));
     }
 
     public function owner()

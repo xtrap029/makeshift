@@ -57,14 +57,29 @@ class PaymentController extends Controller
     }
 
     /**
+     * Pending bookings decorated with their discounted totals, so the payment form
+     * can show the remaining balance staff actually need to collect.
+     */
+    private function payableBookings()
+    {
+        return Booking::with('room', 'payments', 'discounts')
+            ->whereIn('status', [config('global.booking_status.pending')[0]])
+            ->get()
+            ->each(function ($booking) {
+                $booking->subtotal = $booking->subtotal();
+                $booking->discount_amount = $booking->discount_amount();
+                $booking->total_price = $booking->total_price();
+                $booking->total_paid = $booking->total_paid();
+            });
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
         return Inertia::render('payment/create', [
-            'bookings' => Booking::with('room')->whereIn('status', [
-                config('global.booking_status.pending')[0],
-            ])->get(),
+            'bookings' => $this->payableBookings(),
             'payment_providers' => PaymentProvider::where('is_active', true)->orderBy('name', 'asc')->get(),
             'booking_id' => request('booking-id'),
         ]);
@@ -116,9 +131,7 @@ class PaymentController extends Controller
 
         return Inertia::render('payment/edit', [
             'payment' => $payment,
-            'bookings' => Booking::with('room')->whereIn('status', [
-                config('global.booking_status.pending')[0],
-            ])->get(),
+            'bookings' => $this->payableBookings(),
             'payment_providers' => PaymentProvider::where('is_active', true)->orderBy('name', 'asc')->get(),
         ]);
     }

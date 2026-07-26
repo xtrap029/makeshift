@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectValue } from '@/components/ui/
 import AppLayoutHeaderCustomer from '@/layouts/app/app-header-layout-customer';
 import { Room } from '@/types';
 import { InquiryForm } from '@/types/form';
-import { priceDisplay } from '@/utils/formatters';
+import { priceDisplay, promoDateDisplay } from '@/utils/formatters';
 import { Head, router } from '@inertiajs/react';
 import { Check, ChevronsRight, LayoutGrid, SquareDashed, Users } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -131,15 +131,26 @@ export default function Show({
         setDialogOpen(false);
     };
 
+    // An upcoming promo is advertised but not yet applied, so it must not alter prices.
+    const activeDiscount = room.discount && !room.discount.upcoming ? room.discount : null;
+    const effectiveRate = activeDiscount ? activeDiscount.discounted_price : room.price;
+
+    const selectedHours =
+        inquiryForm.end_time && inquiryForm.start_time
+            ? Number(inquiryForm.end_time.split(':')[0]) -
+              Number(inquiryForm.start_time.split(':')[0])
+            : 0;
+    const originalTotal = room.price * selectedHours;
+
     useEffect(() => {
         setTotalPrice(
             inquiryForm.end_time && inquiryForm.start_time
-                ? room.price *
+                ? effectiveRate *
                       (Number(inquiryForm.end_time.split(':')[0]) -
                           Number(inquiryForm.start_time.split(':')[0]))
                 : 0
         );
-    }, [inquiryForm.end_time, inquiryForm.start_time, room.price]);
+    }, [inquiryForm.end_time, inquiryForm.start_time, effectiveRate]);
 
     return (
         <AppLayoutHeaderCustomer page={room.name} rightIcon="arrow-left" rightIconHref="/spaces">
@@ -199,13 +210,27 @@ export default function Show({
                                 <div>{room.sqm} sqm</div>
                             </div>
                         </div>
-                        <Badge
-                            variant="outline"
-                            className="text-destructive rounded-full bg-white text-lg font-bold shadow-sm md:text-xl"
-                        >
-                            {room.price ? priceDisplay(Number(room.price)) : '-'}
-                            <span className="text-muted-foreground text-sm">/hr</span>
-                        </Badge>
+                        <div className="flex flex-col items-end gap-1">
+                            <Badge
+                                variant="outline"
+                                className="text-destructive rounded-full bg-white text-lg font-bold shadow-sm md:text-xl"
+                            >
+                                {activeDiscount && (
+                                    <span className="text-muted-foreground mr-1 text-sm font-normal line-through">
+                                        {priceDisplay(Number(room.price))}
+                                    </span>
+                                )}
+                                {room.price ? priceDisplay(Number(effectiveRate)) : '-'}
+                                <span className="text-muted-foreground text-sm">/hr</span>
+                            </Badge>
+                            {room.discount && (
+                                <Badge className="rounded-full bg-green-600 text-xs text-white">
+                                    {room.discount.label} · {room.discount.name}
+                                    {room.discount.upcoming &&
+                                        ` · from ${promoDateDisplay(room.discount.starts_on)}`}
+                                </Badge>
+                            )}
+                        </div>
                     </div>
                     <div className="text-muted-foreground text-md mt-4 md:text-base">
                         <h2 className="text-foreground mb-2 text-2xl">About this space</h2>
@@ -390,6 +415,27 @@ export default function Show({
                                             />
                                         </div>
                                         <div className="py-4 text-center sm:col-span-2">
+                                            {room.discount && (
+                                                <div className="mb-2 flex flex-wrap items-center justify-center gap-2">
+                                                    <span className="rounded-full bg-green-600 px-2 py-0.5 text-xs font-bold text-white">
+                                                        {room.discount.label}
+                                                    </span>
+                                                    {room.discount.upcoming && (
+                                                        <span className="text-muted-foreground text-xs">
+                                                            pick a date from{' '}
+                                                            {promoDateDisplay(
+                                                                room.discount.starts_on
+                                                            )}{' '}
+                                                            to get this
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )}
+                                            {activeDiscount && selectedHours > 0 && (
+                                                <div className="text-muted-foreground text-xs line-through">
+                                                    {priceDisplay(originalTotal)}
+                                                </div>
+                                            )}
                                             <div className="text-makeshift-primary text-2xl font-bold">
                                                 {priceDisplay(totalPrice)}
                                             </div>

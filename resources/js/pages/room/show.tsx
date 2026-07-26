@@ -191,6 +191,49 @@ export default function Show({ room }: { room: Room }) {
                                             </div>
                                         </TableCell>
                                     </TableRow>
+                                    <TableRow>
+                                        <TableHead>Discounts</TableHead>
+                                        <TableCell>
+                                            <div className="flex flex-wrap gap-2">
+                                                {room.discounts && room.discounts.length > 0
+                                                    ? room.discounts.map((discount) => {
+                                                          const isUpcoming = !discount.is_ongoing;
+                                                          const valueLabel =
+                                                              Number(discount.type) === 2
+                                                                  ? `${Number(discount.value)}% OFF`
+                                                                  : `${priceDisplay(Number(discount.value))} OFF/hr`;
+                                                          return (
+                                                              <a
+                                                                  key={discount.id}
+                                                                  href={route(
+                                                                      'discounts.edit',
+                                                                      discount.id
+                                                                  )}
+                                                                  target="_blank"
+                                                                  rel="noopener noreferrer"
+                                                              >
+                                                                  <Badge
+                                                                      className={cn(
+                                                                          'cursor-pointer gap-1.5',
+                                                                          isUpcoming
+                                                                              ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                                                                              : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                                                                      )}
+                                                                  >
+                                                                      {isUpcoming
+                                                                          ? 'Upcoming'
+                                                                          : 'Ongoing'}
+                                                                      <Dot className="size-3" />
+                                                                      {discount.name} &middot;{' '}
+                                                                      {valueLabel}
+                                                                  </Badge>
+                                                              </a>
+                                                          );
+                                                      })
+                                                    : '-'}
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
                                 </TableBody>
                             </Table>
                         </div>

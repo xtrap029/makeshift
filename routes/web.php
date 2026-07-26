@@ -4,6 +4,7 @@ use App\Http\Controllers\AmenityController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatabaseController;
+use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\LayoutController;
 use App\Http\Controllers\SourceController;
 use App\Http\Controllers\LogController;
@@ -41,6 +42,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('rooms', RoomController::class);
     Route::resource('amenities', AmenityController::class);
     Route::resource('layouts', LayoutController::class);
+    Route::resource('discounts', DiscountController::class);
     Route::resource('sources', SourceController::class);
     Route::resource('schedules', ScheduleController::class);
     Route::resource('overrides', ScheduleOverrideController::class);
@@ -51,6 +53,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('bookings.updateStatus');
     Route::get('bookings/{booking}/send-acknowledged-email', [BookingController::class, 'sendAcknowledgedEmail'])
         ->name('bookings.sendAcknowledgedEmail');
+    Route::get('bookings/{booking}/recalculate-discount', [BookingController::class, 'recalculateDiscount'])
+        ->name('bookings.recalculateDiscount');
     Route::resource('payments', PaymentController::class);
 
     Route::get('logs/mail/export', [LogController::class, 'mailExport'])->name('logs.mail.export');

@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { paymentStatus } from '@/constants';
 import { Booking, PaymentProvider } from '@/types';
 import { PaymentForm } from '@/types/form';
+import { priceDisplay, remainingBalance } from '@/utils/formatters';
 import { Link } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler, useState } from 'react';
@@ -43,6 +44,9 @@ export default function Form({
         data.payment_provider_id?.toString() || undefined
     );
 
+    const booking = bookings.find((b) => b.id.toString() === selectedBooking);
+    const balance = booking ? remainingBalance(booking) : null;
+
     const handleAttachmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -61,6 +65,13 @@ export default function Form({
                         onValueChange={(value) => {
                             setSelectedBooking(value);
                             setData('booking_id', parseInt(value));
+
+                            // Prefill with what's actually still owed on the
+                            // (possibly discounted) total.
+                            const selected = bookings.find((b) => b.id.toString() === value);
+                            if (selected && !data.id) {
+                                setData('amount', remainingBalance(selected));
+                            }
                         }}
                         required
                         disabled={processing}
@@ -76,6 +87,20 @@ export default function Form({
                             ))}
                         </SelectContent>
                     </Select>
+                    {booking && (
+                        <p className="text-muted-foreground text-xs">
+                            {Number(booking.discount_amount) > 0 && (
+                                <>
+                                    Subtotal {priceDisplay(Number(booking.subtotal))} &minus;
+                                    discount {priceDisplay(Number(booking.discount_amount))}
+                                    {' · '}
+                                </>
+                            )}
+                            Total {priceDisplay(Number(booking.total_price))} · Paid{' '}
+                            {priceDisplay(Number(booking.total_paid))} ·{' '}
+                            <strong>Balance {priceDisplay(Number(balance))}</strong>
+                        </p>
+                    )}
                     <InputError message={errors.booking_id} className="mt-2" />
                 </div>
                 <div className="col-span-4 grid gap-2">
@@ -123,9 +148,10 @@ export default function Form({
                     <Input
                         id="amount"
                         type="number"
+                        step="0.01"
                         required
                         value={data.amount}
-                        onChange={(e) => setData('amount', parseInt(e.target.value))}
+                        onChange={(e) => setData('amount', parseFloat(e.target.value))}
                         disabled={processing}
                         placeholder="Amount"
                     />
@@ -136,8 +162,9 @@ export default function Form({
                     <Input
                         id="amount_paid"
                         type="number"
+                        step="0.01"
                         value={data.amount_paid}
-                        onChange={(e) => setData('amount_paid', parseInt(e.target.value))}
+                        onChange={(e) => setData('amount_paid', parseFloat(e.target.value))}
                         disabled={processing}
                         placeholder="Amount Paid"
                     />

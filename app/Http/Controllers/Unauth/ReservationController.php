@@ -15,6 +15,7 @@ use App\Mail\InquirySubmitted;
 use App\Models\Settings;
 use Illuminate\Support\Facades\Mail;
 use App\Services\BookingService;
+use App\Services\DiscountService;
 
 class ReservationController extends Controller
 {
@@ -58,6 +59,7 @@ class ReservationController extends Controller
         return Inertia::render('unauth/reservation/inquire', [
             'inquiry' => $validated,
             'room' => $room,
+            'discount' => DiscountService::preview($room, $validated['date']),
             'sources' => Source::orderBy('name')->get(['id', 'name']),
             'legal' => [
                 'terms' => $legal['LEGAL_TERMS'] ?? null,
@@ -111,6 +113,9 @@ class ReservationController extends Controller
 
             $booking = $booking->fresh();
 
+            // Resolved server-side — the client-side preview is never trusted.
+            DiscountService::applyTo($booking);
+
             Mail::to($validated['email'])->send(new InquirySubmitted([
                 'name' => $validated['name'],
                 'booking_id' => BookingService::generateBookingId($booking),
@@ -121,6 +126,7 @@ class ReservationController extends Controller
                 'booking_room_price' => 'PHP ' . number_format($room->price, 2, '.', ','),
                 'booking_total_hours' => $booking->total_hours(),
                 'booking_total_price' => 'PHP ' . number_format($booking->total_price(), 2, '.', ','),
+                ...DiscountService::mailData($booking),
                 'is_subscribed' => (bool) ($validated['is_subscribed'] ?? false),
             ]));
 

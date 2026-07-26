@@ -19,7 +19,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { formValidation } from '@/constants/form';
 import AppLayoutHeaderCustomer from '@/layouts/app/app-header-layout-customer';
-import { Room, Source } from '@/types';
+import { DiscountPreview, Room, Source } from '@/types';
 import { InquiryForm, LegalAppearanceForm } from '@/types/form';
 import { priceDisplay } from '@/utils/formatters';
 import { Head, router, useForm } from '@inertiajs/react';
@@ -61,14 +61,24 @@ const validationSchema = z.object({
 export default function Inquire({
     inquiry,
     room,
+    discount,
     sources,
     legal,
 }: {
     inquiry: InquiryForm;
     room: Room;
+    discount: DiscountPreview | null;
     sources: Source[];
     legal: LegalAppearanceForm;
 }) {
+    const hours =
+        inquiry.end_time && inquiry.start_time
+            ? Number(inquiry.end_time.split(':')[0]) - Number(inquiry.start_time.split(':')[0])
+            : 0;
+    const subtotal = room.price * hours;
+    const discountAmount = discount ? discount.per_hour_amount * hours : 0;
+    const totalPrice = Math.max(0, subtotal - discountAmount);
+
     const { data, setData, processing, errors, post } = useForm<Partial<InquiryForm>>({
         name: '',
         email: '',
@@ -214,45 +224,37 @@ export default function Inquire({
                                         <div className="flex flex-1 flex-col gap-2">
                                             <div className="font-bold">Computation</div>
                                             <div className="text-sm">
-                                                {priceDisplay(Number(room.price))} x{' '}
-                                                {inquiry.end_time && inquiry.start_time
-                                                    ? Number(inquiry.end_time.split(':')[0]) -
-                                                      Number(inquiry.start_time.split(':')[0])
-                                                    : 0}{' '}
-                                                hours
+                                                {priceDisplay(Number(room.price))} x {hours} hours
                                             </div>
                                         </div>
                                         <div className="flex items-end text-right">
-                                            {priceDisplay(
-                                                inquiry.end_time && inquiry.start_time
-                                                    ? room.price *
-                                                          (Number(inquiry.end_time.split(':')[0]) -
-                                                              Number(
-                                                                  inquiry.start_time.split(':')[0]
-                                                              ))
-                                                    : 0
-                                            )}
+                                            {priceDisplay(subtotal)}
                                         </div>
                                     </div>
                                     <div className="flex flex-row gap-2">
                                         <div className="flex flex-1 flex-col gap-2">
                                             Discount / Promo
+                                            {discount && (
+                                                <span className="-mt-2 text-xs text-green-600">
+                                                    {discount.name} ({discount.label})
+                                                </span>
+                                            )}
                                         </div>
-                                        <div className="flex items-end text-right">
-                                            {priceDisplay(0)}
+                                        <div
+                                            className={
+                                                'flex items-end text-right' +
+                                                (discountAmount > 0 ? ' text-green-600' : '')
+                                            }
+                                        >
+                                            {discountAmount > 0 ? '- ' : ''}
+                                            {priceDisplay(discountAmount)}
                                         </div>
                                     </div>
                                 </div>
                                 <div className="flex flex-1 flex-row items-center border-t border-gray-200 pt-3">
                                     <div className="font-bold">Total Price</div>
                                     <div className="flex-1 text-right font-bold">
-                                        {priceDisplay(
-                                            inquiry.end_time && inquiry.start_time
-                                                ? room.price *
-                                                      (Number(inquiry.end_time.split(':')[0]) -
-                                                          Number(inquiry.start_time.split(':')[0]))
-                                                : 0
-                                        )}
+                                        {priceDisplay(totalPrice)}
                                     </div>
                                 </div>
                             </div>

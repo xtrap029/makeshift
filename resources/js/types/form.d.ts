@@ -35,6 +35,21 @@ export interface LayoutForm {
     description: string;
 }
 
+export interface DiscountForm {
+    id?: number;
+    name: string;
+    description?: string;
+    type: number;
+    value: number | string;
+    book_from: string;
+    book_to: string;
+    reserve_from: string;
+    reserve_to: string;
+    priority: number | string;
+    is_active: boolean;
+    rooms: number[];
+}
+
 export interface SourceForm {
     id: number;
     name: string;

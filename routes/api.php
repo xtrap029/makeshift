@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
     Route::post('/api/bookings/verify', [BookingController::class, 'verify']);
+    Route::get('/api/bookings/{booking}/preview-discount', [BookingController::class, 'previewDiscount']);
     Route::post('/api/rooms/{roomId}/images', [RoomController::class, 'images']);
     Route::post('/api/announcements/images', [AnnouncementController::class, 'images']);
 });

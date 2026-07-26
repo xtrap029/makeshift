@@ -43,6 +43,9 @@ class InquiryAcknowledged extends Mailable
                 'booking_note' => $this->data['booking_note'],
                 'booking_room_price' => $this->data['booking_room_price'],
                 'booking_total_hours' => $this->data['booking_total_hours'],
+                'booking_subtotal' => $this->data['booking_subtotal'] ?? null,
+                'booking_discount' => $this->data['booking_discount'] ?? null,
+                'booking_discount_name' => $this->data['booking_discount_name'] ?? null,
                 'booking_total_price' => $this->data['booking_total_price'],
             ]);
     }

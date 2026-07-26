@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use App\Models\Room;
 use App\Models\Settings;
+use App\Services\DiscountService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -21,6 +22,10 @@ class HomeController extends Controller
         $featuredRoom = Room::with('image')->find($data['HOME_FEATURED_ID']);
 
         $roomSlider = Room::with('image')->whereIn('id', explode(',', $data['HOME_ROOM_SLIDER']))->get();
+
+        $roomSlider->each(function ($room) {
+            $room->discount = DiscountService::preview($room);
+        });
 
         return Inertia::render('unauth/home/index', [
             'websiteAppearance' => [

@@ -15,6 +15,7 @@
    - [Rooms](#rooms)
    - [Amenities](#amenities)
    - [Layouts](#layouts)
+   - [Discounts](#discounts)
 6. [Availability Module](#6-availability-module)
    - [Schedules](#schedules)
    - [Schedule Overrides](#schedule-overrides)
@@ -115,6 +116,8 @@ Rooms are the core of MakeShift. Each room represents a bookable space (a meetin
 
 > **Tip:** A room will not appear as bookable unless it has an active schedule assigned to it.
 
+**Viewing a room's discounts:** On the room's detail page, a **Discounts** row (below Layouts) lists any ongoing or upcoming promos assigned to that room, with the promo name and its value (e.g., "10% OFF"). A discount is tagged **Ongoing** (green) when today falls inside its **Booking Period** — meaning a customer inquiring today qualifies, even if the stay date they pick is later in the Reservation Dates window. It's tagged **Upcoming** (amber) when the Booking Period hasn't opened yet. Click a tag to open that discount for editing in a new tab. Expired discounts are not shown here; manage them from **Spaces → Discounts** instead.
+
 ---
 
 ### Amenities
@@ -135,6 +138,40 @@ Layouts define the seating or setup arrangements available in a room (e.g., "Cla
 - Go to **Spaces → Layouts** to manage layout options.
 - Once created, layouts can be assigned to rooms.
 - During booking, customers can select their preferred layout from the options assigned to the room.
+
+---
+
+### Discounts
+
+Discounts let you run promos on selected rooms without the customer needing a promo code. If a room has an active discount and the booking falls inside the dates you set, the discount is applied automatically — on the website, in the customer's emails, and on the amount they need to pay.
+
+Go to **Spaces → Discounts** to add or manage them.
+
+| Field | What it means |
+|---|---|
+| Name | The promo name customers see (e.g., "Summer Promo") |
+| Description | Optional internal note; not shown to customers |
+| Discount Type | **Fixed Amount** (peso amount off) or **Percentage** (% off) |
+| Amount off / Percentage | How much comes off. This is applied **per hour**, off the room's hourly rate |
+| Priority | If several discounts cover the same room, the one with the **lowest number** wins (1 = top priority) |
+| Status | **Active** discounts apply; **Inactive** ones are ignored |
+| Rooms | Which rooms the discount applies to. At least one is required |
+| Reservation dates (From / To) | Which **booking dates** the discount covers. Required |
+| Booking period (From / To) | When the inquiry must be **submitted** to qualify. Required |
+
+**Important things to know:**
+
+- **The discount is per hour.** A ₱50 fixed discount on a ₱500/hour room booked for 3 hours across 2 spaces takes off ₱300 in total (₱50 × 3 hours × 2 spaces), bringing ₱3,000 down to ₱2,700.
+- **A fixed discount never goes below zero.** If the amount off is larger than the room rate, the rate simply becomes ₱0.
+- **All four dates are required.** Every discount must have a start and end for both ranges — there is no open-ended promo. If you want one to run indefinitely, set its end date far in the future.
+- **The dates are inclusive.** A promo running 1–31 August applies on both 1 August and 31 August.
+- **Promos are advertised before they start.** On the home page, the spaces list, and a room page before a date is picked, a promo that hasn't begun yet shows as "10% OFF from Aug 1". Prices are **not** crossed out yet — the discount only takes effect once the customer picks a date inside the reservation window. A promo is only advertised this way if its booking period is already open, so anything shown as upcoming can actually be claimed by inquiring today.
+- **The two date ranges do different jobs.** "Reservation dates" is about *when the customer is booking for*. "Booking period" is about *when they submit the inquiry* — use it for things like "book this week only."
+- **Only one discount applies per room at a time.** You are allowed to create overlapping discounts; the system picks the one with the **lowest priority number** — priority 1 beats priority 10. Overlapping rows show a warning icon in the list so you can spot them.
+- **Already submitted bookings are locked in.** When a booking is created, the discount is saved onto that booking. Editing, deactivating, or deleting the discount afterwards will **not** change bookings that were already submitted.
+- **Editing a booking does *not* automatically re-check the discount.** Changing a note, a phone number, or any other field leaves the price exactly as it was — the total won't silently shift because of an unrelated edit.
+- **If you change a booking's room, date, time, or quantity, recalculate the discount yourself.** On the booking detail page (Inquiry and Pending bookings only), a small refresh icon sits beside the discount amount — click it to re-check the current room and dates against active discounts. A dialog shows the **Before** and **After** side by side (discount and total price) so you can review the change before confirming it; nothing is applied until you click **Apply Change**. Until you do, the total keeps using the discount that was worked out before your edit — even if it no longer makes sense for the new room or date. Confirmed bookings never show this icon; their price is permanently locked in.
+- **Deleting a discount is safe.** Past bookings keep their discount name and amount on record.
 
 ---
 
@@ -271,6 +308,8 @@ The Payments section is a record of all payment transactions linked to bookings.
 
 The system automatically totals all **Paid** payments for a booking to check if the full amount has been settled.
 
+If the booking has a discount, the amount owed is the **discounted** total — not the original price. When you pick a booking on the payment form, MakeShift shows its subtotal, discount, total, amount already paid, and the **remaining balance**, and pre-fills the Amount with that balance.
+
 ---
 
 ### Payment Providers
@@ -390,6 +429,8 @@ Customize what the automated emails say to customers. Each of the four customer 
 | **Booking Confirmed** | Arrival instructions, additional information |
 | **Booking Canceled** | Cancellation explanation, what it means, next steps, alternative options |
 
+When a booking has a discount, the Inquiry Received, Payment Required, and Booking Confirmed emails automatically show an extra **Subtotal** and **Discount** line above the total. Nothing needs to be configured — the lines simply do not appear when there is no discount.
+
 You can also update:
 - **Bank account details** shown in payment emails
 - **Support link** (shown as a button in all emails)
@@ -424,9 +465,14 @@ The public website is what your customers see. No login required.
 - Lists all active rooms.
 - Customers can filter by a specific date to see only rooms that are open and have availability on that day.
 - Each room card shows the name, a photo, price per hour, capacity, and a link to view details.
+- If a room has an active discount for that date, a green promo badge (e.g., "10% OFF") appears on its photo.
+- With no date filter applied, a promo starting later shows as "10% OFF / from Aug 1".
 
 ### Space Detail Page (`/spaces/{room-name}`)
 - Full details: description, size, capacity, price per hour
+- If a discount applies, the original price shows crossed out beside the new discounted rate, with a green badge naming the promo. The estimated total in the booking dialog uses the discounted rate.
+- Inside the **Inquire Now** dialog, the promo appears above the Total Price: a green "10% OFF" pill, the promo name, the crossed-out hourly rate beside the discounted one, and the crossed-out original total beside the discounted total once times are chosen.
+- If the promo hasn't started yet, the dialog shows the pill with "pick a date from Aug 1 to get this" and leaves prices uncrossed until a qualifying date is selected.
 - Photo gallery
 - Amenities list
 - Available layout options
@@ -437,6 +483,7 @@ The public website is what your customers see. No login required.
 - Customer selects their preferred date, start time, end time, and layout.
 - Customer enters their name, email, and any special notes.
 - Customer can optionally enter **"Referred By"** (who referred them) and select **"How did you hear about us?"** from the Sources list managed in the admin panel.
+- The booking summary shows the computation, a **Discount / Promo** line naming the promo and the amount taken off, and the discounted Total Price.
 - Customer reviews and agrees to the legal documents (Terms of Service, House Rules, Privacy Policy).
 - Customer can optionally tick **"Subscribe to our newsletter"** to opt in to marketing emails.
 - On submission, MakeShift creates an Inquiry booking and sends a confirmation email to the customer.
@@ -472,6 +519,7 @@ Use this sequence to walk a customer through MakeShift from end to end. Each sec
 
 **Step 3: Space Detail**
 - Walk through the room's gallery, amenities, layouts, and pricing.
+- If a discount is set up for this room (see Step 14b), point out the crossed-out original price and the green promo badge.
 - Select a date and watch the available time slots populate.
 - Point out that the system is checking availability in real time (existing bookings are accounted for).
 
@@ -479,6 +527,7 @@ Use this sequence to walk a customer through MakeShift from end to end. Each sec
 - Click the booking/inquiry button.
 - Fill in sample customer details (name, email, note).
 - Optionally fill in **Referred By** and pick a **"How did you hear about us?"** option — mention this data helps track which marketing channels are working.
+- Point out the **Discount / Promo** line in the booking summary and the discounted Total Price.
 - Show the legal document agreement step (Terms, Privacy Policy, House Rules — all editable by the admin).
 - Submit the form.
 - Show the success page the customer sees.
@@ -499,7 +548,8 @@ Use this sequence to walk a customer through MakeShift from end to end. Each sec
 - Navigate to **Transactions → Bookings**.
 - Find the inquiry submitted in Step 4 (status: Inquiry).
 - Open the booking detail page.
-- Show all the booking info: room, date, time, layout, customer name and email, notes, referred by / source, total price.
+- Show all the booking info: room, date, time, layout, customer name and email, notes, referred by / source, subtotal, discount, and total price.
+- Explain: *"The discount is saved onto the booking. Even if we change or delete the promo later, this booking keeps the price the customer was quoted."*
 
 **Step 7: Moving to Pending (Reserving the Slot)**
 - From the booking detail, change the status to **Pending**.
@@ -510,6 +560,7 @@ Use this sequence to walk a customer through MakeShift from end to end. Each sec
 **Step 8: Recording a Payment**
 - Navigate to **Transactions → Payments** (or use the payment section on the booking detail).
 - Create a new payment: select the booking, choose a payment provider (e.g., GCash), enter a reference number, amount, and date paid. Optionally attach a screenshot.
+- Point out that picking the booking shows its subtotal, discount, total, and remaining balance — and pre-fills the Amount with the balance, so staff always collect the discounted figure.
 - Return to the booking and show that the total paid is now updated.
 
 **Step 9: Confirming the Booking**
@@ -557,6 +608,15 @@ Use this sequence to walk a customer through MakeShift from end to end. Each sec
 - Go back to the public website, navigate to that room, and select tomorrow's date.
 - Show that no time slots are available — the override worked.
 - Explain: *"This is how you handle holidays, maintenance, or sudden closures without changing your regular schedule."*
+
+**Step 14b: Create a Discount**
+- Go to **Spaces → Discounts** → create a new discount.
+- Name it (e.g., "Summer Promo"), pick **Percentage**, and enter 10.
+- Assign it to the room created in Step 13, set the **Reservation dates** to cover the next month, and set the **Booking period** from today to the end of next month.
+- Toggle **Active** ON and save.
+- Go back to the public website and open that room — show the crossed-out original price, the new rate, and the promo badge.
+- Explain: *"No promo code needed. Any booking for this room inside these dates gets the discount automatically — on the website, in the customer's email, and in the amount they owe."*
+- Mention priority: *"If two promos cover the same room, the one with the lower priority number wins — so you can schedule promos back to back without them fighting."*
 
 ---
 
@@ -610,6 +670,7 @@ Use this sequence to walk a customer through MakeShift from end to end. Each sec
 | Audit trail | Full accountability for all admin actions |
 | Auto database backup | Data protection with minimal effort |
 | Payment tracking | Multiple partial payments supported with proof of payment attachments |
+| Automatic discounts | Run room promos with no promo code; already-submitted bookings keep the price they were quoted |
 
 ---
 

@@ -36,6 +36,16 @@
                 <span style="color: #4a5568; font-weight: 500;">Total Hours:&nbsp;</span>
                 <span style="color: #2d3748; font-weight: 600;">{{ $data['booking_total_hours'] }}</span>
             </div>
+            @if (!empty($data['booking_discount']))
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <span style="color: #4a5568; font-weight: 500;">Subtotal:&nbsp;</span>
+                    <span style="color: #2d3748; font-weight: 600;">{{ $data['booking_subtotal'] }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <span style="color: #4a5568; font-weight: 500;">Discount ({{ $data['booking_discount_name'] }}):&nbsp;</span>
+                    <span style="color: #48bb78; font-weight: 600;">- {{ $data['booking_discount'] }}</span>
+                </div>
+            @endif
             <div style="display: flex; justify-content: space-between; margin-bottom: 0;">
                 <span style="color: #4a5568; font-weight: 500;">Total Price:&nbsp;</span>
                 <span style="color: #2d3748; font-weight: 600;">{{ $data['booking_total_price'] }}</span>

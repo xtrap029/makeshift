@@ -17,6 +17,14 @@ return [
         'refunded' => [6, 'Refunded'],
     ],
     'no_reserve_status' => [1, 4],
+    'discount_type' => [
+        'fixed' => [1, 'Fixed Amount'],
+        'percentage' => [2, 'Percentage'],
+    ],
+    'discount_source' => [
+        'auto' => [1, 'Automatic'],
+        'code' => [2, 'Coupon Code'],
+    ],
     'settings' => [
         'logo_mimes' => 'png',
         'logo_max_size' => 2048,

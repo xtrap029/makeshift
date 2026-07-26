@@ -9,6 +9,7 @@ use App\Models\Room;
 use App\Models\Schedule;
 use App\Models\ScheduleOverride;
 use App\Models\ScheduleOverrideRoom;
+use App\Services\DiscountService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
@@ -31,7 +32,7 @@ class SpaceController extends Controller
             ]);
         }
 
-        $rooms = Room::select('id', 'name', 'cap', 'sqm', 'description')
+        $rooms = Room::select('id', 'name', 'cap', 'sqm', 'description', 'price')
             ->where('is_active', true)
             ->where('qty', '>', 0);
 
@@ -61,6 +62,10 @@ class SpaceController extends Controller
         $rooms = $rooms->with(['image' => function ($query) {
             $query->select('name', 'room_id')->where('is_main', true);
         }])->get();
+
+        $rooms->each(function ($room) use ($request) {
+            $room->discount = DiscountService::preview($room, $request->date);
+        });
 
         return Inertia::render('unauth/space/index', [
             'rooms' => $rooms,
@@ -153,6 +158,8 @@ class SpaceController extends Controller
         }
 
         $availableTimes = array_values(array_unique($availableTimes));
+
+        $room->discount = DiscountService::preview($room, $request->date);
 
         return Inertia::render('unauth/space/show', [
             'room' => $room,

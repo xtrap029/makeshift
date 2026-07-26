@@ -5,6 +5,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -26,19 +27,26 @@ import AppLayout from '@/layouts/app-layout';
 import { Booking, BreadcrumbItem } from '@/types';
 import { priceDisplay } from '@/utils/formatters';
 import { Head, Link, router } from '@inertiajs/react';
+import axios from 'axios';
 import dayjs from 'dayjs';
 import {
+    ArrowRight,
     CheckCircle,
     Circle,
     CircleDashed,
     CircleFadingArrowUp,
     CircleX,
     Loader2,
+    RefreshCw,
     Send,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import ShowPayment from './show-payment';
+
+type DiscountLine = { name: string; type: number; value: number; amount: number };
+type RecalcSide = { discounts: DiscountLine[]; discount_amount: number; total_price: number };
+type RecalcPreview = { subtotal: number; before: RecalcSide; after: RecalcSide; changed: boolean };
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
@@ -74,6 +82,10 @@ export default function Show({ booking }: { booking: Booking }) {
     const { updateStatus: updateToConfirmedStatus, processing: updateToConfirmedProcessing } =
         useUpdateStatus('confirmed');
     const [isEmailProcessing, setIsEmailProcessing] = useState(false);
+    const [isRecalculating, setIsRecalculating] = useState(false);
+    const [isRecalcDialogOpen, setIsRecalcDialogOpen] = useState(false);
+    const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+    const [recalcPreview, setRecalcPreview] = useState<RecalcPreview | null>(null);
 
     const isAnyProcessing =
         deleteProcessing ||
@@ -81,7 +93,39 @@ export default function Show({ booking }: { booking: Booking }) {
         updateToPendingProcessing ||
         updateToCanceledProcessing ||
         updateToConfirmedProcessing ||
-        isEmailProcessing;
+        isEmailProcessing ||
+        isRecalculating;
+
+    const isEditableStatus = ['Inquiry', 'Pending'].includes(
+        bookingStatus.find((status) => status.id === booking.status)?.label || ''
+    );
+
+    const openRecalculatePreview = async () => {
+        setIsRecalcDialogOpen(true);
+        setIsPreviewLoading(true);
+        setRecalcPreview(null);
+        try {
+            const { data } = await axios.get<RecalcPreview>(
+                `/api/bookings/${booking.id}/preview-discount`
+            );
+            setRecalcPreview(data);
+        } catch {
+            toast.error('Failed to load discount preview');
+            setIsRecalcDialogOpen(false);
+        } finally {
+            setIsPreviewLoading(false);
+        }
+    };
+
+    const confirmRecalculate = () => {
+        setIsRecalcDialogOpen(false);
+        setIsRecalculating(true);
+        router.get(
+            `/bookings/${booking.id}/recalculate-discount`,
+            {},
+            { onFinish: () => setIsRecalculating(false) }
+        );
+    };
 
     useEffect(() => {
         if (!isCanceledDialogOpen) {
@@ -407,6 +451,68 @@ export default function Show({ booking }: { booking: Booking }) {
                                             x {booking.total_hours} hours x {booking.qty} spaces
                                         </TableCell>
                                     </TableRow>
+                                    {booking.discounts?.length > 0 && (
+                                        <>
+                                            <TableRow>
+                                                <TableHead className={labelWidth}>
+                                                    Subtotal
+                                                </TableHead>
+                                                <TableCell>
+                                                    {priceDisplay(Number(booking.subtotal))}
+                                                </TableCell>
+                                            </TableRow>
+                                            {booking.discounts.map((discount, index) => (
+                                                <TableRow key={discount.id}>
+                                                    <TableHead className={labelWidth}>
+                                                        Discount
+                                                        <span className="text-muted-foreground block text-xs font-normal">
+                                                            {discount.name}
+                                                            {Number(discount.type) === 2
+                                                                ? ` (${Number(discount.value)}% off/hr)`
+                                                                : ` (${priceDisplay(Number(discount.value))} off/hr)`}
+                                                        </span>
+                                                    </TableHead>
+                                                    <TableCell>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-green-600">
+                                                                - {priceDisplay(Number(discount.amount))}
+                                                            </span>
+                                                            {isEditableStatus &&
+                                                                index === booking.discounts.length - 1 && (
+                                                                    <Button
+                                                                        variant="outline"
+                                                                        size="icon"
+                                                                        className="size-7"
+                                                                        disabled={isAnyProcessing}
+                                                                        title="Recalculate discount"
+                                                                        onClick={openRecalculatePreview}
+                                                                    >
+                                                                        <RefreshCw className="size-3.5" />
+                                                                    </Button>
+                                                                )}
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </>
+                                    )}
+                                    {isEditableStatus && !(booking.discounts?.length > 0) && (
+                                        <TableRow>
+                                            <TableHead className={labelWidth}>Discount</TableHead>
+                                            <TableCell>
+                                                <Button
+                                                    variant="outline"
+                                                    size="icon"
+                                                    className="size-7"
+                                                    disabled={isAnyProcessing}
+                                                    title="Recalculate discount"
+                                                    onClick={openRecalculatePreview}
+                                                >
+                                                    <RefreshCw className="size-3.5" />
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
                                     <TableRow>
                                         <TableHead className={labelWidth}>Total Price</TableHead>
                                         <TableCell className="font-bold">
@@ -519,6 +625,100 @@ export default function Show({ booking }: { booking: Booking }) {
                             </div>
                         </DialogDescription>
                     </DialogHeader>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={isRecalcDialogOpen} onOpenChange={setIsRecalcDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Recalculate Discount</DialogTitle>
+                        <DialogDescription>
+                            Re-checks this booking&apos;s room and dates against active
+                            discounts. Review the change below before applying it.
+                        </DialogDescription>
+                    </DialogHeader>
+                    {isPreviewLoading && (
+                        <div className="flex items-center justify-center py-8">
+                            <Loader2 className="text-muted-foreground size-6 animate-spin" />
+                        </div>
+                    )}
+                    {!isPreviewLoading && recalcPreview && (
+                        <div className="flex flex-col gap-4">
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="flex flex-col gap-2 rounded-lg border p-3">
+                                    <div className="text-muted-foreground text-xs font-semibold uppercase">
+                                        Before
+                                    </div>
+                                    {recalcPreview.before.discounts.length > 0 ? (
+                                        recalcPreview.before.discounts.map((d, i) => (
+                                            <div key={i} className="text-sm">
+                                                <div className="font-medium">{d.name}</div>
+                                                <div className="text-green-600">
+                                                    - {priceDisplay(d.amount)}
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-muted-foreground text-sm">
+                                            No discount
+                                        </div>
+                                    )}
+                                    <div className="mt-1 border-t pt-2 text-sm font-bold">
+                                        {priceDisplay(recalcPreview.before.total_price)}
+                                    </div>
+                                </div>
+                                <div className="flex flex-col gap-2 rounded-lg border p-3">
+                                    <div className="text-muted-foreground text-xs font-semibold uppercase">
+                                        After
+                                    </div>
+                                    {recalcPreview.after.discounts.length > 0 ? (
+                                        recalcPreview.after.discounts.map((d, i) => (
+                                            <div key={i} className="text-sm">
+                                                <div className="font-medium">{d.name}</div>
+                                                <div className="text-green-600">
+                                                    - {priceDisplay(d.amount)}
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-muted-foreground text-sm">
+                                            No discount
+                                        </div>
+                                    )}
+                                    <div className="mt-1 border-t pt-2 text-sm font-bold">
+                                        {priceDisplay(recalcPreview.after.total_price)}
+                                    </div>
+                                </div>
+                            </div>
+                            {recalcPreview.changed ? (
+                                <div className="flex items-center justify-center gap-2 text-sm">
+                                    <span>{priceDisplay(recalcPreview.before.total_price)}</span>
+                                    <ArrowRight className="text-muted-foreground size-4" />
+                                    <span className="font-bold">
+                                        {priceDisplay(recalcPreview.after.total_price)}
+                                    </span>
+                                </div>
+                            ) : (
+                                <p className="text-muted-foreground text-center text-sm">
+                                    No change — this booking already reflects the current
+                                    discounts.
+                                </p>
+                            )}
+                        </div>
+                    )}
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => setIsRecalcDialogOpen(false)}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            disabled={isPreviewLoading || !recalcPreview}
+                            onClick={confirmRecalculate}
+                        >
+                            {recalcPreview?.changed ? 'Apply Change' : 'Recalculate Anyway'}
+                        </Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </AppLayout>

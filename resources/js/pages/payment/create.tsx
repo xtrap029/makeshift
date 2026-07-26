@@ -4,6 +4,7 @@ import { FormEventHandler } from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { Booking, BreadcrumbItem, PaymentProvider } from '@/types';
 import { PaymentForm } from '@/types/form';
+import { remainingBalance } from '@/utils/formatters';
 import Form from './form';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -21,13 +22,19 @@ export default function Create({
     payment_providers: PaymentProvider[];
     booking_id: string;
 }) {
+    // Arriving via a booking's "Record Payment" quick-link pre-selects that booking,
+    // so prefill Amount with its balance right away — not just on manual selection.
+    const preselectedBooking = booking_id
+        ? bookings.find((b) => b.id === parseInt(booking_id))
+        : undefined;
+
     const { data, setData, post, processing, errors } = useForm<Partial<PaymentForm>>({
         booking_id: booking_id ? parseInt(booking_id) : null,
         payment_provider_id: payment_providers.find((p) => p.is_default)?.id || undefined,
         note: '',
         reference_number: '',
         pr_no: '',
-        amount: 0,
+        amount: preselectedBooking ? remainingBalance(preselectedBooking) : 0,
         amount_paid: 0,
         paid_at: '',
         attachment: null,

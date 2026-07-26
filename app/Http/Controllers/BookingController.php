@@ -15,6 +15,7 @@ use App\Mail\InquiryAcknowledged;
 use App\Mail\InquiryConfirmed;
 use App\Mail\InquiryCancelled;
 use App\Services\BookingService;
+use App\Services\DiscountService;
 use App\Services\VoucherService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -137,6 +138,8 @@ class BookingController extends Controller
 
         $booking = Booking::create($validated);
 
+        DiscountService::applyTo($booking);
+
         return to_route('bookings.show', $booking)->withSuccess('Booking created successfully!');
     }
 
@@ -145,9 +148,11 @@ class BookingController extends Controller
      */
     public function show(Booking $booking)
     {
-        $booking->load('room', 'layout', 'source', 'owner', 'updater', 'payments.payment_provider');
+        $booking->load('room', 'layout', 'source', 'owner', 'updater', 'payments.payment_provider', 'discounts');
         $booking->total_paid = $booking->total_paid();
         $booking->total_hours = $booking->total_hours();
+        $booking->subtotal = $booking->subtotal();
+        $booking->discount_amount = $booking->discount_amount();
         $booking->total_price = $booking->total_price();
 
         return Inertia::render('booking/show', [
@@ -187,6 +192,28 @@ class BookingController extends Controller
         $booking->update($validated);
 
         return to_route('bookings.show', $booking)->withSuccess('Booking updated successfully!');
+    }
+
+    /**
+     * Re-resolve and rewrite the booking's discount snapshot on demand.
+     *
+     * Not run automatically on every edit — an unrelated field change (a note, a
+     * phone number) shouldn't silently move the price on a booking that may already
+     * have payments recorded against it. Staff trigger this explicitly after
+     * changing room/date/time/qty and wanting the total to reflect it.
+     */
+    public function recalculateDiscount(Booking $booking)
+    {
+        if (
+            $booking->status !== config('global.booking_status.inquiry')[0]
+            && $booking->status !== config('global.booking_status.pending')[0]
+        ) {
+            return back()->withError(config('messages.not_allowed'));
+        }
+
+        DiscountService::applyTo($booking);
+
+        return back()->withSuccess('Discount recalculated successfully!');
     }
 
     /**
@@ -250,6 +277,7 @@ class BookingController extends Controller
                     'booking_room_price' => 'PHP ' . number_format($booking->room->price, 2, '.', ','),
                     'booking_total_hours' => $booking->total_hours(),
                     'booking_total_price' => 'PHP ' . number_format($booking->total_price(), 2, '.', ','),
+                    ...DiscountService::mailData($booking),
                     'voucher_code' => $voucherCode,
                     'qr_code' => asset('storage/vouchers/' . $voucherCode . '.png'),
                 ]));
@@ -305,6 +333,7 @@ class BookingController extends Controller
             'booking_room_price' => 'PHP ' . number_format($booking->room->price, 2, '.', ','),
             'booking_total_hours' => $booking->total_hours(),
             'booking_total_price' => 'PHP ' . number_format($booking->total_price(), 2, '.', ','),
+            ...DiscountService::mailData($booking),
         ]));
 
         return back()->withSuccess('Acknowledged email sent successfully!');

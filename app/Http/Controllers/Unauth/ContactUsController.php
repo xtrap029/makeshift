@@ -43,7 +43,7 @@ class ContactUsController extends Controller
             'email' => 'required|email',
         ]);
 
-        $bookings = Booking::with('room')
+        $bookings = Booking::with('room', 'discounts')
             ->where('customer_email', $validated['email'])
             ->whereIn('status', config('global.booking_status.confirmed'))
             ->get()

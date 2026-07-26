@@ -147,8 +147,21 @@ export default function Index({
                                             <h2 className="text-md mt-3 font-bold">
                                                 {room.name}
                                                 <span className="right-0 float-right text-sm font-normal">
+                                                    {room.discount && !room.discount.upcoming && (
+                                                        <span className="text-muted-foreground mr-1 line-through">
+                                                            {priceDisplay(Number(room.price))}
+                                                        </span>
+                                                    )}
                                                     {room.price
-                                                        ? priceDisplay(Number(room.price))
+                                                        ? priceDisplay(
+                                                              Number(
+                                                                  room.discount &&
+                                                                      !room.discount.upcoming
+                                                                      ? room.discount
+                                                                            .discounted_price
+                                                                      : room.price
+                                                              )
+                                                          )
                                                         : ''}
                                                 </span>
                                             </h2>

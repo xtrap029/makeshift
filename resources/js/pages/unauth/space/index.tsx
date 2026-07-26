@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import AppLayoutHeaderCustomer from '@/layouts/app/app-header-layout-customer';
 import { Room } from '@/types';
+import { promoDateDisplay } from '@/utils/formatters';
 import { Head, router } from '@inertiajs/react';
 import { CalendarIcon, SquareDashed, Users } from 'lucide-react';
 import { useState } from 'react';
@@ -134,7 +135,7 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                     <div key={room.id.toString()} className="w-full">
                         <Animation isRandom>
                             <Card
-                                className="w-full cursor-pointer rounded-2xl py-2 shadow-lg"
+                                className="relative w-full cursor-pointer gap-0 overflow-hidden rounded-2xl py-2 shadow-lg"
                                 onClick={() =>
                                     router.visit(
                                         route('spaces.show', room.name) +
@@ -142,6 +143,18 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                                     )
                                 }
                             >
+                                {room.discount && (
+                                    <span className="absolute top-0 right-0 hidden rounded-tr-2xl rounded-bl-lg bg-green-600 px-2 py-1 text-xs leading-tight font-bold whitespace-nowrap text-white md:inline-block">
+                                        {room.discount.label}
+                                        {room.discount.upcoming && (
+                                            <span className="font-normal">
+                                                {' '}
+                                                · from{' '}
+                                                {promoDateDisplay(room.discount.starts_on)}
+                                            </span>
+                                        )}
+                                    </span>
+                                )}
                                 <CardContent className="px-2">
                                     <div className="flex items-center justify-center gap-3">
                                         <div className="relative h-[100px] w-[100px] flex-shrink-0 overflow-hidden rounded-2xl bg-gray-100">
@@ -177,6 +190,13 @@ export default function Index({ rooms }: { rooms: Room[] }) {
                                         </div>
                                     </div>
                                 </CardContent>
+                                {room.discount && (
+                                    <div className="-mb-2 mt-2 rounded-b-2xl bg-green-600 px-3 py-1 text-center text-xs leading-tight font-bold text-white md:hidden">
+                                        {room.discount.label}
+                                        {room.discount.upcoming &&
+                                            ` · from ${promoDateDisplay(room.discount.starts_on)}`}
+                                    </div>
+                                )}
                             </Card>
                         </Animation>
                     </div>
