@@ -1,7 +1,7 @@
 # MakeShift — Developer Handover
 
 > Auto-updated after each commit. Read this first when picking up the project.
-> Last updated: 2026-07-26 (latest: c820877)
+> Last updated: 2026-07-29 (latest committed: c820877; rate calendar feature below is uncommitted)
 
 ---
 
@@ -25,6 +25,7 @@ MakeShift is a Laravel + Inertia.js (React) space booking platform for a co-work
 
 | Commit | Summary |
 |--------|---------|
+| *(uncommitted)* | **Fare-style rate calendar** on the public room page's "Inquire Now" date field, replacing the native `<input type="date">`. Built on `react-day-picker` (new dependency) + a new shadcn-style `components/ui/calendar.tsx` wrapper; `components/custom/room-date-picker.tsx` is the room-specific Popover+Calendar combining rate lookups. New public (unauthenticated) endpoint `GET /api/spaces/{roomName}/rate-calendar?from=&to=` (`Api\Unauth\RoomCalendarController`) returns per-day `{price, original_price, discount_label, closed}` for a bounded range (capped at 62 days), fetched once per visible month — deliberately **not** a query-per-day design. Backed by two new service methods: `DiscountService::pricingForRange()` (one discount query + in-memory per-day containment check, verified to agree exactly with the existing single-date `resolve()`) and `RoomAvailabilityService::closedDaysForRange()` (one Schedule + one bounded ScheduleOverride query, same day-of-week/max_day/max_date/override precedence as the existing single-date check in `SpaceController::show()`, including the override-partially-overlaps-schedule nuance). Scope decision made with the user: closed-day detection is schedule/override-based only, **not** booking-conflict-aware — a day can show open and still turn out fully booked once a specific time is picked, exactly as before; the calendar is a browsing/pricing aid, not the availability authority. Post-build fixes from a full rescan: (1) `month_caption` had `position: relative`, which sat in the same stacking layer as the absolutely-positioned `nav` and, being later in the DOM, silently ate the prev/next month button clicks — removed; (2) the day-cell button had no explicit text color, relying on inherited color through a Radix Popover's portal boundary — pinned to `text-foreground`/`hover:text-accent-foreground` so it can't render invisible against its own hover background; (3) the `selected` day's black fill was applied to both the (square) day cell and the (rounded) button inside it, so a square peeked out around the rounded highlight — now applied only to the button; (4) `RoomDatePicker`'s `DayButton` render function is now `useCallback`-memoized (was a fresh closure every render, forcing `react-day-picker` to remount the whole day grid — including losing hover/focus — on any unrelated re-render); (5) added a `fetchedMonths` ref cache so reopening the popover on a month already fetched this session skips the network call instead of re-fetching. **Verified**: 4 DB queries total for the endpoint regardless of range size (room, discounts, schedule, overrides — confirmed via query log on a 62-day request), ~15-20ms real response time. |
 | `c820877` | **Room Discounts module.** Admin-managed discounts that apply automatically to selected rooms — no promo code. New `discounts` table (+ `discount_room` pivot) and `booking_discounts` snapshot table. CRUD at `/discounts` (Spaces group in sidebar). Fixed-amount and percentage types, both applied **per hour** off the room rate. Two independent date windows: **booking period** (vs `bookings.created_at`) and **reservation dates** (vs `bookings.start_date`); all four dates are **mandatory** and bounds are inclusive. Overlaps are allowed and resolved by `priority ASC, id DESC` — **lower number wins**; the admin list badges them. `Booking::total_price()` is now `subtotal() - discount_amount()`, so the confirm gate, all 3 customer emails, and `ContactUsController` became discount-correct with no changes at those call sites. Payment `amount`/`amount_paid` validation relaxed from `integer` to `numeric` (percentage discounts produce decimal totals). Discounts surface on home/spaces/space-detail/inquiry pages and on `booking/show`. Public pages also advertise **upcoming** promos (before a date is picked) via `DiscountService::nextUpcoming()` — flagged `upcoming: true`, never used to cross out a price. Admin **room show page** (`/rooms/{room}`) now lists that room's ongoing/upcoming discounts (below Layouts) as clickable tags opening `/discounts/{id}/edit` in a new tab; expired ones are excluded via `RoomController::show()` filtering `discounts` on `reserve_to >= today`. "Ongoing" is computed server-side (`is_ongoing`) as today falling inside the **booking period only** — a customer inquiring today qualifies regardless of which future stay date (within the reservation window) they pick, since `DiscountService::resolve()` checks the booking period against today but the reservation window against the chosen stay date, not today. Anything whose booking period hasn't opened yet is tagged Upcoming. (Edge case: a discount whose booking period has already *closed* but whose reservation window still extends into the future is also tagged Upcoming, which is a mislabel — there's no third "Closed" state yet.) Booking edits no longer auto-reset the discount snapshot — a small refresh icon beside the discount amount on `booking/show.tsx` (Inquiry/Pending only) opens a Before/After preview dialog (new `GET /api/bookings/{booking}/preview-discount` endpoint, read-only) and only writes the snapshot on explicit confirmation; see the Discount Resolution section for the reasoning. |
 | `2067953` | Added announcements uploader |
 | `389410d` | Added an admin-manageable **Announcements** banner to the home page, shown full-width above the Featured Space section. New `announcements` table/model; images uploaded via `POST /api/announcements/images` (mirrors the Room images upload/reorder/diff-delete pattern). Managed from Settings > Website > Appearance (new "Announcements" section, `resources/js/pages/settings/website/announcements-uploader.tsx`). Static image if 1 uploaded, auto-rotating carousel if 2+, each image optionally links out on click with a "More Info" badge. Also rebalanced the home page's black/white section striping (mobile and desktop) to account for the new top banner. |
@@ -70,6 +71,7 @@ These files exist locally but are not yet committed:
 | `GUIDE.md` | Non-developer user guide and demo script |
 | `GUIDE.pdf` | PDF export of GUIDE.md |
 | `.claude/settings.local.json` | Local Claude Code permission overrides (not for git) |
+| Rate calendar feature (several files) | See `git status` — new `app/Http/Controllers/Api/Unauth/RoomCalendarController.php`, `resources/js/components/ui/calendar.tsx`, `resources/js/components/custom/room-date-picker.tsx`, plus edits to `DiscountService`, `RoomAvailabilityService`, `routes/api.php`, `unauth/space/show.tsx`, and `package.json`/`package-lock.json` (new `react-day-picker` dependency, already `npm install`ed locally). |
 
 Note: `public/build.zip` was deleted locally (was previously untracked/uncommitted) and `public/build` currently holds a stale compiled bundle from before this session's frontend changes — run `npm run dev` or `npm run build` before relying on the UI in a browser.
 
@@ -84,6 +86,8 @@ app/
     Api/
       RoomController.php          — Multi-image upload/reorder for rooms
       AnnouncementController.php  — Multi-image upload/reorder for the home page Announcements banner
+      Unauth/
+        RoomCalendarController.php — Public (no auth), per-day rate + closed-day JSON for the room date-picker calendar
     BookingController.php
     PaymentController.php
     RoomController.php
@@ -103,7 +107,8 @@ app/
   Models/
   Services/
     VoucherService.php   — Generates XXXX-XXXX-XXXX-XXXX codes + QR PNG
-    DiscountService.php  — Resolves/previews room discounts, writes booking snapshots
+    DiscountService.php  — Resolves/previews room discounts, writes booking snapshots; pricingForRange() batches per-day rates for the calendar
+    RoomAvailabilityService.php — Per-hour availability check (existing); closedDaysForRange() batches per-day open/closed for the calendar
   Console/Commands/
     UpdateExpiredBookings.php   — Auto-cancels expired pending bookings
     BackupDatabase.php          — Scheduled DB backup
@@ -116,7 +121,7 @@ resources/
 
 routes/
   web.php                       — All routes (public + admin)
-  api.php                       — /api/bookings/verify, /api/rooms/{roomId}/images, /api/announcements/images, /cron/run/{token}
+  api.php                       — /api/bookings/verify, /api/rooms/{roomId}/images, /api/announcements/images, /api/spaces/{roomName}/rate-calendar (public), /cron/run/{token}
 
 config/
   global.php                    — App constants (statuses, pagination, file limits)
@@ -184,11 +189,15 @@ INQUIRY (1) → PENDING (2) → CONFIRMED (3)
 - **`2026_07_23_110000_make_discount_dates_required`** backfills any open-ended discount dates before enforcing NOT NULL: missing `*_from` becomes the row's `DATE(created_at)`, missing `*_to` becomes the `2099-12-31` sentinel. The local "Summer Promo" row was backfilled this way — review its dates before demoing, since `2099-12-31` is a placeholder, not an intended value.
 - **Discount previews are per-request, not cached.** `DiscountService::preview()` runs one query per room on `/spaces` and the home slider. Fine at the current room count; worth caching if the room list grows.
 - **`Booking::total_price()` lazy-loads `discounts`.** Any new code that calls it over a collection should eager-load `discounts` (as `ContactUsController::resend()` and `PaymentController::payableBookings()` now do) or it will N+1.
+- **Rate calendar has had one round of real browser testing** (user caught the nav-button and hover-contrast bugs listed above — both fixed). No headless browser tool has been available in this session to screenshot it directly, so continued manual spot-checks in Brave are worthwhile, but the backend is thoroughly verified (matches `resolve()` exactly, respects the 62-day cap, correct 404/422/public-access behavior, 4 queries total confirmed via query log) and `tsc`/ESLint/build all pass.
+- **Closed-day check on the calendar is schedule/override-based only, not booking-aware** (agreed tradeoff for query cost — see Discount/Availability sections above). A day can show open on the calendar and still come back "No available times" once picked, same as before this change.
 
 ---
 
 ## What's Likely Next
 
+- **Commit the rate calendar feature** — it's complete and backend-verified but uncommitted; do a quick manual visual check in a browser first (see Known Issues).
+- `npm install` needed on any other machine/server picking up this branch — `react-day-picker` is a new dependency.
 - Run the 4 discount migrations on the server (see the migrations-drift note in Known Issues — use `--path` per migration; a bare `php artisan migrate` will try the two stale Pending rows and fail).
 - Two real discounts already exist locally ("Summer Promo", "Better Promo") — review their dates before demoing.
 - Demo preparation — `GUIDE.md` has a full demo script (Part 13) ready, including the new Step 14b for Discounts.

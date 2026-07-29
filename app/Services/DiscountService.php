@@ -40,6 +40,55 @@ class DiscountService
     }
 
     /**
+     * Per-day effective rate for a room across a date range — one query instead of
+     * one per day. Answers "what would I pay if I booked today for day X", so the
+     * booking-window side of the check uses today for every day in the range.
+     *
+     * @return array<string, array{price: float, original_price: float, discount_label: ?string}>
+     */
+    public static function pricingForRange(Room $room, string $from, string $to): array
+    {
+        $price = (float) $room->price;
+        $bookedOn = now()->format('Y-m-d');
+
+        $candidates = Discount::where('is_active', true)
+            ->whereNull('code')
+            ->whereHas('rooms', function ($query) use ($room) {
+                $query->where('rooms.id', $room->id);
+            })
+            ->where('book_from', '<=', $bookedOn)
+            ->where('book_to', '>=', $bookedOn)
+            ->orderBy('priority', 'asc')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $result = [];
+        $period = Carbon::parse($from)->toPeriod(Carbon::parse($to));
+
+        foreach ($period as $day) {
+            $date = $day->format('Y-m-d');
+
+            $discount = $candidates->first(
+                fn ($d) => $d->reserve_from->format('Y-m-d') <= $date && $d->reserve_to->format('Y-m-d') >= $date
+            );
+
+            $result[$date] = $discount
+                ? [
+                    'price' => round($price - $discount->perHourAmount($price), 2),
+                    'original_price' => $price,
+                    'discount_label' => $discount->label($price),
+                ]
+                : [
+                    'price' => $price,
+                    'original_price' => $price,
+                    'discount_label' => null,
+                ];
+        }
+
+        return $result;
+    }
+
+    /**
      * Discount preview for public-facing pages. Returns null when nothing applies.
      *
      * When no date is in play (a room card or a room page before the customer has

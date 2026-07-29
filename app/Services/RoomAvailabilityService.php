@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\Room;
 use App\Models\Schedule;
 use App\Models\ScheduleOverride;
+use Carbon\Carbon;
 
 class RoomAvailabilityService
 {
@@ -95,6 +96,70 @@ class RoomAvailabilityService
         }
 
         return ['status' => true];
+    }
+
+    /**
+     * Days in a range where the room has no open hours at all — based on its weekly
+     * schedule and date overrides only, NOT existing booking conflicts (that final
+     * check still happens per-hour the moment a specific date is picked, exactly as
+     * `verifyRoomAvailability()` already does). This is a browsing/calendar aid, not
+     * the availability authority, so it stays cheap: one Schedule query, one bounded
+     * ScheduleOverride query, then an in-memory loop over the range.
+     *
+     * @return string[] Closed dates in Y-m-d format
+     */
+    public function closedDaysForRange(Room $room, string $from, string $to): array
+    {
+        $schedule = Schedule::find($room->schedule_id);
+
+        $overrides = ScheduleOverride::whereBetween('date', [$from, $to])
+            ->whereHas('rooms', function ($query) use ($room) {
+                $query->where('room_id', $room->id);
+            })
+            ->orderBy('id', 'desc')
+            ->get()
+            ->unique('date'); // Honor the latest override per date, same as the single-date check.
+
+        $closed = [];
+        $period = Carbon::parse($from)->toPeriod($to);
+
+        foreach ($period as $day) {
+            $date = $day->format('Y-m-d');
+            $dateDay = strtolower($day->format('D'));
+
+            $scheduleOpen = $schedule
+                && $schedule->is_active
+                && $schedule->{$dateDay . '_start'}
+                && $schedule->{$dateDay . '_end'}
+                && $schedule->max_day >= now()->diffInDays($date, false)
+                && $schedule->max_date >= $date;
+
+            $override = $overrides->firstWhere('date', $date);
+
+            if ($override && $override->is_open) {
+                continue; // Override opens the day regardless of the regular schedule.
+            }
+
+            if ($override && !$override->is_open) {
+                // A partial closure (override window narrower than the schedule) still
+                // leaves some hours open; only a closure covering the whole schedule
+                // window (or no schedule at all) closes the day entirely.
+                $fullyCovers = !$scheduleOpen
+                    || ($override->time_start <= $schedule->{$dateDay . '_start'}
+                        && $override->time_end >= $schedule->{$dateDay . '_end'});
+
+                if ($fullyCovers) {
+                    $closed[] = $date;
+                }
+                continue;
+            }
+
+            if (!$scheduleOpen) {
+                $closed[] = $date;
+            }
+        }
+
+        return $closed;
     }
 
     /**

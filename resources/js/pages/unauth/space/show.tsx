@@ -1,5 +1,5 @@
-import { Input } from '@/components/custom/makeshift/input';
 import { SelectTrigger } from '@/components/custom/makeshift/selectTrigger';
+import RoomDatePicker from '@/components/custom/room-date-picker';
 import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -50,6 +50,10 @@ export default function Show({
     });
 
     const [zodErrors, setZodErrors] = useState<Record<string, string>>({});
+
+    const minSelectableDate = new Date(Date.now() + 48 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0];
 
     const generateEndTimes = (times: string[], startTime: string): string[] => {
         // Helper: convert HH:mm to minutes
@@ -290,15 +294,11 @@ export default function Show({
                                             <div className="text-muted-foreground mb-1 ml-3">
                                                 Date
                                             </div>
-                                            <Input
-                                                type="date"
-                                                min={
-                                                    new Date(Date.now() + 48 * 60 * 60 * 1000)
-                                                        .toISOString()
-                                                        .split('T')[0]
-                                                }
-                                                value={inquiryForm.date}
-                                                onChange={(e) => handleDateChange(e.target.value)}
+                                            <RoomDatePicker
+                                                room={room}
+                                                value={inquiryForm.date || ''}
+                                                minDate={minSelectableDate}
+                                                onChange={handleDateChange}
                                             />
                                             <InputError message={zodErrors.date} className="ml-3" />
                                         </div>

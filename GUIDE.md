@@ -473,6 +473,7 @@ The public website is what your customers see. No login required.
 - If a discount applies, the original price shows crossed out beside the new discounted rate, with a green badge naming the promo. The estimated total in the booking dialog uses the discounted rate.
 - Inside the **Inquire Now** dialog, the promo appears above the Total Price: a green "10% OFF" pill, the promo name, the crossed-out hourly rate beside the discounted one, and the crossed-out original total beside the discounted total once times are chosen.
 - If the promo hasn't started yet, the dialog shows the pill with "pick a date from Aug 1 to get this" and leaves prices uncrossed until a qualifying date is selected.
+- The **Date** field in the Inquire Now dialog is a fare-style calendar: each open day shows its rate underneath the date number, discounted days shown in green. Days the room is closed on (by schedule or a schedule override) are greyed out and can't be picked. Picking a date still checks specific time-slot availability the same way it always has — the calendar itself just helps customers browse and compare prices before choosing.
 - Photo gallery
 - Amenities list
 - Available layout options
@@ -520,6 +521,7 @@ Use this sequence to walk a customer through MakeShift from end to end. Each sec
 **Step 3: Space Detail**
 - Walk through the room's gallery, amenities, layouts, and pricing.
 - If a discount is set up for this room (see Step 14b), point out the crossed-out original price and the green promo badge.
+- Open the Inquire Now dialog and click the Date field — point out the rate shown under each day, and how discounted days stand out in green. Explain: *"Customers can compare prices across the month before picking a date, like a flight booking site."*
 - Select a date and watch the available time slots populate.
 - Point out that the system is checking availability in real time (existing bookings are accounted for).
 
