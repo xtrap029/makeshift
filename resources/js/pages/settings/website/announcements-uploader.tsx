@@ -2,17 +2,21 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import axios from 'axios';
-import { ChevronLeft, ChevronRight, ImageUp, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ImageUp, Smartphone, X } from 'lucide-react';
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import ImageUploading, { ImageType } from 'react-images-uploading';
 
 type ImageWithLink = ImageType & {
     link?: string;
+    mobile_data_url?: string;
+    mobile_url?: string;
+    mobile_file?: File;
 };
 
 type ExistingImage = {
     url: string;
     link?: string | null;
+    mobileUrl?: string | null;
 };
 
 type Props = {
@@ -34,6 +38,9 @@ const AnnouncementsUploader = forwardRef<AnnouncementsUploaderHandle, Props>(
                     url: img.url,
                     link: img.link || '',
                     file: undefined,
+                    mobile_data_url: img.mobileUrl ? '/storage/' + img.mobileUrl : undefined,
+                    mobile_url: img.mobileUrl || undefined,
+                    mobile_file: undefined,
                 }));
                 setImages(mapped);
             } else {
@@ -48,6 +55,9 @@ const AnnouncementsUploader = forwardRef<AnnouncementsUploaderHandle, Props>(
                     return {
                         ...img,
                         link: existingImage?.link || prev[i]?.link || '',
+                        mobile_data_url: existingImage?.mobile_data_url || prev[i]?.mobile_data_url,
+                        mobile_url: existingImage?.mobile_url || prev[i]?.mobile_url,
+                        mobile_file: existingImage?.mobile_file || prev[i]?.mobile_file,
                     };
                 });
                 return newImages;
@@ -59,6 +69,36 @@ const AnnouncementsUploader = forwardRef<AnnouncementsUploaderHandle, Props>(
                 const updated = [...prev];
                 if (updated[index]) {
                     updated[index].link = value;
+                }
+                return updated;
+            });
+        };
+
+        const handleMobileImageChange = (index: number, file: File) => {
+            setImages((prev) => {
+                const updated = [...prev];
+                if (updated[index]) {
+                    updated[index] = {
+                        ...updated[index],
+                        mobile_file: file,
+                        mobile_data_url: URL.createObjectURL(file),
+                        mobile_url: undefined,
+                    };
+                }
+                return updated;
+            });
+        };
+
+        const handleMobileImageRemove = (index: number) => {
+            setImages((prev) => {
+                const updated = [...prev];
+                if (updated[index]) {
+                    updated[index] = {
+                        ...updated[index],
+                        mobile_file: undefined,
+                        mobile_data_url: undefined,
+                        mobile_url: undefined,
+                    };
                 }
                 return updated;
             });
@@ -88,6 +128,12 @@ const AnnouncementsUploader = forwardRef<AnnouncementsUploaderHandle, Props>(
 
                     if (img.link) {
                         formData.append(`images[${index}][link]`, img.link);
+                    }
+
+                    if (img.mobile_file) {
+                        formData.append(`images[${index}][mobile_file]`, img.mobile_file);
+                    } else if (img.mobile_url) {
+                        formData.append(`images[${index}][mobile_url]`, img.mobile_url);
                     }
 
                     formData.append(
@@ -125,7 +171,7 @@ const AnnouncementsUploader = forwardRef<AnnouncementsUploaderHandle, Props>(
                                     <ImageUp size={45} className="text-gray-500" />
                                     <span>Upload Images</span>
                                     <span className="text-xs text-gray-500">
-                                        PNG, JPG, JPEG up to 2MB
+                                        Up to 2MB · 2172 × 596px
                                     </span>
                                 </div>
                                 {imageList.map((image, index) => (
@@ -182,6 +228,56 @@ const AnnouncementsUploader = forwardRef<AnnouncementsUploaderHandle, Props>(
                                                 }
                                                 className="mt-2"
                                             />
+                                            <div className="mt-2 flex items-center gap-2">
+                                                {images[index]?.mobile_data_url ? (
+                                                    <div className="relative">
+                                                        <img
+                                                            src={images[index].mobile_data_url}
+                                                            alt=""
+                                                            className="size-14 rounded-md border border-gray-200 object-cover shadow-sm"
+                                                        />
+                                                        <Button
+                                                            type="button"
+                                                            variant="destructive"
+                                                            size="sm"
+                                                            onClick={() =>
+                                                                handleMobileImageRemove(index)
+                                                            }
+                                                            className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0"
+                                                        >
+                                                            <X className="size-3" />
+                                                        </Button>
+                                                    </div>
+                                                ) : (
+                                                    <label className="flex size-14 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-md border-2 border-dashed border-gray-300 text-center transition-colors hover:border-gray-400 hover:bg-gray-50">
+                                                        <Smartphone
+                                                            size={16}
+                                                            className="text-gray-500"
+                                                        />
+                                                        <input
+                                                            type="file"
+                                                            accept="image/png,image/jpg,image/jpeg"
+                                                            className="hidden"
+                                                            onChange={(e) => {
+                                                                const file =
+                                                                    e.target.files?.[0];
+                                                                if (file) {
+                                                                    handleMobileImageChange(
+                                                                        index,
+                                                                        file
+                                                                    );
+                                                                }
+                                                                e.target.value = '';
+                                                            }}
+                                                        />
+                                                    </label>
+                                                )}
+                                                <span className="text-xs text-gray-500">
+                                                    Mobile (optional)
+                                                    <br />
+                                                    1080 × 1080px
+                                                </span>
+                                            </div>
                                         </CardContent>
                                     </Card>
                                 ))}

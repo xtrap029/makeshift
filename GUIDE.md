@@ -401,12 +401,13 @@ Configure your public-facing website:
 ### Announcements
 Manage the promotional banner shown at the very top of the home page, above the Featured Space section.
 
-- Go to **Settings → Portal Appearance**, under the **Announcements** section.
-- Upload one or more images (drag-and-drop or click to browse, up to 10 images, 2MB each).
-- With **one image**, it displays as a static banner. With **two or more**, it automatically becomes an auto-rotating slider.
-- Each image can optionally have a **link** — when set, clicking the image opens that link in a new tab and a "More Info" badge appears on the image.
-- Reorder images with the arrow buttons on each image card, or remove one with the X button.
-- Click **Save Announcements** to publish changes immediately.
+- Go to **Settings → Portal Appearance → Announcements**.
+- Upload up to 10 images (2MB each). Recommended: **2172 × 596px** wide.
+- One image = static banner. Two or more = auto-rotating slider.
+- Optional **mobile image** per slide (squarish, e.g. **1080 × 1080px**) — shown to phone visitors instead of the wide banner. No mobile image = phones show the wide banner too.
+- Optional **link** per slide — opens on click, shown for both desktop and mobile versions.
+- Reorder with the arrow buttons, remove with the X (mobile image has its own X).
+- Click **Save Announcements** to publish.
 
 ### Website Content (Homepage)
 Edit what appears on the public homepage:

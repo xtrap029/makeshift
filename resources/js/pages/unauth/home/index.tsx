@@ -37,7 +37,7 @@ export default function Index({
                                 orientation="horizontal"
                                 className="w-full max-w-7xl m-auto px-4"
                             >
-                                <CarouselContent className="ml-0">
+                                <CarouselContent className="ml-0 items-start">
                                     {announcements.map((announcement) => (
                                         <CarouselItem
                                             key={announcement.id}
@@ -223,7 +223,17 @@ function AnnouncementImage({ announcement }: { announcement: Announcement }) {
             <img
                 src={`/storage/${announcement.image}`}
                 alt="Announcement"
-                className="h-[280px] w-full rounded-2xl object-cover shadow-lg md:h-[360px]"
+                className="hidden aspect-[2172/596] w-full rounded-2xl object-cover object-center shadow-lg md:block"
+            />
+            {/* Every mobile slide uses the same aspect ratio (square) — a carousel
+                lays all slides in one row, so mismatched heights leave a gap
+                under whichever slide is shorter. A slide with no mobile image
+                falls back to the desktop image, center-cropped into the square
+                instead of keeping its wide shape, so the carousel stays uniform. */}
+            <img
+                src={`/storage/${announcement.mobile_image ?? announcement.image}`}
+                alt="Announcement"
+                className="aspect-square block w-full rounded-2xl object-cover object-center shadow-lg md:hidden"
             />
         </div>
     );

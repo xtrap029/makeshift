@@ -8,6 +8,7 @@ class Announcement extends Model
 {
     protected $fillable = [
         'image',
+        'mobile_image',
         'link_url',
         'order',
         'is_temp',

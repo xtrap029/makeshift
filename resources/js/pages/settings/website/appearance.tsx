@@ -170,13 +170,14 @@ export default function Appearance({
                     <br />
                     <HeadingSmall
                         title="Announcements"
-                        description="Manage the promotional banner shown at the top of the home page. Add multiple images to make it a slider; each image can optionally link somewhere when clicked."
+                        description="Promotional banner at the top of the home page. Multiple images become a slider; each can link somewhere and have an optional mobile version."
                     />
                     <AnnouncementsUploader
                         ref={announcementsRef}
                         initialImages={announcements.map((announcement) => ({
                             url: announcement.image,
                             link: announcement.link_url,
+                            mobileUrl: announcement.mobile_image,
                         }))}
                     />
                     <br />

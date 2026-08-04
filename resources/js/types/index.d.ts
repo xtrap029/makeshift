@@ -165,6 +165,7 @@ export interface Source {
 export interface Announcement {
     id: number;
     image: string;
+    mobile_image: string | null;
     link_url: string | null;
     order?: number;
 }

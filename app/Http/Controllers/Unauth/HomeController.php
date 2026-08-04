@@ -39,7 +39,7 @@ class HomeController extends Controller
                 'homeFeaturedDescription' => $data['HOME_FEATURED_DESCRIPTION'] ?? null,
             ],
             'roomSlider' => $roomSlider,
-            'announcements' => Announcement::orderBy('order')->get(['id', 'image', 'link_url']),
+            'announcements' => Announcement::orderBy('order')->get(['id', 'image', 'mobile_image', 'link_url']),
         ]);
     }
 
