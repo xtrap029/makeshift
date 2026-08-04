@@ -16,7 +16,13 @@ class HandleAppearance
      */
     public function handle(Request $request, Closure $next): Response
     {
-        View::share('appearance', $request->cookie('appearance') ?? 'system');
+        // Public-facing pages (Unauth\* controllers) always render light — dark mode
+        // is an admin-only preference and must never leak into the customer site,
+        // regardless of what the admin's browser has saved.
+        $route = $request->route();
+        $isPublicPage = $route && str_contains((string) $route->getActionName(), '\\Unauth\\');
+
+        View::share('appearance', $isPublicPage ? 'light' : ($request->cookie('appearance') ?? 'system'));
 
         return $next($request);
     }

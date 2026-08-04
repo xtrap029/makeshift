@@ -1,3 +1,4 @@
+import { router } from '@inertiajs/react';
 import { useCallback, useEffect, useState } from 'react';
 
 export type Appearance = 'light' | 'dark' | 'system';
@@ -10,6 +11,32 @@ const prefersDark = () => {
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
 };
 
+// Public site pages all render from components under `unauth/` (mirrors the
+// `Unauth\*` controller namespace on the backend). Dark mode is an admin-only
+// preference and must never leak into the customer-facing site — this is one
+// SPA instance, so the `<html>` class otherwise persists across client-side
+// navigation between admin and public pages.
+//
+// Tracked manually (not read live from Inertia) because `router` exposes no
+// public "current page" accessor — this is seeded once from the SSR'd
+// `data-page` payload and kept in sync via the `navigate` event.
+let currentComponent = '';
+
+const readInitialComponent = () => {
+    if (typeof document === 'undefined') {
+        return '';
+    }
+
+    try {
+        const raw = document.getElementById('app')?.getAttribute('data-page');
+        return raw ? (JSON.parse(raw).component ?? '') : '';
+    } catch {
+        return '';
+    }
+};
+
+const isPublicPage = () => currentComponent.startsWith('unauth/');
+
 const setCookie = (name: string, value: string, days = 365) => {
     if (typeof document === 'undefined') {
         return;
@@ -20,7 +47,8 @@ const setCookie = (name: string, value: string, days = 365) => {
 };
 
 const applyTheme = (appearance: Appearance) => {
-    const isDark = appearance === 'dark' || (appearance === 'system' && prefersDark());
+    const isDark =
+        !isPublicPage() && (appearance === 'dark' || (appearance === 'system' && prefersDark()));
 
     document.documentElement.classList.toggle('dark', isDark);
 };
@@ -39,12 +67,24 @@ const handleSystemThemeChange = () => {
 };
 
 export function initializeTheme() {
+    currentComponent = readInitialComponent();
+
     const savedAppearance = (localStorage.getItem('appearance') as Appearance) || 'light';
 
     applyTheme(savedAppearance);
 
     // Add the event listener for system theme changes...
     mediaQuery()?.addEventListener('change', handleSystemThemeChange);
+
+    // Re-evaluate on every client-side navigation — this is one SPA instance,
+    // so moving between an admin page and a public page never reloads the
+    // document; without this the `dark` class would just stick around.
+    router.on('navigate', (event) => {
+        currentComponent = event.detail.page.component;
+
+        const currentAppearance = (localStorage.getItem('appearance') as Appearance) || 'light';
+        applyTheme(currentAppearance);
+    });
 }
 
 export function useAppearance() {
