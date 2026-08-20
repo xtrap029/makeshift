@@ -31,7 +31,7 @@ return [
         'favicon_mimes' => 'ico,png,jpg,jpeg',
         'favicon_max_size' => 512,
         'banner_mimes' => 'jpeg,png,jpg',
-        'banner_max_size' => 2048,
+        'banner_max_size' => 5120,
         'site_description_max_size' => 30,
     ]
 ];

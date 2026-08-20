@@ -158,7 +158,7 @@ const AnnouncementsUploader = forwardRef<AnnouncementsUploaderHandle, Props>(
                     onChange={handleImageChange}
                     maxNumber={10}
                     dataURLKey="data_url"
-                    maxFileSize={2 * 1024 * 1024}
+                    maxFileSize={5 * 1024 * 1024}
                 >
                     {({ imageList, onImageUpload, onImageRemove, dragProps }) => (
                         <div className="space-y-4">
@@ -171,7 +171,7 @@ const AnnouncementsUploader = forwardRef<AnnouncementsUploaderHandle, Props>(
                                     <ImageUp size={45} className="text-gray-500" />
                                     <span>Upload Images</span>
                                     <span className="text-xs text-gray-500">
-                                        Up to 2MB · 2172 × 596px
+                                        Up to 5MB · 16:9 aspect ratio
                                     </span>
                                 </div>
                                 {imageList.map((image, index) => (
@@ -275,7 +275,7 @@ const AnnouncementsUploader = forwardRef<AnnouncementsUploaderHandle, Props>(
                                                 <span className="text-xs text-gray-500">
                                                     Mobile (optional)
                                                     <br />
-                                                    1080 × 1080px
+                                                    1:1 aspect ratio
                                                 </span>
                                             </div>
                                         </CardContent>

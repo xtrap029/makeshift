@@ -223,7 +223,7 @@ function AnnouncementImage({ announcement }: { announcement: Announcement }) {
             <img
                 src={`/storage/${announcement.image}`}
                 alt="Announcement"
-                className="hidden aspect-[2172/596] w-full rounded-2xl object-cover object-center shadow-lg md:block"
+                className="hidden aspect-video w-full rounded-2xl object-cover object-center shadow-lg md:block"
             />
             {/* Every mobile slide uses the same aspect ratio (square) — a carousel
                 lays all slides in one row, so mismatched heights leave a gap
