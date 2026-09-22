@@ -241,9 +241,17 @@ class BookingController extends Controller
                 }
 
                 $booking->update([
-                    'status' => config('global.booking_status.pending')[0]
+                    'status' => config('global.booking_status.pending')[0],
+                    'expires_at' => $validated['expires_at'] ?? null,
                 ]);
-                break;
+
+                if (!empty($validated['notify'])) {
+                    $this->sendAcknowledgedMail($booking->fresh(['room', 'layout']));
+
+                    return to_route('bookings.show', $booking)->withSuccess('Booking set to pending and customer notified!');
+                }
+
+                return to_route('bookings.show', $booking)->withSuccess('Booking set to pending!');
             case 'inquiry':
                 // Booking should be pending
                 if ($booking->status !== config('global.booking_status.pending')[0] && $booking->status !== config('global.booking_status.canceled')[0]) {
@@ -406,6 +414,17 @@ class BookingController extends Controller
             return back()->withError('Booking is not pending');
         }
 
+        $this->sendAcknowledgedMail($booking);
+
+        return back()->withSuccess('Acknowledged email sent successfully!');
+    }
+
+    /**
+     * Payment-request email for a Pending booking. Shared by the explicit Notify
+     * button and the "Set as Pending & Notify" option on the status change.
+     */
+    private function sendAcknowledgedMail(Booking $booking): void
+    {
         Mail::to($booking->customer_email)->send(new InquiryAcknowledged([
             'name' => $booking->customer_name,
             'payment_method' => 'Bank Transfer',
@@ -422,8 +441,6 @@ class BookingController extends Controller
             'booking_total_price' => 'PHP ' . number_format($booking->total_price(), 2, '.', ','),
             ...DiscountService::mailData($booking),
         ]));
-
-        return back()->withSuccess('Acknowledged email sent successfully!');
     }
 
     /**

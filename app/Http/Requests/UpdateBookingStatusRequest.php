@@ -25,6 +25,10 @@ class UpdateBookingStatusRequest extends FormRequest
         return [
             'status' => 'required|string|in:' . implode(',', array_keys(config('global.booking_status'))),
             'cancel_reason' => 'nullable|string|max:255',
+            // Pending only: optionally send the payment-request email right away.
+            // expires_at is optional either way — the email prints "N/A" when unset.
+            'notify' => 'nullable|boolean',
+            'expires_at' => 'nullable|date|after:now',
         ];
     }
 }

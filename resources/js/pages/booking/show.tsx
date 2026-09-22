@@ -1,4 +1,5 @@
 import Countdown from '@/components/custom/countdown';
+import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,6 +19,8 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import { bookingStatus } from '@/constants';
@@ -70,6 +73,8 @@ export default function Show({ booking }: { booking: Booking }) {
     const { destroy, processing: deleteProcessing } = useDelete();
     const [isCanceledDialogOpen, setIsCanceledDialogOpen] = useState(false);
     const [isRescheduleDialogOpen, setIsRescheduleDialogOpen] = useState(false);
+    const [isPendingDialogOpen, setIsPendingDialogOpen] = useState(false);
+    const [pendingExpiresAt, setPendingExpiresAt] = useState('');
     const [bookingCancelReason, setBookingCancelReason] = useState(booking.cancel_reason || '');
 
     const updateStatusConfig = {
@@ -78,8 +83,11 @@ export default function Show({ booking }: { booking: Booking }) {
     };
     const { updateStatus: updateToInquiryStatus, processing: updateToInquiryProcessing } =
         useUpdateStatus('inquiry');
-    const { updateStatus: updateToPendingStatus, processing: updateToPendingProcessing } =
-        useUpdateStatus('pending');
+    const {
+        updateStatus: updateToPendingStatus,
+        processing: updateToPendingProcessing,
+        errors: pendingErrors,
+    } = useUpdateStatus('pending');
     const { updateStatus: updateToCanceledStatus, processing: updateToCanceledProcessing } =
         useUpdateStatus('canceled', bookingCancelReason);
     const { updateStatus: updateToConfirmedStatus, processing: updateToConfirmedProcessing } =
@@ -180,9 +188,7 @@ export default function Show({ booking }: { booking: Booking }) {
                                     {bookingStatus.find((status) => status.id === booking.status)
                                         ?.label === 'Inquiry' && (
                                         <DropdownMenuItem
-                                            onClick={() =>
-                                                updateToPendingStatus(updateStatusConfig)
-                                            }
+                                            onClick={() => setIsPendingDialogOpen(true)}
                                             className="cursor-pointer"
                                         >
                                             Pending
@@ -591,6 +597,81 @@ export default function Show({ booking }: { booking: Booking }) {
                     </div>
                 </div>
             </div>
+            <Dialog open={isPendingDialogOpen} onOpenChange={setIsPendingDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Set as Pending</DialogTitle>
+                        <DialogDescription>
+                            This reserves the slot for the customer so nobody else can book it.
+                            You can also send the payment-request email right away.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-2">
+                        <Label htmlFor="pending_expires_at">Payment Deadline (Expires At)</Label>
+                        <Input
+                            id="pending_expires_at"
+                            type="datetime-local"
+                            min={dayjs().format('YYYY-MM-DDTHH:mm')}
+                            value={pendingExpiresAt}
+                            onChange={(e) => setPendingExpiresAt(e.target.value)}
+                            disabled={updateToPendingProcessing}
+                        />
+                        <p className="text-muted-foreground text-xs">
+                            Optional — shown as the deadline in the payment email (N/A if left
+                            blank). If unpaid by then, the booking is automatically canceled.
+                        </p>
+                        <InputError message={pendingErrors.expires_at} />
+                    </div>
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => setIsPendingDialogOpen(false)}
+                            disabled={updateToPendingProcessing}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="secondary"
+                            disabled={updateToPendingProcessing}
+                            onClick={() =>
+                                updateToPendingStatus({
+                                    ...updateStatusConfig,
+                                    options: {
+                                        skipConfirm: true,
+                                        data: { expires_at: pendingExpiresAt || undefined },
+                                        onSuccess: () => setIsPendingDialogOpen(false),
+                                    },
+                                })
+                            }
+                        >
+                            Set as Pending
+                        </Button>
+                        <Button
+                            disabled={updateToPendingProcessing}
+                            onClick={() =>
+                                updateToPendingStatus({
+                                    ...updateStatusConfig,
+                                    options: {
+                                        skipConfirm: true,
+                                        data: {
+                                            notify: true,
+                                            expires_at: pendingExpiresAt || undefined,
+                                        },
+                                        onSuccess: () => setIsPendingDialogOpen(false),
+                                    },
+                                })
+                            }
+                        >
+                            {updateToPendingProcessing ? (
+                                <Loader2 className="animate-spin" />
+                            ) : (
+                                <Send size={16} />
+                            )}
+                            Set as Pending & Notify
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
             <Dialog open={isCanceledDialogOpen} onOpenChange={setIsCanceledDialogOpen}>
                 <DialogContent>
                     <DialogHeader>

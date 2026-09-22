@@ -269,8 +269,10 @@ INQUIRY → PENDING → CONFIRMED
 #### 2. Pending
 - The admin has reviewed and **tentatively reserved the slot**.
 - The time slot is now blocked — other customers cannot book it.
-- The admin sends the customer a **payment request email** (with payment instructions, bank details, and a deadline).
-- The admin sets an **Expires At** deadline. If the customer does not pay by then, the booking is automatically moved to Canceled.
+- Choosing **Status → Pending** on an Inquiry opens a small dialog with a **Payment Deadline (Expires At)** field and two choices:
+  - **Set as Pending** — reserves the slot only. The deadline is optional here; you can send the payment email later with the **Notify** button.
+  - **Set as Pending & Notify** — reserves the slot *and* immediately sends the customer the **payment request email** (payment instructions, bank details, and the deadline). The deadline is optional — if left blank the email shows "N/A" for it.
+- If the customer does not pay by the **Expires At** deadline, the booking is automatically moved to Canceled.
 - Payments can now be recorded against this booking.
 - The booking can still be canceled by the admin if needed.
 
@@ -567,10 +569,11 @@ Use this sequence to walk a customer through MakeShift from end to end. Each sec
 - Explain: *"The discount is saved onto the booking. Even if we change or delete the promo later, this booking keeps the price the customer was quoted."*
 
 **Step 7: Moving to Pending (Reserving the Slot)**
-- From the booking detail, change the status to **Pending**.
-- Set an **Expires At** date — the deadline for the customer to pay.
-- Trigger the **Send Acknowledged Email** action.
-- Explain: *"This sends the customer an email with payment instructions, your bank details, and their payment deadline. If they don't pay in time, the system automatically cancels it."*
+- From the booking detail, open **Status → Pending**. A dialog appears.
+- Set the **Payment Deadline (Expires At)** — the date the customer must pay by (optional; the email shows "N/A" if blank).
+- Click **Set as Pending & Notify**.
+- Explain: *"One click reserves the slot and sends the customer an email with payment instructions, your bank details, and their payment deadline. If they don't pay in time, the system automatically cancels it."*
+- Mention the plain **Set as Pending** option for when staff want to reserve first and email later (the **Notify** button on a Pending booking resends the same email).
 
 **Step 8: Recording a Payment**
 - Navigate to **Transactions → Payments** (or use the payment section on the booking detail).
