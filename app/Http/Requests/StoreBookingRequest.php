@@ -38,7 +38,7 @@ class StoreBookingRequest extends FormRequest
                 'integer',
                 Rule::in($layout),
             ],
-            'note' => 'nullable|string|max:255',
+            'note' => 'nullable|string|max:5000',
             'referred_by' => 'nullable|string|max:255',
             'source_id' => 'nullable|integer|exists:sources,id',
             'qty' => 'required|integer',

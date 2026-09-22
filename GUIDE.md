@@ -1,7 +1,7 @@
 # MakeShift — User Guide & Demo Script
 
 > **Audience:** Non-technical staff, admins, and demo presenters
-> **Last updated:** July 2026
+> **Last updated:** September 2026
 
 ---
 
@@ -241,7 +241,7 @@ Both views share the same **filter panel** (the sliders icon). You can filter by
 | **Date** | The booking date |
 | **Time Start / End** | The time range for the booking |
 | **Layout** | The selected room setup (if applicable) |
-| **Notes** | Any special requests from the customer |
+| **Notes** | Any special requests from the customer. Also holds the reschedule history — each reschedule of a Confirmed booking appends a dated log line here (this appears in customer emails too) |
 | **Referred By** | Free-text field — who referred the customer (e.g. a person or company's name), if any |
 | **Source** | How the customer heard about the business, chosen from the Sources list (see below) |
 | **Status** | Current state of the booking (see flow below) |
@@ -277,8 +277,19 @@ INQUIRY → PENDING → CONFIRMED
 #### 3. Confirmed
 - **Payment has been received** and the admin has marked the booking as confirmed.
 - A **voucher code and QR code** are automatically generated and emailed to the customer.
-- The booking is now **locked** — it cannot be edited or canceled.
+- The booking is now **locked** — it cannot be edited or canceled. The only change allowed is a **reschedule** (see below).
 - The customer presents the QR code at arrival for check-in.
+
+**Rescheduling a confirmed booking**
+
+If a paying customer needs a different date or time, open the booking and click **Reschedule** (only shown on Confirmed bookings).
+
+- Pick the **new date**, then a **new start time** from the list. The list only shows start times where the booking's full original duration is free — the end time is filled in automatically and cannot be changed, so the number of hours (and the price) never changes.
+- The **room cannot change**. Availability is checked for the same room, taking into account the schedule, any overrides, and other Pending/Confirmed bookings.
+- The dialog shows the **locked rate** the customer already paid next to the **rate the new date would normally carry** (for example, if a discount applies on the new date but not the original one, or the other way around). This is for your awareness only — the customer's total stays exactly as paid.
+- Optionally type a **note** (e.g. the reason). MakeShift appends a line to the booking's Notes with the date, your name, the old and new schedule, and your note — so the Notes act as a history of every reschedule.
+- A **Booking Rescheduled** email goes to the customer (and to the BCC addresses, if set) with the previous and new schedule. The voucher code and QR code stay the same and remain valid.
+- A booking can be rescheduled as many times as needed.
 
 #### 4. Canceled
 - The booking has been canceled, either manually by the admin or automatically due to payment expiry.
@@ -402,9 +413,9 @@ Configure your public-facing website:
 Manage the promotional banner shown at the very top of the home page, above the Featured Space section.
 
 - Go to **Settings → Portal Appearance → Announcements**.
-- Upload up to 10 images (2MB each). Recommended: **2172 × 596px** wide.
+- Upload up to 10 images (5MB each). Recommended aspect ratio: **16:9** (wide).
 - One image = static banner. Two or more = auto-rotating slider.
-- Optional **mobile image** per slide (squarish, e.g. **1080 × 1080px**) — shown to phone visitors instead of the wide banner. No mobile image = phones show the wide banner too.
+- Optional **mobile image** per slide (recommended aspect ratio **1:1**, square) — shown to phone visitors instead of the wide banner. No mobile image = phones show the wide banner too.
 - Optional **link** per slide — opens on click, shown for both desktop and mobile versions.
 - Reorder with the arrow buttons, remove with the X (mobile image has its own X).
 - Click **Save Announcements** to publish.
@@ -429,8 +440,9 @@ Customize what the automated emails say to customers. Each of the four customer 
 | **Payment Required (Acknowledged)** | Payment steps, screenshot requirement text, deadline warning |
 | **Booking Confirmed** | Arrival instructions, additional information |
 | **Booking Canceled** | Cancellation explanation, what it means, next steps, alternative options |
+| **Booking Rescheduled** | Reuses the Booking Confirmed "Arrival instructions" section (no separate settings) |
 
-When a booking has a discount, the Inquiry Received, Payment Required, and Booking Confirmed emails automatically show an extra **Subtotal** and **Discount** line above the total. Nothing needs to be configured — the lines simply do not appear when there is no discount.
+When a booking has a discount, the Inquiry Received, Payment Required, Booking Confirmed, and Booking Rescheduled emails automatically show an extra **Subtotal** and **Discount** line above the total. Nothing needs to be configured — the lines simply do not appear when there is no discount.
 
 You can also update:
 - **Bank account details** shown in payment emails
@@ -573,6 +585,12 @@ Use this sequence to walk a customer through MakeShift from end to end. Each sec
   - A QR code image is created from that code.
   - A confirmation email is sent to the customer with the voucher code and QR code.
 - Mention: *"The customer uses this QR code to check in when they arrive."*
+
+**Step 9b: Rescheduling a Confirmed Booking (optional)**
+- Still on the confirmed booking, click **Reschedule**.
+- Pick a date a few days out — point out that only start times where the full duration fits appear, and the end time fills itself in.
+- Point out the two price boxes: *"The customer already paid, so their rate is locked — but you can see what the new date would normally cost."*
+- Add a short note and confirm. Show the new line appended under Notes and mention the customer receives a "Booking Rescheduled" email with the same voucher.
 
 **Step 10: Check-In Simulation**
 - Return to the Dashboard.

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
 use App\Http\Requests\UpdateBookingStatusRequest;
+use App\Http\Requests\RescheduleBookingRequest;
 use App\Models\Booking;
 use App\Models\Layout;
 use App\Models\Room;
@@ -14,11 +15,13 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\InquiryAcknowledged;
 use App\Mail\InquiryConfirmed;
 use App\Mail\InquiryCancelled;
+use App\Mail\BookingRescheduled;
 use App\Services\BookingService;
 use App\Services\DiscountService;
 use App\Services\VoucherService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Http\Requests\FilterBookingRequest;
 
@@ -311,6 +314,90 @@ class BookingController extends Controller
         $booking->update(['expires_at' => null]);
 
         return to_route('bookings.show', $booking)->withSuccess('Booking status updated successfully!');
+    }
+
+    /**
+     * Move a Confirmed (paid) booking to a new date/time in the same room.
+     *
+     * The end time is derived from the original duration and the discount snapshot
+     * is left untouched, so the customer's locked total never changes. Every
+     * reschedule appends a line to `note`, which doubles as the change log.
+     */
+    public function reschedule(RescheduleBookingRequest $request, Booking $booking)
+    {
+        if ($booking->status !== config('global.booking_status.confirmed')[0]) {
+            return back()->withError(config('messages.not_allowed'));
+        }
+
+        $validated = $request->validated();
+        $failed_message = 'Reschedule failed. ';
+
+        $booking->load('room', 'layout');
+
+        $hours = (int) $booking->total_hours();
+        $newStart = Carbon::createFromFormat('H:i:s', $validated['start_time']);
+        $newEnd = $newStart->copy()->addHours($hours);
+
+        if ($newEnd->day !== $newStart->day) {
+            return back()->withError($failed_message . 'Selected start time does not leave enough hours in the day');
+        }
+
+        $availability = $this->roomAvailabilityService->verifyRoomAvailability(
+            $booking->room,
+            $booking->qty,
+            $validated['start_date'],
+            $newStart->format('H:i:s'),
+            $newEnd->format('H:i:s'),
+            $booking->id
+        );
+        if (!$availability['status']) {
+            return back()->withError($failed_message . $availability['message']);
+        }
+
+        $previousDate = Carbon::parse($booking->start_date)->format('M d, Y');
+        $previousTime = substr($booking->start_time, 0, 5) . ' - ' . substr($booking->end_time, 0, 5);
+        $newDate = Carbon::parse($validated['start_date'])->format('M d, Y');
+        $newTime = $newStart->format('H:i') . ' - ' . $newEnd->format('H:i');
+
+        $logLine = sprintf(
+            '[%s by %s] Rescheduled from %s %s to %s %s.',
+            now()->format('Y-m-d H:i'),
+            Auth::user()?->name ?? 'System',
+            $previousDate,
+            $previousTime,
+            $newDate,
+            $newTime
+        );
+        if (!empty($validated['note'])) {
+            $logLine .= ' ' . trim($validated['note']);
+        }
+
+        $booking->update([
+            'start_date' => $validated['start_date'],
+            'start_time' => $newStart->format('H:i:s'),
+            'end_time' => $newEnd->format('H:i:s'),
+            'note' => trim(($booking->note ? $booking->note . "\n" : '') . $logLine),
+        ]);
+
+        Mail::to($booking->customer_email)->send(new BookingRescheduled([
+            'name' => $booking->customer_name,
+            'booking_id' => BookingService::generateBookingId($booking),
+            'previous_date' => $previousDate,
+            'previous_time' => $previousTime,
+            'booking_date' => $booking->start_date,
+            'booking_time' => $booking->start_time . ' - ' . $booking->end_time,
+            'booking_room' => $booking->room->name . ' (' . $booking->layout->name . ')',
+            'booking_note' => $booking->note,
+            'reschedule_note' => $validated['note'] ?? null,
+            'booking_room_price' => 'PHP ' . number_format($booking->room->price, 2, '.', ','),
+            'booking_total_hours' => $booking->total_hours(),
+            'booking_total_price' => 'PHP ' . number_format($booking->total_price(), 2, '.', ','),
+            ...DiscountService::mailData($booking),
+            'voucher_code' => $booking->voucher_code,
+            'qr_code' => asset('storage/vouchers/' . $booking->voucher_code . '.png'),
+        ]));
+
+        return to_route('bookings.show', $booking)->withSuccess('Booking rescheduled successfully!');
     }
 
     public function sendAcknowledgedEmail(Booking $booking)

@@ -31,6 +31,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import {
     ArrowRight,
+    CalendarClock,
     CheckCircle,
     Circle,
     CircleDashed,
@@ -42,6 +43,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import RescheduleDialog from './reschedule-dialog';
 import ShowPayment from './show-payment';
 
 type DiscountLine = { name: string; type: number; value: number; amount: number };
@@ -67,6 +69,7 @@ export default function Show({ booking }: { booking: Booking }) {
     const labelWidth = 'w-[150px]';
     const { destroy, processing: deleteProcessing } = useDelete();
     const [isCanceledDialogOpen, setIsCanceledDialogOpen] = useState(false);
+    const [isRescheduleDialogOpen, setIsRescheduleDialogOpen] = useState(false);
     const [bookingCancelReason, setBookingCancelReason] = useState(booking.cancel_reason || '');
 
     const updateStatusConfig = {
@@ -222,6 +225,17 @@ export default function Show({ booking }: { booking: Booking }) {
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         )}
+                        {bookingStatus.find((status) => status.id === booking.status)?.label ===
+                            'Confirmed' && (
+                            <Button
+                                variant="outline"
+                                disabled={isAnyProcessing}
+                                onClick={() => setIsRescheduleDialogOpen(true)}
+                            >
+                                <CalendarClock size={16} />
+                                Reschedule
+                            </Button>
+                        )}
                         {['Pending'].includes(
                             bookingStatus.find((status) => status.id === booking.status)?.label ||
                                 ''
@@ -359,7 +373,7 @@ export default function Show({ booking }: { booking: Booking }) {
                                         <TableHead colSpan={2}>Notes</TableHead>
                                     </TableRow>
                                     <TableRow>
-                                        <TableCell colSpan={2} className="whitespace-normal">
+                                        <TableCell colSpan={2} className="whitespace-pre-line">
                                             {booking.note || '-'}
                                         </TableCell>
                                     </TableRow>
@@ -721,6 +735,11 @@ export default function Show({ booking }: { booking: Booking }) {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+            <RescheduleDialog
+                booking={booking}
+                open={isRescheduleDialogOpen}
+                onOpenChange={setIsRescheduleDialogOpen}
+            />
         </AppLayout>
     );
 }

@@ -224,6 +224,23 @@ export interface PaymentProvider {
     updated_id?: number;
 }
 
+export interface ReschedulePricingSide {
+    discount_name: string | null;
+    discount_amount: number;
+    total_price: number;
+}
+
+export interface RescheduleOptions {
+    hours: number;
+    start_times: string[];
+    pricing: {
+        subtotal: number;
+        current: ReschedulePricingSide;
+        would_be: ReschedulePricingSide;
+        changed: boolean;
+    };
+}
+
 export interface Booking {
     id: number;
     booking_id: string;

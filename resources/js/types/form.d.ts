@@ -115,6 +115,12 @@ export interface BookingForm {
     expires_at: string;
 }
 
+export interface RescheduleBookingForm {
+    start_date: string;
+    start_time: string;
+    note: string;
+}
+
 export interface PaymentForm {
     id: number;
     booking_id: number | null;

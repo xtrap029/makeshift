@@ -51,6 +51,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('bookings-calendar', [BookingController::class, 'calendar'])->name('bookings.calendar');
     Route::put('bookings/{booking}/edit-status', [BookingController::class, 'updateStatus'])
         ->name('bookings.updateStatus');
+    Route::put('bookings/{booking}/reschedule', [BookingController::class, 'reschedule'])
+        ->name('bookings.reschedule');
     Route::get('bookings/{booking}/send-acknowledged-email', [BookingController::class, 'sendAcknowledgedEmail'])
         ->name('bookings.sendAcknowledgedEmail');
     Route::get('bookings/{booking}/recalculate-discount', [BookingController::class, 'recalculateDiscount'])

@@ -250,6 +250,51 @@ class DiscountService
     }
 
     /**
+     * What the booking WOULD cost if it were priced against `$newDate` — shown to
+     * staff in the reschedule dialog so they can see the locked total next to the
+     * rate the new date would normally carry. Read-only: rescheduling never
+     * rewrites the discount snapshot, so the current total stays as-is.
+     */
+    public static function previewReschedule(Booking $booking, string $newDate): array
+    {
+        $booking->loadMissing('room', 'discounts');
+
+        $subtotal = $booking->subtotal();
+
+        $current = [
+            'discount_name' => $booking->discounts->pluck('name')->implode(', ') ?: null,
+            'discount_amount' => $booking->discount_amount(),
+            'total_price' => $booking->total_price(),
+        ];
+
+        $discount = self::resolve(
+            $booking->room_id,
+            Carbon::parse($newDate)->format('Y-m-d'),
+            $booking->created_at ? Carbon::parse($booking->created_at) : null
+        );
+
+        $wouldBeAmount = 0.0;
+        if ($discount) {
+            $perHour = $discount->perHourAmount((float) $booking->room->price);
+            $wouldBeAmount = round($perHour * $booking->total_hours() * $booking->qty, 2);
+        }
+
+        $wouldBe = [
+            'discount_name' => $discount?->name,
+            'discount_amount' => $wouldBeAmount,
+            'total_price' => max(0, round($subtotal - $wouldBeAmount, 2)),
+        ];
+
+        return [
+            'subtotal' => $subtotal,
+            'current' => $current,
+            'would_be' => $wouldBe,
+            'changed' => $current['total_price'] != $wouldBe['total_price']
+                || $current['discount_name'] !== $wouldBe['discount_name'],
+        ];
+    }
+
+    /**
      * Discount fields for the customer emails. All null when the booking has no
      * discount, which is how the templates decide whether to render the rows.
      */
