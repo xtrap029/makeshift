@@ -20,6 +20,7 @@ export interface NavItem {
     href: string;
     icon?: LucideIcon | null;
     isActive?: boolean;
+    badge?: number | string | null;
     items?: NavItem[];
 }
 
@@ -28,6 +29,7 @@ export interface SharedData {
     quote: { message: string; author: string };
     auth: Auth;
     ziggy: Config & { location: string };
+    inquiryCount: number | null;
     [key: string]: unknown;
 }
 

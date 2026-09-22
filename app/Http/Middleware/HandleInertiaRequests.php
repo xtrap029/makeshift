@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Foundation\Inspiring;
+use App\Models\Booking;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
@@ -47,6 +48,11 @@ class HandleInertiaRequests extends Middleware
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
+            // Sidebar badge: open inquiries awaiting staff action. Lazy so it only
+            // runs for authenticated admin pages, never for the public site.
+            'inquiryCount' => fn() => $request->user()
+                ? Booking::where('status', config('global.booking_status.inquiry')[0])->count()
+                : null,
             'flash' => [
                 'success' => fn() => $request->session()->get('success'),
                 'error' => fn() => $request->session()->get('error'),
