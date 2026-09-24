@@ -7,7 +7,11 @@ import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Payment } from '@/types';
 import { priceDisplay } from '@/utils/formatters';
 import { Head, Link } from '@inertiajs/react';
+import { canSetPaid } from '@/utils/payments';
+import SetPaidDialog from './set-paid-dialog';
 import dayjs from 'dayjs';
+import { Check } from 'lucide-react';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
@@ -18,6 +22,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Show({ payment }: { payment: Payment }) {
     const labelWidth = 'w-[150px]';
     const { destroy, processing } = useDelete();
+    const [isSetPaidOpen, setIsSetPaidOpen] = useState(false);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -30,6 +35,18 @@ export default function Show({ payment }: { payment: Payment }) {
                         </Button>
                     </div>
                     <div className="flex gap-2">
+                        {canSetPaid(payment) && (
+                            <Button
+                                variant="outline"
+                                className="cursor-pointer"
+                                onClick={() => setIsSetPaidOpen(true)}
+                                disabled={processing}
+                                title="Mark as paid"
+                            >
+                                <Check size={16} />
+                                Set as Paid
+                            </Button>
+                        )}
                         {['Inquiry', 'Pending'].includes(
                             bookingStatus.find((status) => status.id === payment.booking.status)
                                 ?.label || ''
@@ -228,6 +245,11 @@ export default function Show({ payment }: { payment: Payment }) {
                     </div>
                 </div>
             </div>
+            <SetPaidDialog
+                payment={payment}
+                open={isSetPaidOpen}
+                onOpenChange={setIsSetPaidOpen}
+            />
         </AppLayout>
     );
 }

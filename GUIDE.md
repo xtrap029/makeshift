@@ -350,6 +350,16 @@ The Payments section is a record of all payment transactions linked to bookings.
 
 The system automatically totals all **Paid** payments for a booking to check if the full amount has been settled.
 
+**Marking a payment as paid (shortcut)**
+
+When the money arrives, you don't need to open the payment and edit it. A green check icon appears on the Payments list (and a **Set as Paid** button on the payment's own page) for any **Pending** payment belonging to a **Pending** booking.
+
+- Clicking it opens a confirmation showing exactly how much will be recorded as received — the **full billed amount**.
+- **Paid At** is pre-filled with the current date and time. You can change it, or clear it to use the current time.
+- Nothing is saved until you click **Mark as Paid**.
+- This also records the amount received, so the booking's **total paid** updates immediately and it can be moved to Confirmed once the balance is covered.
+- **Recording a partial payment?** Use **Edit** instead — the shortcut always records the full billed amount. If the payment already has a smaller amount recorded, the confirmation warns you before it is replaced.
+
 If the booking has a discount, the amount owed is the **discounted** total — not the original price. When you pick a booking on the payment form, MakeShift shows its subtotal, discount, total, amount already paid, and the **remaining balance**, and pre-fills the Amount with that balance.
 
 ---

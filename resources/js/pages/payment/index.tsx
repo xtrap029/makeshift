@@ -27,8 +27,10 @@ import { Payment, Room, type BreadcrumbItem } from '@/types';
 import { PaginatedData } from '@/types/pagination';
 import { priceDisplay } from '@/utils/formatters';
 import { Head, Link, router } from '@inertiajs/react';
+import { canSetPaid } from '@/utils/payments';
+import SetPaidDialog from './set-paid-dialog';
 import dayjs from 'dayjs';
-import { Eye, SlidersHorizontal } from 'lucide-react';
+import { Check, Eye, SlidersHorizontal } from 'lucide-react';
 import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -52,6 +54,7 @@ export default function Index({
         note: string | undefined;
     };
 }) {
+    const [setPaidTarget, setSetPaidTarget] = useState<Payment | null>(null);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [resetToken, setResetToken] = useState(0);
     const [filterData, setFilterData] = useState<{
@@ -175,6 +178,16 @@ export default function Index({
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="flex justify-end gap-2">
+                                    {canSetPaid(payment) && (
+                                        <Button
+                                            variant="ghost"
+                                            className="cursor-pointer"
+                                            title="Mark as paid"
+                                            onClick={() => setSetPaidTarget(payment)}
+                                        >
+                                            <Check />
+                                        </Button>
+                                    )}
                                     <Link
                                         className={buttonVariants({ variant: 'ghost' })}
                                         href={`/payments/${payment.id}`}
@@ -188,6 +201,11 @@ export default function Index({
                 </Table>
                 <Pagination links={payments.links} />
             </div>
+            <SetPaidDialog
+                payment={setPaidTarget}
+                open={!!setPaidTarget}
+                onOpenChange={(open) => !open && setSetPaidTarget(null)}
+            />
             <FilterDialog
                 title="Filter Payments"
                 open={isFilterOpen}

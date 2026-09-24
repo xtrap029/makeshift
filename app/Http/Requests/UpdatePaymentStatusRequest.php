@@ -23,7 +23,11 @@ class UpdatePaymentStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => 'required|string|in:' . implode(',', array_keys(config('global.payment_status'))),
+            // `sometimes`: the "Set as Paid" shortcut sends no status — it decides the
+            // target status itself and ignores anything submitted.
+            'status' => 'sometimes|required|string|in:' . implode(',', array_keys(config('global.payment_status'))),
+            // Optional on the "Set as Paid" shortcut, matching the edit form.
+            'paid_at' => 'nullable|date_format:Y-m-d\TH:i',
         ];
     }
 }

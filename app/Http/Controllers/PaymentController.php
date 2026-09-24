@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
+use App\Http\Requests\UpdatePaymentStatusRequest;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\PaymentProvider;
@@ -167,6 +168,37 @@ class PaymentController extends Controller
         $payment->update($validated);
 
         return to_route('payments.show', $payment)->withSuccess('Payment updated successfully!');
+    }
+
+    /**
+     * One-click "Set as Paid" shortcut from the payments list and detail page.
+     *
+     * Also writes `amount_paid` from `amount`: Booking::total_paid() only sums
+     * amount_paid on Paid payments, so flipping the status alone would leave the
+     * booking no closer to confirmable. Partial amounts still go through the edit
+     * form, which is why this is a shortcut and not the only path.
+     */
+    public function setPaid(UpdatePaymentStatusRequest $request, Payment $payment)
+    {
+        if ($payment->status !== config('global.payment_status.pending')[0]) {
+            return back()->withError('Payment is not pending');
+        }
+
+        // `?->` — Booking soft-deletes and this relation has no withTrashed(), so a
+        // payment can outlive its booking. Fail as a flash, not a 500.
+        if ($payment->booking?->status !== config('global.booking_status.pending')[0]) {
+            return back()->withError('Booking is not pending');
+        }
+
+        $paidAt = $request->validated()['paid_at'] ?? null;
+
+        $payment->update([
+            'status' => config('global.payment_status.paid')[0],
+            'amount_paid' => $payment->amount,
+            'paid_at' => $paidAt ?: ($payment->paid_at ?? now()),
+        ]);
+
+        return back()->withSuccess('Payment marked as paid!');
     }
 
     /**

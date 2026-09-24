@@ -62,6 +62,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('bookings/{booking}/recalculate-discount', [BookingController::class, 'recalculateDiscount'])
         ->name('bookings.recalculateDiscount');
     Route::resource('payments', PaymentController::class);
+    Route::put('payments/{payment}/set-paid', [PaymentController::class, 'setPaid'])
+        ->name('payments.setPaid');
 
     Route::get('logs/mail/export', [LogController::class, 'mailExport'])->name('logs.mail.export');
     Route::get('logs/mail', [LogController::class, 'mail'])->name('logs.mail');
