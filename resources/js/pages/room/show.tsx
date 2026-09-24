@@ -234,6 +234,49 @@ export default function Show({ room }: { room: Room }) {
                                             </div>
                                         </TableCell>
                                     </TableRow>
+                                    <TableRow>
+                                        <TableHead>Vouchers</TableHead>
+                                        <TableCell>
+                                            <div className="flex flex-wrap gap-2">
+                                                {room.vouchers && room.vouchers.length > 0
+                                                    ? room.vouchers.map((voucher) => {
+                                                          const valueLabel =
+                                                              Number(voucher.type) === 2
+                                                                  ? `${Number(voucher.value)}% OFF`
+                                                                  : `${priceDisplay(Number(voucher.value))} OFF/hr`;
+                                                          const criteria = [
+                                                              voucher.min_hours
+                                                                  ? `${voucher.min_hours}+ hrs`
+                                                                  : null,
+                                                              voucher.min_spend
+                                                                  ? `${priceDisplay(Number(voucher.min_spend))}+`
+                                                                  : null,
+                                                          ]
+                                                              .filter(Boolean)
+                                                              .join(' and ');
+                                                          return (
+                                                              <a
+                                                                  key={voucher.id}
+                                                                  href={route(
+                                                                      'vouchers.edit',
+                                                                      voucher.id
+                                                                  )}
+                                                                  target="_blank"
+                                                                  rel="noopener noreferrer"
+                                                              >
+                                                                  <Badge className="cursor-pointer gap-1.5 bg-sky-100 text-sky-700 hover:bg-sky-200">
+                                                                      {criteria || 'No minimum'}
+                                                                      <Dot className="size-3" />
+                                                                      {voucher.name} &middot;{' '}
+                                                                      {valueLabel}
+                                                                  </Badge>
+                                                              </a>
+                                                          );
+                                                      })
+                                                    : '-'}
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
                                 </TableBody>
                             </Table>
                         </div>

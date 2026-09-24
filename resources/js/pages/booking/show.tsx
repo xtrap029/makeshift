@@ -27,7 +27,7 @@ import { bookingStatus } from '@/constants';
 import { useDelete } from '@/hooks/use-delete';
 import { useUpdateStatus } from '@/hooks/use-update-status';
 import AppLayout from '@/layouts/app-layout';
-import { Booking, BreadcrumbItem } from '@/types';
+import { Booking, BreadcrumbItem, VoucherOffer, VoucherWarning } from '@/types';
 import { priceDisplay } from '@/utils/formatters';
 import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
@@ -43,9 +43,12 @@ import {
     Loader2,
     RefreshCw,
     Send,
+    Ticket,
+    TriangleAlert,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import VoucherPicker from '@/components/custom/voucher-picker';
 import RescheduleDialog from './reschedule-dialog';
 import ShowPayment from './show-payment';
 
@@ -68,12 +71,22 @@ const CANCEL_REASONS = [
     'Other',
 ];
 
-export default function Show({ booking }: { booking: Booking }) {
+export default function Show({
+    booking,
+    vouchers = [],
+    voucherWarning = null,
+}: {
+    booking: Booking;
+    vouchers?: VoucherOffer[];
+    voucherWarning?: VoucherWarning | null;
+}) {
     const labelWidth = 'w-[150px]';
     const { destroy, processing: deleteProcessing } = useDelete();
     const [isCanceledDialogOpen, setIsCanceledDialogOpen] = useState(false);
     const [isRescheduleDialogOpen, setIsRescheduleDialogOpen] = useState(false);
     const [isPendingDialogOpen, setIsPendingDialogOpen] = useState(false);
+    const [isVoucherDialogOpen, setIsVoucherDialogOpen] = useState(false);
+    const [isVoucherProcessing, setIsVoucherProcessing] = useState(false);
     const [pendingExpiresAt, setPendingExpiresAt] = useState('');
     const [bookingCancelReason, setBookingCancelReason] = useState(booking.cancel_reason || '');
 
@@ -105,6 +118,7 @@ export default function Show({ booking }: { booking: Booking }) {
         updateToCanceledProcessing ||
         updateToConfirmedProcessing ||
         isEmailProcessing ||
+        isVoucherProcessing ||
         isRecalculating;
 
     const isEditableStatus = ['Inquiry', 'Pending'].includes(
@@ -126,6 +140,21 @@ export default function Show({ booking }: { booking: Booking }) {
         } finally {
             setIsPreviewLoading(false);
         }
+    };
+
+    const VOUCHER_SOURCE = 3;
+    const appliedVoucher = booking.discounts?.find(
+        (discount) => Number(discount.source) === VOUCHER_SOURCE
+    );
+
+    const submitVoucher = (voucherId: number | null) => {
+        setIsVoucherDialogOpen(false);
+        setIsVoucherProcessing(true);
+        router.put(
+            `/bookings/${booking.id}/voucher`,
+            { voucher_id: voucherId },
+            { preserveScroll: true, onFinish: () => setIsVoucherProcessing(false) }
+        );
     };
 
     const confirmRecalculate = () => {
@@ -484,7 +513,9 @@ export default function Show({ booking }: { booking: Booking }) {
                                             {booking.discounts.map((discount, index) => (
                                                 <TableRow key={discount.id}>
                                                     <TableHead className={labelWidth}>
-                                                        Discount
+                                                        {Number(discount.source) === VOUCHER_SOURCE
+                                                            ? 'Voucher'
+                                                            : 'Discount'}
                                                         <span className="text-muted-foreground block text-xs font-normal">
                                                             {discount.name}
                                                             {Number(discount.type) === 2
@@ -497,8 +528,30 @@ export default function Show({ booking }: { booking: Booking }) {
                                                             <span className="text-green-600">
                                                                 - {priceDisplay(Number(discount.amount))}
                                                             </span>
+                                                            {Number(discount.source) ===
+                                                                VOUCHER_SOURCE &&
+                                                                voucherWarning && (
+                                                                    <Button
+                                                                        variant="destructive"
+                                                                        size="sm"
+                                                                        className="h-7"
+                                                                        disabled={isAnyProcessing}
+                                                                        onClick={() =>
+                                                                            submitVoucher(null)
+                                                                        }
+                                                                    >
+                                                                        Remove
+                                                                    </Button>
+                                                                )}
                                                             {isEditableStatus &&
-                                                                index === booking.discounts.length - 1 && (
+                                                                Number(discount.source) !==
+                                                                    VOUCHER_SOURCE &&
+                                                                index ===
+                                                                    booking.discounts.findLastIndex(
+                                                                        (d) =>
+                                                                            Number(d.source) !==
+                                                                            VOUCHER_SOURCE
+                                                                    ) && (
                                                                     <Button
                                                                         variant="outline"
                                                                         size="icon"
@@ -516,7 +569,10 @@ export default function Show({ booking }: { booking: Booking }) {
                                             ))}
                                         </>
                                     )}
-                                    {isEditableStatus && !(booking.discounts?.length > 0) && (
+                                    {isEditableStatus &&
+                                        !booking.discounts?.some(
+                                            (d) => Number(d.source) !== VOUCHER_SOURCE
+                                        ) && (
                                         <TableRow>
                                             <TableHead className={labelWidth}>Discount</TableHead>
                                             <TableCell>
@@ -529,6 +585,55 @@ export default function Show({ booking }: { booking: Booking }) {
                                                     onClick={openRecalculatePreview}
                                                 >
                                                     <RefreshCw className="size-3.5" />
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                    {isEditableStatus && voucherWarning && (
+                                        <TableRow>
+                                            <TableCell colSpan={2} className="whitespace-normal">
+                                                <div className="flex items-start gap-2 rounded-lg border border-amber-300 bg-amber-50 p-3 text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
+                                                    <TriangleAlert className="mt-0.5 size-4 shrink-0" />
+                                                    <div className="text-sm">
+                                                        <div className="font-medium">
+                                                            &ldquo;{voucherWarning.name}&rdquo; no
+                                                            longer qualifies for this booking
+                                                        </div>
+                                                        <ul className="mt-1 list-inside list-disc text-xs">
+                                                            {voucherWarning.reasons.map(
+                                                                (reason, index) => (
+                                                                    <li key={index}>{reason}</li>
+                                                                )
+                                                            )}
+                                                        </ul>
+                                                        <p className="mt-1 text-xs">
+                                                            It is still deducting{' '}
+                                                            {priceDisplay(voucherWarning.amount)}.
+                                                            The price won&apos;t change until you
+                                                            remove or replace it.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                    {isEditableStatus && (vouchers.length > 0 || voucherWarning) && (
+                                        <TableRow>
+                                            <TableHead className={labelWidth}>
+                                                Voucher
+                                                <span className="text-muted-foreground block text-xs font-normal">
+                                                    Customer-selected offer
+                                                </span>
+                                            </TableHead>
+                                            <TableCell>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    disabled={isAnyProcessing}
+                                                    onClick={() => setIsVoucherDialogOpen(true)}
+                                                >
+                                                    <Ticket size={14} />
+                                                    {appliedVoucher ? 'Change' : 'Apply'} voucher
                                                 </Button>
                                             </TableCell>
                                         </TableRow>
@@ -813,6 +918,42 @@ export default function Show({ booking }: { booking: Booking }) {
                         >
                             {recalcPreview?.changed ? 'Apply Change' : 'Recalculate Anyway'}
                         </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={isVoucherDialogOpen} onOpenChange={setIsVoucherDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Apply Voucher</DialogTitle>
+                        <DialogDescription>
+                            Vouchers stack on top of the automatic discount — both come off the
+                            original room rate. Greyed out vouchers don&apos;t meet this
+                            booking&apos;s criteria.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <VoucherPicker
+                        vouchers={vouchers}
+                        selectedId={appliedVoucher?.voucher_id ?? null}
+                        onSelect={submitVoucher}
+                        disabled={isVoucherProcessing}
+                    />
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => setIsVoucherDialogOpen(false)}
+                            disabled={isVoucherProcessing}
+                        >
+                            Close
+                        </Button>
+                        {appliedVoucher && (
+                            <Button
+                                variant="destructive"
+                                onClick={() => submitVoucher(null)}
+                                disabled={isVoucherProcessing}
+                            >
+                                Remove voucher
+                            </Button>
+                        )}
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

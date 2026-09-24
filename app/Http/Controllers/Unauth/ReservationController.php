@@ -15,7 +15,9 @@ use App\Mail\InquirySubmitted;
 use App\Models\Settings;
 use Illuminate\Support\Facades\Mail;
 use App\Services\BookingService;
+use Carbon\Carbon;
 use App\Services\DiscountService;
+use App\Services\OfferService;
 
 class ReservationController extends Controller
 {
@@ -56,10 +58,15 @@ class ReservationController extends Controller
 
         $legal = Settings::whereIn('key', ['LEGAL_TERMS', 'LEGAL_PRIVACY', 'LEGAL_RULES'])->pluck('value', 'key');
 
+        $hours = Carbon::createFromFormat('H:i', $validated['start_time'])
+            ->diffInMinutes(Carbon::createFromFormat('H:i', $validated['end_time'])) / 60;
+
         return Inertia::render('unauth/reservation/inquire', [
             'inquiry' => $validated,
             'room' => $room,
             'discount' => DiscountService::preview($room, $validated['date']),
+            'vouchers' => OfferService::availableFor($room, $validated['date'], $hours),
+            'selectedVoucherId' => isset($validated['voucher_id']) ? (int) $validated['voucher_id'] : null,
             'sources' => Source::orderBy('name')->get(['id', 'name']),
             'legal' => [
                 'terms' => $legal['LEGAL_TERMS'] ?? null,
@@ -115,6 +122,7 @@ class ReservationController extends Controller
 
             // Resolved server-side — the client-side preview is never trusted.
             DiscountService::applyTo($booking);
+            OfferService::applyTo($booking, $validated['voucher_id'] ?? null);
 
             Mail::to($validated['email'])->send(new InquirySubmitted([
                 'name' => $validated['name'],

@@ -38,6 +38,11 @@ class Room extends Model
         return $this->belongsToMany(Discount::class, 'discount_room');
     }
 
+    public function vouchers()
+    {
+        return $this->belongsToMany(Voucher::class, 'room_voucher');
+    }
+
     public function image()
     {
         return $this->hasOne(RoomImage::class)->where('is_main', true);

@@ -74,11 +74,69 @@ export interface Room {
     discount?: DiscountPreview | null;
     /** Ongoing and upcoming discount records (admin room show page). */
     discounts?: Discount[];
+    /** Active voucher records covering this room (admin room show page). */
+    vouchers?: Voucher[];
     created_at?: string;
     updated_at?: string;
     deleted_at?: string | null;
     owner_id?: number;
     updated_id?: number;
+}
+
+/** An admin-managed voucher record (admin CRUD pages). */
+export interface Voucher {
+    id: number;
+    name: string;
+    description: string | null;
+    /** 1 = Fixed Amount, 2 = Percentage */
+    type: number;
+    value: number;
+    min_hours: number | null;
+    min_spend: number | null;
+    book_from: string;
+    book_to: string;
+    reserve_from: string;
+    reserve_to: string;
+    priority: number;
+    is_active: boolean;
+    rooms?: Room[];
+}
+
+/**
+ * A voucher running on a room, without the parts that depend on how many hours
+ * are booked. The inquiry modal evaluates these client-side as the customer
+ * changes their selection — see utils/vouchers.ts.
+ */
+export interface VoucherCatalogEntry {
+    id: number;
+    name: string;
+    description: string | null;
+    type: number;
+    value: number;
+    min_hours: number | null;
+    min_spend: number | null;
+    criteria_label: string;
+    label: string;
+    per_hour_amount: number;
+    room_price: number;
+}
+
+/**
+ * A voucher as offered to a customer for one specific booking — carries the
+ * computed savings and whether its criteria are met yet.
+ */
+export interface VoucherOffer extends VoucherCatalogEntry {
+    total_savings: number;
+    qualifies: boolean;
+    shortfall: { hours: number | null; spend: number | null } | null;
+}
+
+/** A claimed voucher that a later booking edit has invalidated. */
+export interface VoucherWarning {
+    name: string;
+    amount: number;
+    current_amount: number | null;
+    reasons: string[];
 }
 
 export interface Discount {
@@ -125,11 +183,12 @@ export interface BookingDiscount {
     id: number;
     booking_id: number;
     discount_id: number | null;
+    voucher_id: number | null;
     name: string;
     type: number;
     value: number;
     amount: number;
-    /** 1 = automatic, 2 = coupon code */
+    /** 1 = automatic, 2 = coupon code, 3 = customer-selected voucher */
     source: number;
 }
 

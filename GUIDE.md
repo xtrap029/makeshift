@@ -16,6 +16,7 @@
    - [Amenities](#amenities)
    - [Layouts](#layouts)
    - [Discounts](#discounts)
+   - [Vouchers](#vouchers)
 6. [Availability Module](#6-availability-module)
    - [Schedules](#schedules)
    - [Schedule Overrides](#schedule-overrides)
@@ -172,6 +173,34 @@ Go to **Spaces → Discounts** to add or manage them.
 - **Editing a booking does *not* automatically re-check the discount.** Changing a note, a phone number, or any other field leaves the price exactly as it was — the total won't silently shift because of an unrelated edit.
 - **If you change a booking's room, date, time, or quantity, recalculate the discount yourself.** On the booking detail page (Inquiry and Pending bookings only), a small refresh icon sits beside the discount amount — click it to re-check the current room and dates against active discounts. A dialog shows the **Before** and **After** side by side (discount and total price) so you can review the change before confirming it; nothing is applied until you click **Apply Change**. Until you do, the total keeps using the discount that was worked out before your edit — even if it no longer makes sense for the new room or date. Confirmed bookings never show this icon; their price is permanently locked in.
 - **Deleting a discount is safe.** Past bookings keep their discount name and amount on record.
+
+---
+
+### Vouchers
+
+Vouchers are offers the **customer chooses** — typically a reward for a longer stay or a bigger booking ("Book 6+ hours, get 10% off"). Unlike a Discount, a voucher is never applied automatically: the customer sees it on the inquiry page and taps it to claim it.
+
+Go to **Spaces → Vouchers** to add or manage them.
+
+Most fields work exactly like a Discount (name, type, amount/percentage, rooms, both date ranges, status). The differences:
+
+| Field | What it means |
+|---|---|
+| Minimum Hours | The customer must book at least this many hours before the voucher unlocks. Leave blank for no hour requirement |
+| Minimum Spend | The booking total (**before** any automatic discount) must reach this amount. Leave blank for no spend requirement |
+| Priority | Ordering only — vouchers never compete with each other. Lower numbers appear first in the customer's list |
+
+**Important things to know:**
+
+- **Set at least one criterion.** A voucher needs a minimum hours, a minimum spend, or both. When both are set, the booking must meet **both**.
+- **Vouchers stack on top of discounts.** If a room has an active promo and the customer claims a voucher, they get both. Both come off the **original** room rate, so they never compound: on a ₱1,000/hour room, a 20% promo plus a ₱100 voucher gives ₱1,000 − ₱200 − ₱100 = ₱700 per hour.
+- **Only one voucher per booking.** Claiming a second one replaces the first.
+- **Locked vouchers are still shown.** A voucher the customer doesn't qualify for yet appears greyed out with what's missing ("Book 6+ hours to unlock — 2 more hours"), so they can see what's within reach.
+- **Vouchers appear twice, and the choice carries over.** They show first in the **Inquire Now** pop-up on the room page, where the cards unlock and re-price live as the customer changes their time range; the claimed voucher then carries through to the full inquiry form, where it can still be changed or removed. If the customer shortens their booking so a claimed voucher no longer qualifies, it is dropped automatically.
+- **Nothing is trusted from the browser.** Eligibility is re-checked when the inquiry is submitted. A voucher whose criteria aren't met is simply not applied — the booking still goes through at the normal price.
+- **Staff can change it.** On an Inquiry or Pending booking, an **Apply voucher** button beside the price lets staff claim, swap, or remove the voucher. Confirmed bookings are locked, like all pricing.
+- **You are warned if an edit invalidates the voucher.** Editing a booking never re-prices it on its own. So if you shorten a booking below the voucher's minimum hours, move it to a room the voucher doesn't cover, move it outside the voucher's dates, or the voucher is later deactivated or deleted, an amber warning appears on the booking with the exact reason and a **Remove** button. Until you act, the original amount keeps being deducted — the warning is there so that is a decision, not an accident.
+- **Recalculating the discount leaves the voucher alone.** The refresh icon only re-checks the automatic promo; the claimed voucher stays on the booking and is included in the Before/After figures.
 
 ---
 
@@ -507,6 +536,7 @@ The public website is what your customers see. No login required.
 ### Contact Us Page (`/contact-us`)
 - Business contact details (email, phone, address)
 - Google Map
+- **Vouchers in the Inquire Now pop-up and on the inquiry form** — when a room has vouchers running, they appear as cards in both places, and a voucher claimed in the pop-up carries over to the form. Ones the customer qualifies for can be tapped to apply; the rest are greyed out showing what's needed to unlock them.
 - **Resend My Bookings** — customers can enter their email address to receive all their confirmed booking vouchers resent to their inbox.
 
 ---
@@ -641,6 +671,15 @@ Use this sequence to walk a customer through MakeShift from end to end. Each sec
 - Go back to the public website and open that room — show the crossed-out original price, the new rate, and the promo badge.
 - Explain: *"No promo code needed. Any booking for this room inside these dates gets the discount automatically — on the website, in the customer's email, and in the amount they owe."*
 - Mention priority: *"If two promos cover the same room, the one with the lower priority number wins — so you can schedule promos back to back without them fighting."*
+
+**Step 14c: Create a Voucher**
+- Go to **Spaces → Vouchers** → create a new voucher.
+- Name it (e.g., "Long Stay Reward"), pick **Percentage**, enter 10, and set **Minimum Hours** to 6.
+- Assign it to the same room, set both date ranges as in Step 14b, toggle **Active** ON and save.
+- Go to the public website and open that room, then click **Inquire Now**. With a **4-hour** slot picked, show the voucher greyed out with "Book 6+ hours to unlock — 2 more hours".
+- Extend the slot to **6 hours** without closing the pop-up — the card unlocks as you do. Click it and show the total drop right there.
+- Continue to the full inquiry form and point out that the voucher came along and is still shown in the price breakdown.
+- Explain: *"The promo was applied automatically; this one the customer earns and claims. They stack — both come off the original rate — so a long booking gets both."*
 
 ---
 

@@ -204,6 +204,11 @@ class DiscountService
 
         $subtotal = $booking->subtotal();
 
+        // Recalculating only rewrites the automatic row; a claimed voucher stays put,
+        // so it has to be carried onto the "after" side too or the preview would show
+        // the customer losing it.
+        $voucherAmount = OfferService::appliedAmount($booking);
+
         $before = [
             'discounts' => $booking->discounts->map(fn ($d) => [
                 'name' => $d->name,
@@ -221,23 +226,33 @@ class DiscountService
             $booking->created_at ? Carbon::parse($booking->created_at) : null
         );
 
-        $afterDiscounts = [];
+        $afterDiscounts = $booking->discounts
+            ->where('source', config('global.discount_source.voucher')[0])
+            ->map(fn ($d) => [
+                'name' => $d->name,
+                'type' => $d->type,
+                'value' => (float) $d->value,
+                'amount' => (float) $d->amount,
+            ])->values()->all();
+
         $afterAmount = 0.0;
         if ($discount) {
             $perHour = $discount->perHourAmount((float) $booking->room->price);
             $afterAmount = round($perHour * $booking->total_hours() * $booking->qty, 2);
-            $afterDiscounts[] = [
+            array_unshift($afterDiscounts, [
                 'name' => $discount->name,
                 'type' => $discount->type,
                 'value' => (float) $discount->value,
                 'amount' => $afterAmount,
-            ];
+            ]);
         }
+
+        $afterTotalDeduction = round($afterAmount + $voucherAmount, 2);
 
         $after = [
             'discounts' => $afterDiscounts,
-            'discount_amount' => $afterAmount,
-            'total_price' => max(0, round($subtotal - $afterAmount, 2)),
+            'discount_amount' => $afterTotalDeduction,
+            'total_price' => max(0, round($subtotal - $afterTotalDeduction, 2)),
         ];
 
         return [
@@ -273,16 +288,29 @@ class DiscountService
             $booking->created_at ? Carbon::parse($booking->created_at) : null
         );
 
+        // A claimed voucher is never re-resolved on a reschedule — it rides along
+        // on both sides so the comparison isolates the automatic promo.
+        $voucherAmount = OfferService::appliedAmount($booking);
+
         $wouldBeAmount = 0.0;
         if ($discount) {
             $perHour = $discount->perHourAmount((float) $booking->room->price);
             $wouldBeAmount = round($perHour * $booking->total_hours() * $booking->qty, 2);
         }
 
+        $wouldBeTotalDeduction = round($wouldBeAmount + $voucherAmount, 2);
+
+        $wouldBeNames = $booking->discounts
+            ->where('source', config('global.discount_source.voucher')[0])
+            ->pluck('name')
+            ->prepend($discount?->name)
+            ->filter()
+            ->implode(', ');
+
         $wouldBe = [
-            'discount_name' => $discount?->name,
-            'discount_amount' => $wouldBeAmount,
-            'total_price' => max(0, round($subtotal - $wouldBeAmount, 2)),
+            'discount_name' => $wouldBeNames ?: null,
+            'discount_amount' => $wouldBeTotalDeduction,
+            'total_price' => max(0, round($subtotal - $wouldBeTotalDeduction, 2)),
         ];
 
         return [

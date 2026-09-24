@@ -5,6 +5,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\DiscountController;
+use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\LayoutController;
 use App\Http\Controllers\SourceController;
 use App\Http\Controllers\LogController;
@@ -43,6 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('amenities', AmenityController::class);
     Route::resource('layouts', LayoutController::class);
     Route::resource('discounts', DiscountController::class);
+    Route::resource('vouchers', VoucherController::class);
     Route::resource('sources', SourceController::class);
     Route::resource('schedules', ScheduleController::class);
     Route::resource('overrides', ScheduleOverrideController::class);
@@ -55,6 +57,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('bookings.reschedule');
     Route::get('bookings/{booking}/send-acknowledged-email', [BookingController::class, 'sendAcknowledgedEmail'])
         ->name('bookings.sendAcknowledgedEmail');
+    Route::put('bookings/{booking}/voucher', [BookingController::class, 'updateVoucher'])
+        ->name('bookings.updateVoucher');
     Route::get('bookings/{booking}/recalculate-discount', [BookingController::class, 'recalculateDiscount'])
         ->name('bookings.recalculateDiscount');
     Route::resource('payments', PaymentController::class);

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Layout;
 use App\Models\Room;
 use App\Services\DiscountService;
+use App\Services\OfferService;
 use App\Services\RoomAvailabilityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -112,6 +113,10 @@ class SpaceController extends Controller
         return Inertia::render('unauth/space/show', [
             'room' => $room,
             'availableTimes' => $availableTimes,
+            // Hours aren't chosen yet, so the modal evaluates these client-side.
+            'vouchers' => $request->date
+                ? OfferService::catalogFor($room, $request->date)
+                : [],
             'selectedDate' => $request->date,
         ]);
     }

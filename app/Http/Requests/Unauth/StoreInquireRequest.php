@@ -26,6 +26,9 @@ class StoreInquireRequest extends FormRequest
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i',
             'layout' => 'required|exists:layouts,name',
+            // Carried from the inquiry modal through the GET hop, then re-validated
+            // for real in OfferService::applyTo() on submit.
+            'voucher_id' => 'nullable|integer|exists:vouchers,id',
         ];
 
         /** @var \Illuminate\Http\Request $this */

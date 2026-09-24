@@ -15,12 +15,14 @@ import {
 import IconDynamic from '@/components/ui/icon-dynamic';
 import { Select, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 import AppLayoutHeaderCustomer from '@/layouts/app/app-header-layout-customer';
-import { Room } from '@/types';
+import { Room, VoucherCatalogEntry } from '@/types';
 import { InquiryForm } from '@/types/form';
+import VoucherPicker from '@/components/custom/voucher-picker';
+import { evaluateVouchers } from '@/utils/vouchers';
 import { priceDisplay, promoDateDisplay } from '@/utils/formatters';
 import { Head, router } from '@inertiajs/react';
 import { Check, ChevronsRight, LayoutGrid, SquareDashed, Users } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { z } from 'zod';
 
 const validationSchema = z.object({
@@ -34,10 +36,12 @@ export default function Show({
     room,
     availableTimes,
     selectedDate,
+    vouchers = [],
 }: {
     room: Room;
     availableTimes: string[];
     selectedDate: string;
+    vouchers?: VoucherCatalogEntry[];
 }) {
     const dialogFocusRef = useRef<HTMLButtonElement>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -48,6 +52,8 @@ export default function Show({
         end_time: '',
         layout: '',
     });
+
+    const [selectedVoucherId, setSelectedVoucherId] = useState<number | null>(null);
 
     const [zodErrors, setZodErrors] = useState<Record<string, string>>({});
 
@@ -131,6 +137,7 @@ export default function Show({
 
         router.get(route('reservation.inquire', room.name), {
             ...inquiryForm,
+            ...(selectedVoucher ? { voucher_id: selectedVoucher.id } : {}),
         });
         setDialogOpen(false);
     };
@@ -146,15 +153,33 @@ export default function Show({
             : 0;
     const originalTotal = room.price * selectedHours;
 
+    const voucherOffers = useMemo(
+        () => evaluateVouchers(vouchers, selectedHours),
+        [vouchers, selectedHours]
+    );
+
+    const selectedVoucher =
+        voucherOffers.find((voucher) => voucher.id === selectedVoucherId && voucher.qualifies) ??
+        null;
+
+    // Shrinking the time range can push the claimed voucher back out of reach.
     useEffect(() => {
-        setTotalPrice(
+        if (selectedVoucherId && !selectedVoucher) {
+            setSelectedVoucherId(null);
+        }
+    }, [selectedVoucherId, selectedVoucher]);
+
+    useEffect(() => {
+        const base =
             inquiryForm.end_time && inquiryForm.start_time
                 ? effectiveRate *
-                      (Number(inquiryForm.end_time.split(':')[0]) -
-                          Number(inquiryForm.start_time.split(':')[0]))
-                : 0
-        );
-    }, [inquiryForm.end_time, inquiryForm.start_time, effectiveRate]);
+                  (Number(inquiryForm.end_time.split(':')[0]) -
+                      Number(inquiryForm.start_time.split(':')[0]))
+                : 0;
+
+        // Both the promo and the voucher come off the original rate — additive.
+        setTotalPrice(Math.max(0, base - (selectedVoucher?.total_savings ?? 0)));
+    }, [inquiryForm.end_time, inquiryForm.start_time, effectiveRate, selectedVoucher]);
 
     return (
         <AppLayoutHeaderCustomer page={room.name} rightIcon="arrow-left" rightIconHref="/spaces">
@@ -414,6 +439,18 @@ export default function Show({
                                                 className="ml-3"
                                             />
                                         </div>
+                                        {voucherOffers.length > 0 && (
+                                            <div className="sm:col-span-2">
+                                                <div className="text-muted-foreground mb-1 ml-3">
+                                                    Vouchers
+                                                </div>
+                                                <VoucherPicker
+                                                    vouchers={voucherOffers}
+                                                    selectedId={selectedVoucher?.id ?? null}
+                                                    onSelect={setSelectedVoucherId}
+                                                />
+                                            </div>
+                                        )}
                                         <div className="py-4 text-center sm:col-span-2">
                                             {room.discount && (
                                                 <div className="mb-2 flex flex-wrap items-center justify-center gap-2">

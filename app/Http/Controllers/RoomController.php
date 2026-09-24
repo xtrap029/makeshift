@@ -140,6 +140,14 @@ class RoomController extends Controller
                 && $discount->book_to->format('Y-m-d') >= $today;
         });
 
+        // Same treatment for vouchers, minus the ongoing/upcoming split — a voucher
+        // is claimed by the customer, so what matters here is simply that it exists.
+        $room->load(['vouchers' => function ($query) {
+            $query->where('is_active', true)
+                ->where('reserve_to', '>=', now()->format('Y-m-d'))
+                ->orderBy('reserve_from');
+        }]);
+
         $booking_date = $request->filled('booking') ? $request->booking : now()->format('Y-m-d');
 
         $room->load(['bookings' => function ($query) use ($booking_date) {

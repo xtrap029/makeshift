@@ -24,6 +24,7 @@ return [
     'discount_source' => [
         'auto' => [1, 'Automatic'],
         'code' => [2, 'Coupon Code'],
+        'voucher' => [3, 'Voucher'],
     ],
     'settings' => [
         'logo_mimes' => 'png',

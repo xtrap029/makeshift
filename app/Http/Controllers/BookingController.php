@@ -6,6 +6,7 @@ use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
 use App\Http\Requests\UpdateBookingStatusRequest;
 use App\Http\Requests\RescheduleBookingRequest;
+use App\Http\Requests\ApplyVoucherRequest;
 use App\Models\Booking;
 use App\Models\Layout;
 use App\Models\Room;
@@ -18,6 +19,7 @@ use App\Mail\InquiryCancelled;
 use App\Mail\BookingRescheduled;
 use App\Services\BookingService;
 use App\Services\DiscountService;
+use App\Services\OfferService;
 use App\Services\VoucherService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -158,8 +160,26 @@ class BookingController extends Controller
         $booking->discount_amount = $booking->discount_amount();
         $booking->total_price = $booking->total_price();
 
+        $isEditable = in_array($booking->status, [
+            config('global.booking_status.inquiry')[0],
+            config('global.booking_status.pending')[0],
+        ]);
+
         return Inertia::render('booking/show', [
             'booking' => $booking,
+            // Staff can swap the claimed voucher while the price is still movable.
+            'vouchers' => $isEditable && $booking->room
+                ? OfferService::availableFor(
+                    $booking->room,
+                    Carbon::parse($booking->start_date)->format('Y-m-d'),
+                    $booking->total_hours(),
+                    $booking->qty,
+                    $booking->created_at ? Carbon::parse($booking->created_at) : null
+                )
+                : [],
+            // Flags a voucher that an edit has invalidated. Nothing is auto-removed —
+            // staff decide, same as the discount recalculation.
+            'voucherWarning' => $isEditable ? OfferService::staleApplied($booking) : null,
         ]);
     }
 
@@ -195,6 +215,38 @@ class BookingController extends Controller
         $booking->update($validated);
 
         return to_route('bookings.show', $booking)->withSuccess('Booking updated successfully!');
+    }
+
+    /**
+     * Claim, swap, or clear the booking's voucher.
+     *
+     * Same gate as the discount recalculation — a Confirmed booking's price is
+     * locked, so vouchers can only move while the booking is still Inquiry or
+     * Pending. Eligibility is re-checked inside the service.
+     */
+    public function updateVoucher(ApplyVoucherRequest $request, Booking $booking)
+    {
+        if (
+            $booking->status !== config('global.booking_status.inquiry')[0]
+            && $booking->status !== config('global.booking_status.pending')[0]
+        ) {
+            return back()->withError(config('messages.not_allowed'));
+        }
+
+        $voucherId = $request->validated()['voucher_id'] ?? null;
+
+        OfferService::applyTo($booking, $voucherId);
+
+        // Row presence, not amount — a zero-value voucher is still legitimately applied.
+        $applied = $booking->discounts
+            ->where('source', config('global.discount_source.voucher')[0])
+            ->isNotEmpty();
+
+        if ($voucherId && !$applied) {
+            return back()->withError('That voucher is not available for this booking.');
+        }
+
+        return back()->withSuccess($voucherId ? 'Voucher applied successfully!' : 'Voucher removed successfully!');
     }
 
     /**

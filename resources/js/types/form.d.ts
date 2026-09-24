@@ -50,6 +50,23 @@ export interface DiscountForm {
     rooms: number[];
 }
 
+export interface VoucherForm {
+    id?: number;
+    name: string;
+    description?: string;
+    type: number;
+    value: number | string;
+    min_hours: number | string;
+    min_spend: number | string;
+    book_from: string;
+    book_to: string;
+    reserve_from: string;
+    reserve_to: string;
+    priority: number | string;
+    is_active: boolean;
+    rooms: number[];
+}
+
 export interface SourceForm {
     id: number;
     name: string;
@@ -149,6 +166,7 @@ export interface InquiryForm {
     referred_by: string;
     source_id: number;
     is_subscribed: boolean;
+    voucher_id: number | null;
 }
 
 export interface WebsiteAppearanceForm {

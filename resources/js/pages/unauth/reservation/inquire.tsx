@@ -19,8 +19,9 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { formValidation } from '@/constants/form';
 import AppLayoutHeaderCustomer from '@/layouts/app/app-header-layout-customer';
-import { DiscountPreview, Room, Source } from '@/types';
+import { DiscountPreview, Room, Source, VoucherOffer } from '@/types';
 import { InquiryForm, LegalAppearanceForm } from '@/types/form';
+import VoucherPicker from '@/components/custom/voucher-picker';
 import { priceDisplay } from '@/utils/formatters';
 import { Head, router, useForm } from '@inertiajs/react';
 import dayjs from 'dayjs';
@@ -62,12 +63,16 @@ export default function Inquire({
     inquiry,
     room,
     discount,
+    vouchers,
+    selectedVoucherId: initialVoucherId,
     sources,
     legal,
 }: {
     inquiry: InquiryForm;
     room: Room;
     discount: DiscountPreview | null;
+    vouchers: VoucherOffer[];
+    selectedVoucherId: number | null;
     sources: Source[];
     legal: LegalAppearanceForm;
 }) {
@@ -77,7 +82,18 @@ export default function Inquire({
             : 0;
     const subtotal = room.price * hours;
     const discountAmount = discount ? discount.per_hour_amount * hours : 0;
-    const totalPrice = Math.max(0, subtotal - discountAmount);
+
+    // Carried over from the inquiry modal, but only honoured if it still qualifies.
+    const [selectedVoucherId, setSelectedVoucherId] = useState<number | null>(
+        vouchers.some((voucher) => voucher.id === initialVoucherId && voucher.qualifies)
+            ? initialVoucherId
+            : null
+    );
+    const selectedVoucher = vouchers.find((voucher) => voucher.id === selectedVoucherId) ?? null;
+    // Both deductions come off the original rate — additive, never compounding.
+    const voucherAmount = selectedVoucher ? selectedVoucher.total_savings : 0;
+
+    const totalPrice = Math.max(0, subtotal - discountAmount - voucherAmount);
 
     const { data, setData, processing, errors, post } = useForm<Partial<InquiryForm>>({
         name: '',
@@ -88,6 +104,11 @@ export default function Inquire({
         end_time: inquiry.end_time,
         layout: inquiry.layout,
         note: '',
+        voucher_id: vouchers.some(
+            (voucher) => voucher.id === initialVoucherId && voucher.qualifies
+        )
+            ? initialVoucherId
+            : null,
         referred_by: '',
         source_id: undefined,
         is_subscribed: false,
@@ -250,6 +271,20 @@ export default function Inquire({
                                             {priceDisplay(discountAmount)}
                                         </div>
                                     </div>
+                                    {selectedVoucher && (
+                                        <div className="flex flex-row gap-2">
+                                            <div className="flex flex-1 flex-col gap-2">
+                                                Voucher
+                                                <span className="-mt-2 text-xs text-green-600">
+                                                    {selectedVoucher.name} (
+                                                    {selectedVoucher.label})
+                                                </span>
+                                            </div>
+                                            <div className="flex items-end text-right text-green-600">
+                                                - {priceDisplay(voucherAmount)}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="flex flex-1 flex-row items-center border-t border-gray-200 pt-3">
                                     <div className="font-bold">Total Price</div>
@@ -366,6 +401,24 @@ export default function Inquire({
                             </Select>
                             <InputError message={errors.source_id} className="ml-3" />
                         </div>
+                        {vouchers.length > 0 && (
+                            <div className="col-span-2 flex flex-col gap-2">
+                                <div className="font-bold">Vouchers</div>
+                                <p className="text-muted-foreground -mt-1 text-sm">
+                                    Pick one to apply on top of any promo already included. Greyed
+                                    out vouchers show what you&apos;d need to book to unlock them.
+                                </p>
+                                <VoucherPicker
+                                    vouchers={vouchers}
+                                    selectedId={selectedVoucherId}
+                                    onSelect={(id) => {
+                                        setSelectedVoucherId(id);
+                                        setData('voucher_id', id);
+                                    }}
+                                    disabled={processing}
+                                />
+                            </div>
+                        )}
                         <div className="col-span-2 flex items-center gap-2">
                             <input
                                 id="is_subscribed"

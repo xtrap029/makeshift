@@ -13,6 +13,7 @@ class BookingDiscount extends Model
     protected $fillable = [
         'booking_id',
         'discount_id',
+        'voucher_id',
         'name',
         'type',
         'value',
@@ -28,5 +29,10 @@ class BookingDiscount extends Model
     public function discount()
     {
         return $this->belongsTo(Discount::class)->withTrashed();
+    }
+
+    public function voucher()
+    {
+        return $this->belongsTo(Voucher::class)->withTrashed();
     }
 }
