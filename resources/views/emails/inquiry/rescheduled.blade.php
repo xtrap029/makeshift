@@ -62,10 +62,18 @@
                     <span style="color: #4a5568; font-weight: 500;">Subtotal:&nbsp;</span>
                     <span style="color: #2d3748; font-weight: 600;">{{ $data['booking_subtotal'] }}</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                    <span style="color: #4a5568; font-weight: 500;">Discount ({{ $data['booking_discount_name'] }}):&nbsp;</span>
-                    <span style="color: #48bb78; font-weight: 600;">- {{ $data['booking_discount'] }}</span>
-                </div>
+                @foreach ($data['booking_deductions'] ?? [] as $deduction)
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <span style="color: #4a5568; font-weight: 500;">{{ $deduction['label'] }} ({{ $deduction['name'] }}):&nbsp;</span>
+                        <span style="color: #48bb78; font-weight: 600;">- {{ $deduction['amount'] }}</span>
+                    </div>
+                @endforeach
+                @if (empty($data['booking_deductions']))
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <span style="color: #4a5568; font-weight: 500;">Discount ({{ $data['booking_discount_name'] }}):&nbsp;</span>
+                        <span style="color: #48bb78; font-weight: 600;">- {{ $data['booking_discount'] }}</span>
+                    </div>
+                @endif
             @endif
             <div style="display: flex; justify-content: space-between; margin-bottom: 0;">
                 <span style="color: #4a5568; font-weight: 500;">Total Price (unchanged):&nbsp;</span>

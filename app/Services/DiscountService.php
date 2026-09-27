@@ -335,13 +335,27 @@ class DiscountService
                 'booking_subtotal' => null,
                 'booking_discount' => null,
                 'booking_discount_name' => null,
+                'booking_deductions' => [],
             ];
         }
+
+        $voucherSource = config('global.discount_source.voucher')[0];
+
+        // One row per deduction so an automatic promo and a customer-claimed voucher
+        // are named for what they are. The two legacy keys stay populated — they are
+        // the combined figure, still used as the "any deduction at all?" flag in the
+        // templates and by anything that hasn't moved to the itemised list.
+        $deductions = $booking->discounts->map(fn ($d) => [
+            'label' => (int) $d->source === $voucherSource ? 'Voucher' : 'Discount',
+            'name' => $d->name,
+            'amount' => 'PHP ' . number_format((float) $d->amount, 2, '.', ','),
+        ])->values()->all();
 
         return [
             'booking_subtotal' => 'PHP ' . number_format($booking->subtotal(), 2, '.', ','),
             'booking_discount' => 'PHP ' . number_format($booking->discount_amount(), 2, '.', ','),
             'booking_discount_name' => $booking->discounts->pluck('name')->implode(', '),
+            'booking_deductions' => $deductions,
         ];
     }
 

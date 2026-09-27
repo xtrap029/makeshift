@@ -212,7 +212,19 @@ class BookingController extends Controller
 
         $validated = $request->validated();
 
+        $roomChanged = isset($validated['room_id'])
+            && (int) $validated['room_id'] !== (int) $booking->room_id
+            && $booking->discounts()->exists();
+
         $booking->update($validated);
+
+        // The model clears deductions on a room change (they were priced against the
+        // old room); say so, since the total moves as a result.
+        if ($roomChanged) {
+            return to_route('bookings.show', $booking)->withSuccess(
+                'Booking updated successfully! The discount and voucher were cleared because the room changed — re-apply them if needed.'
+            );
+        }
 
         return to_route('bookings.show', $booking)->withSuccess('Booking updated successfully!');
     }
@@ -335,7 +347,7 @@ class BookingController extends Controller
                     'booking_id' => BookingService::generateBookingId($booking),
                     'booking_date' => $booking->start_date,
                     'booking_time' => $booking->start_time . ' - ' . $booking->end_time,
-                    'booking_room' => $booking->room->name . ' (' . $booking->layout->name . ')',
+                    'booking_room' => $booking->room->name . ' (' . ($booking->layout?->name ?? 'No layout') . ')',
                     'booking_note' => $booking->note,
                     'booking_room_price' => 'PHP ' . number_format($booking->room->price, 2, '.', ','),
                     'booking_total_hours' => $booking->total_hours(),
@@ -446,7 +458,7 @@ class BookingController extends Controller
             'previous_time' => $previousTime,
             'booking_date' => $booking->start_date,
             'booking_time' => $booking->start_time . ' - ' . $booking->end_time,
-            'booking_room' => $booking->room->name . ' (' . $booking->layout->name . ')',
+            'booking_room' => $booking->room->name . ' (' . ($booking->layout?->name ?? 'No layout') . ')',
             'booking_note' => $booking->note,
             'reschedule_note' => $validated['note'] ?? null,
             'booking_room_price' => 'PHP ' . number_format($booking->room->price, 2, '.', ','),
@@ -484,7 +496,7 @@ class BookingController extends Controller
             'amount' => 'PHP ' . number_format($booking->total_price(), 2, '.', ','),
             'deadline' => $booking->expires_at,
             'booking_id' => BookingService::generateBookingId($booking),
-            'booking_room' => $booking->room->name . ' (' . $booking->layout->name . ')',
+            'booking_room' => $booking->room->name . ' (' . ($booking->layout?->name ?? 'No layout') . ')',
             'booking_date' => $booking->start_date,
             'booking_time' => $booking->start_time . ' - ' . $booking->end_time,
             'booking_note' => $booking->note,

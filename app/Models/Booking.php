@@ -36,6 +36,27 @@ class Booking extends Model
 
     protected $appends = ['booking_id'];
 
+    /**
+     * Drop the frozen deduction rows when the booking moves to a different room.
+     *
+     * Editing a booking deliberately never re-prices it — but a deduction computed
+     * against another room's hourly rate is not a stale figure, it is a void one:
+     * the promo or voucher may not even cover the new room, and the frozen amount
+     * can exceed the new subtotal, which produced customer emails subtracting more
+     * than the subtotal ("PHP 72.00 less PHP 2,700.00"). Clearing them is the only
+     * state that stays coherent; staff re-apply via the recalculate icon and the
+     * voucher picker.
+     */
+    protected static function booted(): void
+    {
+        static::updated(function (Booking $booking) {
+            if ($booking->wasChanged('room_id')) {
+                $booking->discounts()->delete();
+                $booking->load('discounts');
+            }
+        });
+    }
+
     public function room()
     {
         return $this->belongsTo(Room::class)->withTrashed();
