@@ -89,10 +89,24 @@ export default function Form({
                     </Select>
                     {booking && (
                         <p className="text-muted-foreground text-xs">
-                            {Number(booking.discount_amount) > 0 && (
+                            {(Number(booking.discount_amount) > 0 ||
+                                Number(booking.adjustment_amount ?? 0) !== 0) && (
                                 <>
-                                    Subtotal {priceDisplay(Number(booking.subtotal))} &minus;
-                                    discount {priceDisplay(Number(booking.discount_amount))}
+                                    Subtotal {priceDisplay(Number(booking.subtotal))}
+                                    {Number(booking.discount_amount) > 0 && (
+                                        <>
+                                            {' '}&minus; discount{' '}
+                                            {priceDisplay(Number(booking.discount_amount))}
+                                        </>
+                                    )}
+                                    {Number(booking.adjustment_amount ?? 0) !== 0 && (
+                                        <>
+                                            {' '}
+                                            {Number(booking.adjustment_amount) < 0 ? '−' : '+'}{' '}
+                                            adjustment{' '}
+                                            {priceDisplay(Math.abs(Number(booking.adjustment_amount)))}
+                                        </>
+                                    )}
                                     {' · '}
                                 </>
                             )}

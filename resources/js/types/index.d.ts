@@ -317,6 +317,10 @@ export interface Booking {
     subtotal: number;
     discount_amount: number;
     total_price: number;
+    /** Signed manual adjustment: positive raises the total, negative lowers it. */
+    adjustment_amount: number | null;
+    /** Customer-facing reason, printed next to the adjustment in emails. */
+    adjustment_reason: string | null;
     note: string;
     referred_by: string | null;
     source: Source | null;

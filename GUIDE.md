@@ -278,6 +278,19 @@ Both views share the same **filter panel** (the sliders icon). You can filter by
 | **Expires At** | Deadline for the customer to complete payment before the booking is auto-cancelled |
 | **Voucher Code** | Auto-generated when a booking is Confirmed; used for check-in |
 
+#### Adjusting the total
+
+Sometimes the price needs to change for a reason the system can't calculate — an extra-cleaning charge, a goodwill discount, a negotiated rate. On an **Inquiry** or **Pending** booking, click **Adjust Total** (top right, beside **Edit**).
+
+- Choose **Add charge** or **Deduct**, enter the amount, and give a **reason**. The dialog shows the current total and what it will become.
+- **The reason is shown to the customer** in their emails (e.g. "Adjustment (Extra cleaning): + PHP 500.00"), so write it for them to read.
+- A booking has **one adjustment**. Saving again replaces it; use **Remove adjustment** to clear it. Every change is recorded in the Audit Log.
+- The adjustment is applied **after** any discount and voucher: *Subtotal − Discount − Voucher ± Adjustment = Total*.
+- **A deduction can't take the total below zero** — you can deduct at most the current total.
+- **It stays if you change the room.** The discount and voucher are cleared on a room change (they're worked out from the room's rate), but the adjustment is a fixed amount you chose, so it is kept.
+- The payment balance updates straight away, so the customer is asked for — and can be confirmed against — the adjusted total.
+- **Confirmed bookings are locked**, so the button doesn't appear on them.
+
 ---
 
 ### Booking Status Flow
@@ -484,7 +497,7 @@ Customize what the automated emails say to customers. Each of the four customer 
 | **Booking Canceled** | Cancellation explanation, what it means, next steps, alternative options |
 | **Booking Rescheduled** | Reuses the Booking Confirmed "Arrival instructions" section (no separate settings) |
 
-When a booking has a discount or a voucher, the Inquiry Received, Payment Required, Booking Confirmed, and Booking Rescheduled emails automatically show a **Subtotal** line above the total, then **one line per deduction** — an automatic promo is labelled *Discount*, a customer-claimed voucher is labelled *Voucher*, each with its own name and amount. So a booking with both shows both lines separately. Nothing needs to be configured — the lines simply do not appear when there is no discount.
+When a booking has a discount, a voucher, or a manual adjustment, the Inquiry Received, Payment Required, Booking Confirmed, and Booking Rescheduled emails automatically show a **Subtotal** line above the total, then **one line per item** — an automatic promo is labelled *Discount*, a customer-claimed voucher is labelled *Voucher*, and a staff adjustment is labelled *Adjustment* with its reason and a + or − sign. Every line is shown separately so the customer can see exactly how the total was reached. Nothing needs to be configured — the lines simply do not appear when there is nothing to show.
 
 You can also update:
 - **Bank account details** shown in payment emails

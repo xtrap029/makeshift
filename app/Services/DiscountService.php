@@ -252,7 +252,8 @@ class DiscountService
         $after = [
             'discounts' => $afterDiscounts,
             'discount_amount' => $afterTotalDeduction,
-            'total_price' => max(0, round($subtotal - $afterTotalDeduction, 2)),
+            // The manual adjustment isn't touched by recalculating — carry it through.
+            'total_price' => max(0, round($subtotal - $afterTotalDeduction + $booking->adjustment_value(), 2)),
         ];
 
         return [
@@ -310,7 +311,7 @@ class DiscountService
         $wouldBe = [
             'discount_name' => $wouldBeNames ?: null,
             'discount_amount' => $wouldBeTotalDeduction,
-            'total_price' => max(0, round($subtotal - $wouldBeTotalDeduction, 2)),
+            'total_price' => max(0, round($subtotal - $wouldBeTotalDeduction + $booking->adjustment_value(), 2)),
         ];
 
         return [
@@ -330,12 +331,19 @@ class DiscountService
     {
         $booking->loadMissing('discounts');
 
+        $adjustment = self::adjustmentMailData($booking);
+
         if ($booking->discounts->isEmpty()) {
             return [
-                'booking_subtotal' => null,
+                // Subtotal still shows when there's an adjustment but no discount, so
+                // the email reads Subtotal → Adjustment → Total and adds up.
+                'booking_subtotal' => $adjustment['booking_adjustment']
+                    ? 'PHP ' . number_format($booking->subtotal(), 2, '.', ',')
+                    : null,
                 'booking_discount' => null,
                 'booking_discount_name' => null,
                 'booking_deductions' => [],
+                ...$adjustment,
             ];
         }
 
@@ -356,6 +364,33 @@ class DiscountService
             'booking_discount' => 'PHP ' . number_format($booking->discount_amount(), 2, '.', ','),
             'booking_discount_name' => $booking->discounts->pluck('name')->implode(', '),
             'booking_deductions' => $deductions,
+            ...$adjustment,
+        ];
+    }
+
+    /**
+     * The manual adjustment as email fields — signed and formatted, null when none.
+     * Kept separate from booking_deductions: a surcharge isn't a deduction.
+     *
+     * @return array{booking_adjustment: ?string, booking_adjustment_reason: ?string, booking_adjustment_is_credit: bool}
+     */
+    private static function adjustmentMailData(Booking $booking): array
+    {
+        $amount = $booking->adjustment_value();
+
+        if ($amount == 0) {
+            return [
+                'booking_adjustment' => null,
+                'booking_adjustment_reason' => null,
+                'booking_adjustment_is_credit' => false,
+            ];
+        }
+
+        return [
+            'booking_adjustment' => ($amount < 0 ? '- ' : '+ ')
+                . 'PHP ' . number_format(abs($amount), 2, '.', ','),
+            'booking_adjustment_reason' => $booking->adjustment_reason,
+            'booking_adjustment_is_credit' => $amount < 0,
         ];
     }
 

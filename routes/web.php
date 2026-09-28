@@ -59,6 +59,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('bookings.sendAcknowledgedEmail');
     Route::put('bookings/{booking}/voucher', [BookingController::class, 'updateVoucher'])
         ->name('bookings.updateVoucher');
+    Route::put('bookings/{booking}/adjustment', [BookingController::class, 'updateAdjustment'])
+        ->name('bookings.updateAdjustment');
     Route::get('bookings/{booking}/recalculate-discount', [BookingController::class, 'recalculateDiscount'])
         ->name('bookings.recalculateDiscount');
     Route::resource('payments', PaymentController::class);

@@ -43,12 +43,14 @@ import {
     Loader2,
     RefreshCw,
     Send,
+    SlidersHorizontal,
     Ticket,
     TriangleAlert,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import VoucherPicker from '@/components/custom/voucher-picker';
+import AdjustTotalDialog from './adjust-total-dialog';
 import RescheduleDialog from './reschedule-dialog';
 import ShowPayment from './show-payment';
 
@@ -86,6 +88,9 @@ export default function Show({
     const [isRescheduleDialogOpen, setIsRescheduleDialogOpen] = useState(false);
     const [isPendingDialogOpen, setIsPendingDialogOpen] = useState(false);
     const [isVoucherDialogOpen, setIsVoucherDialogOpen] = useState(false);
+    const [isAdjustDialogOpen, setIsAdjustDialogOpen] = useState(false);
+    const adjustment = Number(booking.adjustment_amount ?? 0);
+    const hasAdjustment = adjustment !== 0;
     const [isVoucherProcessing, setIsVoucherProcessing] = useState(false);
     const [pendingExpiresAt, setPendingExpiresAt] = useState('');
     const [bookingCancelReason, setBookingCancelReason] = useState(booking.cancel_reason || '');
@@ -297,6 +302,17 @@ export default function Show({
                         )}
                     </div>
                     <div className="flex gap-2">
+                        {isEditableStatus && (
+                            <Button
+                                variant="outline"
+                                className="cursor-pointer"
+                                disabled={isAnyProcessing}
+                                onClick={() => setIsAdjustDialogOpen(true)}
+                            >
+                                <SlidersHorizontal size={16} />
+                                Adjust Total
+                            </Button>
+                        )}
                         {['Inquiry', 'Pending'].includes(
                             bookingStatus.find((status) => status.id === booking.status)?.label ||
                                 ''
@@ -500,16 +516,16 @@ export default function Show({
                                             x {booking.total_hours} hours x {booking.qty} spaces
                                         </TableCell>
                                     </TableRow>
+                                    {(booking.discounts?.length > 0 || hasAdjustment) && (
+                                        <TableRow>
+                                            <TableHead className={labelWidth}>Subtotal</TableHead>
+                                            <TableCell>
+                                                {priceDisplay(Number(booking.subtotal))}
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
                                     {booking.discounts?.length > 0 && (
                                         <>
-                                            <TableRow>
-                                                <TableHead className={labelWidth}>
-                                                    Subtotal
-                                                </TableHead>
-                                                <TableCell>
-                                                    {priceDisplay(Number(booking.subtotal))}
-                                                </TableCell>
-                                            </TableRow>
                                             {booking.discounts.map((discount, index) => (
                                                 <TableRow key={discount.id}>
                                                     <TableHead className={labelWidth}>
@@ -586,6 +602,22 @@ export default function Show({
                                                 >
                                                     <RefreshCw className="size-3.5" />
                                                 </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                    {hasAdjustment && (
+                                        <TableRow>
+                                            <TableHead className={labelWidth}>
+                                                Adjustment
+                                                <span className="text-muted-foreground block text-xs font-normal whitespace-normal">
+                                                    {booking.adjustment_reason}
+                                                </span>
+                                            </TableHead>
+                                            <TableCell>
+                                                <span className={adjustment < 0 ? 'text-green-600' : ''}>
+                                                    {adjustment < 0 ? '- ' : '+ '}
+                                                    {priceDisplay(Math.abs(adjustment))}
+                                                </span>
                                             </TableCell>
                                         </TableRow>
                                     )}
@@ -957,6 +989,11 @@ export default function Show({
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+            <AdjustTotalDialog
+                booking={booking}
+                open={isAdjustDialogOpen}
+                onOpenChange={setIsAdjustDialogOpen}
+            />
             <RescheduleDialog
                 booking={booking}
                 open={isRescheduleDialogOpen}

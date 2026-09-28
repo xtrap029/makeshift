@@ -32,6 +32,8 @@ class Booking extends Model
         'expires_at',
         'voucher_code',
         'voucher_sent_at',
+        'adjustment_amount',
+        'adjustment_reason',
     ];
 
     protected $appends = ['booking_id'];
@@ -104,9 +106,24 @@ class Booking extends Model
         return round((float) $this->discounts->sum('amount'), 2);
     }
 
+    /**
+     * The staff-entered manual adjustment, signed: positive raises the total,
+     * negative lowers it. Zero when none is set.
+     *
+     * Deliberately NOT named adjustment_amount(): a method sharing a column's name
+     * is treated by Eloquent as a relationship whenever that column is absent from
+     * the model's attributes (e.g. straight after create(), before a fresh()), and
+     * then throws "must return a relationship instance". getAttribute() also keeps
+     * this safe when the column hasn't been loaded.
+     */
+    public function adjustment_value(): float
+    {
+        return round((float) ($this->getAttribute('adjustment_amount') ?? 0), 2);
+    }
+
     public function total_price()
     {
-        return max(0, round($this->subtotal() - $this->discount_amount(), 2));
+        return max(0, round($this->subtotal() - $this->discount_amount() + $this->adjustment_value(), 2));
     }
 
     public function owner()

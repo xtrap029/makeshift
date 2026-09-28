@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateBookingRequest;
 use App\Http\Requests\UpdateBookingStatusRequest;
 use App\Http\Requests\RescheduleBookingRequest;
 use App\Http\Requests\ApplyVoucherRequest;
+use App\Http\Requests\AdjustBookingTotalRequest;
 use App\Models\Booking;
 use App\Models\Layout;
 use App\Models\Room;
@@ -259,6 +260,38 @@ class BookingController extends Controller
         }
 
         return back()->withSuccess($voucherId ? 'Voucher applied successfully!' : 'Voucher removed successfully!');
+    }
+
+    /**
+     * Set, replace, or clear the booking's single manual total adjustment.
+     *
+     * Same gate as the voucher and discount actions — a Confirmed booking's price
+     * is locked. The previous value is kept in the Audit Log by the Auditable trait.
+     */
+    public function updateAdjustment(AdjustBookingTotalRequest $request, Booking $booking)
+    {
+        if (
+            $booking->status !== config('global.booking_status.inquiry')[0]
+            && $booking->status !== config('global.booking_status.pending')[0]
+        ) {
+            return back()->withError(config('messages.not_allowed'));
+        }
+
+        $validated = $request->validated();
+        $amount = round((float) ($validated['amount'] ?? 0), 2);
+
+        if ($amount == 0) {
+            $booking->update(['adjustment_amount' => null, 'adjustment_reason' => null]);
+
+            return back()->withSuccess('Adjustment removed.');
+        }
+
+        $booking->update([
+            'adjustment_amount' => $amount,
+            'adjustment_reason' => trim($validated['reason']),
+        ]);
+
+        return back()->withSuccess('Total adjusted.');
     }
 
     /**
