@@ -4,7 +4,8 @@
 
 | Command | What it does |
 |---|---|
-| `/sync-docs` | Manually sync GUIDE.md, GUIDE.pdf, and HANDOVER.md to reflect current codebase |
+| `/sync-docs` | Manually sync GUIDE.md and HANDOVER.md to reflect current codebase (does not touch GUIDE.pdf) |
+| `/pdf` | Rebuild GUIDE.pdf from GUIDE.md — the only way the PDF is rebuilt; run it only when asked |
 | `/new-page` | Scaffold a new admin Inertia page (controller + route + React page + types) |
 | `/new-setting` | Add a new setting end-to-end (migration + support class + controller + frontend) |
 | `/new-mail` | Scaffold a new Mailable with BCC already wired in + Blade template |

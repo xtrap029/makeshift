@@ -19,14 +19,6 @@
             "if": "Bash(git commit *)",
             "timeout": 120,
             "statusMessage": "Updating HANDOVER.md and GUIDE.md..."
-          },
-          {
-            "type": "command",
-            "command": "cd /Users/kelvinbarsana/Projects/MakeShift && npx md-to-pdf GUIDE.md --highlight-style github < /dev/null > /dev/null 2>&1 || true",
-            "if": "Bash(git commit *)",
-            "timeout": 60,
-            "statusMessage": "Regenerating GUIDE.pdf...",
-            "async": true
           }
         ]
       }
