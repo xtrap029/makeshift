@@ -44,6 +44,10 @@ class BookingController extends Controller
     {
         $filters = $request->validated();
 
+        // Opening Bookings is what clears the new-inquiry browser badge. User isn't
+        // Auditable, so this doesn't write an Audit Log row on every visit.
+        $request->user()?->forceFill(['inquiries_seen_at' => now()])->save();
+
         $bookings = Booking::with('room', 'layout', 'source')->orderBy('created_at', 'desc');
 
         if (isset($filters['date_from'])) {

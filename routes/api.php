@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\Unauth\RoomCalendarController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
+    Route::get('/api/notifications/inquiries', [NotificationController::class, 'inquiries']);
     Route::post('/api/bookings/verify', [BookingController::class, 'verify']);
     Route::get('/api/bookings/{booking}/preview-discount', [BookingController::class, 'previewDiscount']);
     Route::get('/api/bookings/{booking}/reschedule-options', [BookingController::class, 'rescheduleOptions']);

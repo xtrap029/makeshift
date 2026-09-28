@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\StartSession;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -21,6 +22,9 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleAppearance::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
+        ], replace: [
+            // Adds a read-only mode so background polling can't keep a session alive.
+            \Illuminate\Session\Middleware\StartSession::class => StartSession::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -26,6 +26,7 @@
    - [Payments](#payments)
    - [Payment Providers](#payment-providers)
    - [Sources](#sources)
+   - [New Inquiry Notifications](#new-inquiry-notifications)
 8. [Logs Module](#8-logs-module)
    - [Audit Logs](#audit-logs)
    - [Mail Logs](#mail-logs)
@@ -396,6 +397,42 @@ Sources are the list of options shown to customers when asked **"How did you hea
 - Each source only needs a **name** (an optional description can also be added).
 - Once created, a source appears as a dropdown option on the public inquiry form and in the admin booking create/edit screens.
 - Deleting a source does not delete past bookings — bookings that used a since-deleted source will simply show no source.
+
+### New Inquiry Notifications
+
+While you have MakeShift open, you're alerted whenever a customer submits a new inquiry — the same way sites like Facebook tell you about new messages.
+
+- **Red dot on the browser tab.** A red dot appears on MakeShift's tab icon, and the tab title shows how many are waiting, e.g. **(3) Dashboard - MakeShift**. You can spot it from any other tab.
+- **Pop-up in MakeShift.** If you're looking at MakeShift, a message appears in the top-right corner — "New inquiry from Maria Santos" — with a **View** button that opens it. Several at once are grouped as "3 new inquiries".
+- **Desktop notification.** If you're somewhere else — another tab, another app, or the browser is minimised — your computer also shows a notification. Click it to jump straight to the inquiry. The pop-up in MakeShift waits for you too, so you'll still see who it was from when you come back, even if your computer didn't show the notification.
+
+**Turning on desktop notifications:** the first time, MakeShift shows a message asking *"Get notified of new inquiries?"* — click **Enable**, then **Allow** when your browser asks. If you'd rather not, click **Not now** (or ✕); it won't ask again on that browser.
+
+**The bell (top right of every page)** is where you check and fix desktop notifications at any time. Its look tells you the status:
+
+| Bell | Meaning |
+|---|---|
+| Plain bell | Desktop notifications are on |
+| Bell with an amber dot | Not turned on yet — click it to turn them on |
+| Bell with a line through it | Blocked, or not available on this browser/address |
+
+Click the bell to open **Desktop notifications**, which shows your status and what to do next. Under **Troubleshooting** at the bottom there are always three step-by-step guides you can open — *Allow notifications for this page*, *Check your browser's settings*, and *Check your computer's settings* — whatever your status:
+- **Not turned on yet** → one button to turn them on. If your browser doesn't ask (browsers stop asking after the request has been closed a few times), MakeShift tells you and shows how to allow notifications for the page yourself. The same steps are under **Button not working? Allow it in your browser**.
+- **On** → a **Send test notification** button. Use it to check your computer actually shows them.
+- **Blocked by your browser** → short steps to allow it again. Browsers won't let a site ask twice, so you allow it yourself: click the bell icon in the address bar if there is one, or the icon at the left of the web address, and set **Notifications** to **Allow**.
+- **Check your browser's settings** → your browser has its own switch that stops *every* website from asking to send notifications. If it's on, MakeShift can't ask either. These steps show how to open your browser's Settings (on a Mac press **⌘ + ,**; on Windows use the menu at the top right), search for **notifications**, and make sure websites are allowed to ask.
+- **Check your computer's settings** → tips **for Mac and for Windows** (the one for your computer is listed first). Even when the browser allows notifications, your computer can hide them — for example, notifications turned off for your browser, or **Focus / Do Not Disturb** switched on. **If you sent a test notification and didn't see it, this is almost always why.**
+
+The red dot on the tab and the pop-ups inside MakeShift work either way — only the desktop notification depends on these settings.
+
+**When the red dot clears:** as soon as you open the **Bookings** page. "New" means *arrived since you last opened Bookings* — this is remembered on your account, so opening Bookings on your phone clears it on your laptop too. An inquiry that someone moves to Pending or Canceled also stops counting, even if nobody opened Bookings.
+
+**Good to know:**
+- It checks for new inquiries every **30 seconds** while MakeShift is open. If the tab has been in the background a while, your browser may slow this down, so a notification can take up to about a minute to appear.
+- Notifications only appear while MakeShift is **open in a browser tab** — close the tab and they stop.
+- **Leaving MakeShift open doesn't keep you signed in.** The background checks don't count as activity, so if you don't click anything for 2 hours you're signed out as usual — and notifications stop until you sign back in.
+- It's per person: each staff member has their own red dot, based on when *they* last opened Bookings.
+- Desktop notifications need the site to be on a secure (**https://**) address.
 
 ---
 

@@ -1,4 +1,5 @@
 import { Toaster } from '@/components/ui/sonner';
+import { useInquiryNotifications } from '@/hooks/use-inquiry-notifications';
 import AppLayoutTemplate from '@/layouts/app/app-sidebar-layout';
 import { type BreadcrumbItem } from '@/types';
 import { PageProps } from '@inertiajs/core';
@@ -20,6 +21,9 @@ interface AppLayoutProps {
 
 export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => {
     const { flash } = usePage<FlashProps>().props;
+
+    // New-inquiry alerts: tab dot + title count, toast, desktop notification.
+    useInquiryNotifications();
 
     useEffect(() => {
         if (flash?.success) {

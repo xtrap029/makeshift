@@ -35,14 +35,14 @@ Display the full technology stack for the MakeShift project.
 ### Database
 | Technology | Notes |
 |---|---|
-| MySQL | Via XAMPP locally |
+| MySQL | Homebrew MySQL locally (`127.0.0.1:3306`) |
 | Laravel Migrations | Schema management |
 | Settings table | Key-value store for all configurable app settings |
 
 ### Infrastructure / Tooling
 | Tool | Notes |
 |---|---|
-| XAMPP | Local dev server (`/Applications/XAMPP/xamppfiles/htdocs/MakeShift`) |
+| Local dev server | `php artisan serve` (`http://127.0.0.1:8001`) + `npm run dev` (Vite `:5173`), project at `/Users/kelvinbarsana/Projects/MakeShift` |
 | `php artisan serve` | Alternative local server (port 8000) |
 | Laravel Scheduler + CRON | Auto-cancel expired bookings, DB backups |
 | External CRON endpoint | `GET /cron/run/{token}` for hosts without cron access |
